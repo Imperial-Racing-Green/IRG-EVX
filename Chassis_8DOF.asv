@@ -19,7 +19,7 @@ I_CFx = 25; %chassis front inertia around x (kg m^2)
 I_CRx = 25; %chassis rear inertia around x (kg m^2)
 
 % Geometries
-a = 0.7; %distance of COG from front axle (m)
+a = 0.8; %distance of COG from front axle (m)
 b = 0.8; %distance of COG from rear axle (m)
 d_F = 0.6; %distance of COG from front left tire (m)
 e_F = 0.6; %distance of COG from front right tire (m)
@@ -27,10 +27,10 @@ d_R = 0.6; %distance of COG from rear left tire (m)
 e_R = 0.6; %distance of COG from rear right tire (m)
 
 % Suspension Stifnesses
-k_SFR = 10000; %suspension stiffness front right (N/m)
-k_SFL = 10000; %suspension stiffness front left (N/m)
-k_SRR = 10000; %suspension stiffness rear right (N/m)
-k_SRL = 10000; %suspension stiffness rear left (N/m)
+k_SFR = 5000; %suspension stiffness front right (N/m)
+k_SFL = 5000; %suspension stiffness front left (N/m)
+k_SRR = 5000; %suspension stiffness rear right (N/m)
+k_SRL = 5000; %suspension stiffness rear left (N/m)
 
 % Tire Stifnesses
 k_TFR = 5000; %tire stiffness front right (N/m)
@@ -39,10 +39,10 @@ k_TRR = 5000; %tire stiffness rear right (N/m)
 k_TRL = 5000; %tire stiffness rear left (N/m)
 
 % Suspension Damping Coefficients
-c_SFR = 1000; %suspension damping coefficient front right (Ns/m)
-c_SFL = 1000; %suspension damping coefficient front left (Ns/m)
-c_SRR = 1000; %suspension damping coefficientv rear right (Ns/m)
-c_SRL = 1000; %suspension damping coefficient rear left (Ns/m)
+c_SFR = 100; %suspension damping coefficient front right (Ns/m)
+c_SFL = 100; %suspension damping coefficient front left (Ns/m)
+c_SRR = 100; %suspension damping coefficientv rear right (Ns/m)
+c_SRL = 100; %suspension damping coefficient rear left (Ns/m)
 
 % Tire Damping Coefficients
 c_TFR = 1000; %tire damping coefficient front right (Ns/m)
@@ -89,9 +89,9 @@ time = [0 5];
 % Forces & Moments
 g = 9.81;
 F_z = -m_C * g;
-M_y = 100;
-M_xF = 75;
-M_xR = 50;
+M_y = -500;
+M_xF = 500;
+M_xR = 0;
 
 % Floor Displacements & Velocities
 y_FR = 0;
@@ -171,11 +171,49 @@ grid on
 figure
 
 subplot(4,2,1)
-plot(t ,z_c)
-title('Chassis Body Position vs Time');
+plot(t ,x_WFR)
+title('Front Right Wheel Position vs Time');
 grid on
 
 subplot(4,2,2)
-plot(t ,zdot_c)
-title('Chassis Body Velocity vs Time');
+plot(t ,xdot_WFR)
+title('Front Right Wheel Velocity vs Time');
 grid on
+
+subplot(4,2,3)
+plot(t ,x_WFL)
+title('Front Left Wheel Position vs Time');
+grid on
+
+subplot(4,2,4)
+plot(t ,xdot_WFL)
+title('Front Left Wheel Velocity vs Time');
+grid on
+
+subplot(4,2,5)
+plot(t ,x_WRR)
+title('Rear Right Wheel Position vs Time');
+grid on
+
+subplot(4,2,6)
+plot(t ,xdot_WRR)
+title('Rear Right Wheel Velocity vs Time');
+grid on
+
+subplot(4,2,7)
+plot(t ,x_WRL)
+title('Rear Left Wheel Position vs Time');
+grid on
+
+subplot(4,2,8)
+plot(t ,xdot_WRL)
+title('Rear Left Wheel Velocity vs Time');
+grid on
+
+%% Visualise Chassis Ride
+h_ride = 50;
+h_FR = h_ride - a * y_thetaC - e_F * x_thetaCF;
+h_FL = h_ride - a * y_thetaC + d_F * x_thetaCF;
+h_RR = h_ride + b * y_thetaC - e_R * x_thetaCR;
+h_RL = h_ride + b * y_thetaC + d_R * x_thetaCR;
+
