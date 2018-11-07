@@ -1,6 +1,10 @@
 %% 8 DOF Chassis Model
 % William Foster 7/11/2018
 
+clear all
+close all
+clc
+
 %% Car Parameters
 % Masses
 m_C = 200; %car sprung mass (kg)
@@ -46,6 +50,12 @@ c_TFL = 1000; %tire damping coefficient front left (Ns/m)
 c_TRR = 1000; %tire damping coefficientv rear right (Ns/m)
 c_TRL = 1000; %tire damping coefficient rear left (Ns/m)
 
+% Other Stiffnesses
+k_C = 5000;
+
+% Other Damping Coefficients
+c_C = 100;
+
 %% Model
 % Initial Conditions
 z_c = 0;
@@ -56,5 +66,146 @@ x_WFR = 0;
 x_WFL = 0;
 x_WRR = 0;
 x_WRL = 0;
+zdot_c = 0;
+ydot_thetaC = 0;
+xdot_thetaCF = 0;
+xdot_thetaCR = 0;
+xdot_WFR = 0;
+xdot_WFL = 0;
+xdot_WRR = 0;
+xdot_WRL = 0;
 
-initial = [z_c y_thetaC x_thetaCF x_thetaCR x_WFR x_WFL x_WRR x_WRL];
+initial = [z_c, zdot_c;...
+    y_thetaC, ydot_thetaC;...
+    x_thetaCF, xdot_thetaCF;...
+    x_thetaCR, xdot_thetaCR;...
+    x_WFR, xdot_WFR;...
+    x_WFL, xdot_WFL;...
+    x_WRR, xdot_WRR;...
+    x_WRL, xdot_WRL];
+
+time = [0 5];
+
+% Forces & Moments
+g = 9.81;
+F_z = -m_C * g;
+M_y = 100;
+M_xF = 75;
+M_xR = 50;
+
+% Floor Displacements & Velocities
+y_FR = 0;
+y_FL = 0;
+y_RR = 0;
+y_RL = 0;
+ydot_FR = 0;
+ydot_FL = 0;
+ydot_RR = 0;
+ydot_RL = 0;
+
+% Run Simulation
+[t,z] = ode45(@(t,z) Chassis8(t,z,m_C,m_WFR,m_WFL,m_WRR,m_WRL,...
+    I_Cy,I_CFx,I_CRx,a,b,d_F,e_F,d_R,e_R,k_SFR,k_SFL,k_SRR,k_SRL,...
+    k_TFR,k_TFL,k_TRR,k_TRL,c_SFR,c_SFL,c_SRR,c_SRL,c_TFR,c_TFL,...
+    c_TRR,c_TRL,k_C,c_C,F_z,M_y,M_xF,M_xR,y_FR,y_FL,y_RR,y_RL,...
+    ydot_FR,ydot_FL,ydot_RR,ydot_RL),time,initial);
+
+%% Plot Results
+z_c = z(:,1);
+y_thetaC = z(:,3);
+x_thetaCF = z(:,5);
+x_thetaCR = z(:,7);
+x_WFR = z(:,11);
+x_WFL = z(:,13);
+x_WRR = z(:,9);
+x_WRL = z(:,15);
+zdot_c = z(:,2);
+ydot_thetaC = z(:,4);
+xdot_thetaCF = z(:,6);
+xdot_thetaCR = z(:,8);
+xdot_WFR = z(:,12);
+xdot_WFL = z(:,14);
+xdot_WRR = z(:,10);
+xdot_WRL = z(:,16);
+
+subplot(4,2,1)
+plot(t ,z_c)
+title('Chassis Body Position vs Time');
+grid on
+
+subplot(4,2,2)
+plot(t ,zdot_c)
+title('Chassis Body Velocity vs Time');
+grid on
+
+subplot(4,2,3)
+plot(t ,y_thetaC)
+title('Pitch Position vs Time');
+grid on
+
+subplot(4,2,4)
+plot(t ,ydot_thetaC)
+title('Pitch Velocity vs Time');
+grid on
+
+subplot(4,2,5)
+plot(t ,x_thetaCF)
+title('Front Roll Position vs Time');
+grid on
+
+subplot(4,2,6)
+plot(t ,xdot_thetaCF)
+title('Front Roll Velocity vs Time');
+grid on
+
+subplot(4,2,7)
+plot(t ,x_thetaCR)
+title('Rear Roll Position vs Time');
+grid on
+
+subplot(4,2,8)
+plot(t ,xdot_thetaCR)
+title('Rear Roll Velocity vs Time');
+grid on
+
+figure
+
+subplot(4,2,1)
+plot(t ,x_WFR)
+title('Front Right Wheel Position vs Time');
+grid on
+
+subplot(4,2,2)
+plot(t ,xdot_WFR)
+title('Front Right Wheel Velocity vs Time');
+grid on
+
+subplot(4,2,3)
+plot(t ,x_WFL)
+title('Front Left Wheel Position vs Time');
+grid on
+
+subplot(4,2,4)
+plot(t ,xdot_WFL)
+title('Front Left Wheel Velocity vs Time');
+grid on
+
+subplot(4,2,5)
+plot(t ,x_WRR)
+title('Rear Right Wheel Position vs Time');
+grid on
+
+subplot(4,2,6)
+plot(t ,xdot_WRR)
+title('Rear Right Wheel Velocity vs Time');
+grid on
+
+subplot(4,2,7)
+plot(t ,x_WRL)
+title('Rear Left Wheel Position vs Time');
+grid on
+
+subplot(4,2,8)
+plot(t ,xdot_WRL)
+title('Rear Left Wheel Velocity vs Time');
+grid on
