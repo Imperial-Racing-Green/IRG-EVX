@@ -7,7 +7,7 @@ clc
 
 %% Car Parameters
 % Masses
-m_C = 350; %car sprung mass (kg)
+m_C = 250; %car sprung mass (kg)
 m_WFR = 5; %front right wheel mass (kg)
 m_WFL = 5; %front left wheel mass (kg)
 m_WRR = 5; %rear right wheel mass (kg)
@@ -45,16 +45,16 @@ c_SRR = 200; %suspension damping coefficientv rear right (Ns/m)
 c_SRL = 200; %suspension damping coefficient rear left (Ns/m)
 
 % Tire Damping Coefficients
-c_TFR = 150; %tire damping coefficient front right (Ns/m)
-c_TFL = 150; %tire damping coefficient front left (Ns/m)
-c_TRR = 150; %tire damping coefficientv rear right (Ns/m)
-c_TRL = 150; %tire damping coefficient rear left (Ns/m)
+c_TFR = 300; %tire damping coefficient front right (Ns/m)
+c_TFL = 300; %tire damping coefficient front left (Ns/m)
+c_TRR = 300; %tire damping coefficientv rear right (Ns/m)
+c_TRL = 300; %tire damping coefficient rear left (Ns/m)
 
 % Other Stiffnesses
-k_C = 10000;
+k_C = 5000;
 
 % Other Damping Coefficients
-c_C = 50;
+c_C = 100;
 
 %% Model
 % Initial Conditions
@@ -84,7 +84,7 @@ initial = [z_c, zdot_c;...
     x_WRR, xdot_WRR;...
     x_WRL, xdot_WRL];
 
-time = [0 10];
+time = [0 5];
 
 % Forces & Moments
 g = 9.81;
@@ -231,6 +231,6 @@ for i = 1:time
     ylim([-1 1]);
     zlim([0 h_ride*2]);
     grid on
-    pause(0.02)
+    pause(0.01)
 end
 
