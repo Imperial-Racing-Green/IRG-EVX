@@ -7,7 +7,7 @@ clc
 
 %% Car Parameters
 % Masses
-m_C = 350; %car sprung mass (kg)
+m_C = 200; %car sprung mass (kg)
 m_WFR = 5; %front right wheel mass (kg)
 m_WFL = 5; %front left wheel mass (kg)
 m_WRR = 5; %rear right wheel mass (kg)
@@ -39,16 +39,16 @@ k_TRR = 50000; %tire stiffness rear right (N/m)
 k_TRL = 50000; %tire stiffness rear left (N/m)
 
 % Suspension Damping Coefficients
-c_SFR = 200; %suspension damping coefficient front right (Ns/m)
-c_SFL = 200; %suspension damping coefficient front left (Ns/m)
-c_SRR = 200; %suspension damping coefficientv rear right (Ns/m)
-c_SRL = 200; %suspension damping coefficient rear left (Ns/m)
+c_SFR = 500; %suspension damping coefficient front right (Ns/m)
+c_SFL = 500; %suspension damping coefficient front left (Ns/m)
+c_SRR = 500; %suspension damping coefficientv rear right (Ns/m)
+c_SRL = 500; %suspension damping coefficient rear left (Ns/m)
 
 % Tire Damping Coefficients
-c_TFR = 150; %tire damping coefficient front right (Ns/m)
-c_TFL = 150; %tire damping coefficient front left (Ns/m)
-c_TRR = 150; %tire damping coefficientv rear right (Ns/m)
-c_TRL = 150; %tire damping coefficient rear left (Ns/m)
+c_TFR = 100; %tire damping coefficient front right (Ns/m)
+c_TFL = 100; %tire damping coefficient front left (Ns/m)
+c_TRR = 100; %tire damping coefficientv rear right (Ns/m)
+c_TRL = 100; %tire damping coefficient rear left (Ns/m)
 
 % Other Stiffnesses
 k_C = 10000;
@@ -58,7 +58,7 @@ c_C = 50;
 
 %% Model
 % Initial Conditions
-z_c = 0;
+z_c = -0.04;
 y_thetaC = 0;
 x_thetaCF = 0;
 x_thetaCR = 0;
@@ -89,9 +89,9 @@ time = [0 10];
 % Forces & Moments
 g = 9.81;
 F_z = -m_C * g;
-M_y = -500;
-M_xF = 500;
-M_xR = 0;
+M_y = 500;
+M_xF = 250;
+M_xR = -50;
 
 % Floor Displacements & Velocities
 y_FR = 0;
@@ -212,25 +212,56 @@ grid on
 
 %% Visualise Chassis Ride
 h_ride = 0.05;
-h_FR = h_ride - a * y_thetaC - e_F * x_thetaCF;
-h_FL = h_ride - a * y_thetaC + d_F * x_thetaCF;
-h_RR = h_ride + b * y_thetaC - e_R * x_thetaCR;
-h_RL = h_ride + b * y_thetaC + d_R * x_thetaCR;
+h_FR = h_ride + z_c - a * y_thetaC - e_F * x_thetaCF;
+h_FL = h_ride + z_c - a * y_thetaC + d_F * x_thetaCF;
+h_RR = h_ride + z_c + b * y_thetaC - e_R * x_thetaCR;
+h_RL = h_ride + z_c + b * y_thetaC + d_R * x_thetaCR;
 
 time = length(h_FR);
 
 figure
+%set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]);
 
 for i = 1:time
     X = [a a -b -b];
     Y = [-e_F d_F d_R -e_R];
-    Z = [h_FL(i) h_FL(i) h_RL(i) h_RR(i)];
+    Z = [h_FR(i) h_FL(i) h_RL(i) h_RR(i)];
+    Z = 1000 * Z;
     C = [1 1 1 1];
     fill3(X,Y,Z,C)
+    
+    hold on
+    
+    XFR = [a a];
+    YFR = [-e_F -e_F];
+    ZFR = [0 h_FR(i)];
+    plot3(XFR,YFR,ZFR*1000);
+    
+    XFL = [a a];
+    YFL = [d_F d_F];
+    ZFL = [0 h_FL(i)];
+    plot3(XFL,YFL,ZFL*1000);
+    
+    XRR = [-b -b];
+    YRR = [-e_F -e_F];
+    ZRR = [0 h_RR(i)];
+    plot3(XRR,YRR,ZRR*1000);
+    
+    XRL = [-b -b];
+    YRL = [d_F d_F];
+    ZRL = [0 h_RL(i)];
+    plot3(XRL,YRL,ZRL*1000);
+    
     xlim([-1 1]);
     ylim([-1 1]);
-    zlim([0 h_ride*2]);
+    zlim([0 h_ride * 2000]);
+    xlabel('length (m)');
+    ylabel('width (m)');
+    zlabel('ride height (mm)');
+    title('Chassis 8DOF Simulation');
     grid on
-    pause(0.02)
+    pause(0.005)
+    
+    hold off
 end
 
