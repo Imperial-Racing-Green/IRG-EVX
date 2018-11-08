@@ -58,7 +58,7 @@ c_C = 50;
 
 %% Model
 % Initial Conditions
-z_c = -0.04;
+z_c = 0.0;
 y_thetaC = 0;
 x_thetaCF = 0;
 x_thetaCR = 0;
@@ -66,7 +66,7 @@ x_WFR = 0;
 x_WFL = 0;
 x_WRR = 0;
 x_WRL = 0;
-zdot_c = 0;
+zdot_c = 1;
 ydot_thetaC = 0;
 xdot_thetaCF = 0;
 xdot_thetaCR = 0;
@@ -75,7 +75,7 @@ xdot_WFL = 0;
 xdot_WRR = 0;
 xdot_WRL = 0;
 
-initial = [z_c, zdot_c;...
+initial = [z_c, zdot_c;...%this is in the wrong order currently
     y_thetaC, ydot_thetaC;...
     x_thetaCF, xdot_thetaCF;...
     x_thetaCR, xdot_thetaCR;...
@@ -89,9 +89,9 @@ time = [0 10];
 % Forces & Moments
 g = 9.81;
 F_z = -m_C * g;
-M_y = 500;
-M_xF = 250;
-M_xR = -50;
+M_y = 0;
+M_xF = 0;
+M_xR = 0;
 
 % Floor Displacements & Velocities
 y_FR = 0;
@@ -220,7 +220,7 @@ h_RL = h_ride + z_c + b * y_thetaC + d_R * x_thetaCR;
 time = length(h_FR);
 
 figure
-set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]);
+%set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]);
 
 for i = 1:time
     X = [a a -b -b];
@@ -234,22 +234,22 @@ for i = 1:time
     
     XFR = [a a];
     YFR = [-e_F -e_F];
-    ZFR = [0 h_FR(i)];
+    ZFR = [y_FR h_FR(i)];
     plot3(XFR,YFR,ZFR*1000);
     
     XFL = [a a];
     YFL = [d_F d_F];
-    ZFL = [0 h_FL(i)];
+    ZFL = [y_FL h_FL(i)];
     plot3(XFL,YFL,ZFL*1000);
     
     XRR = [-b -b];
     YRR = [-e_F -e_F];
-    ZRR = [0 h_RR(i)];
+    ZRR = [y_RR h_RR(i)];
     plot3(XRR,YRR,ZRR*1000);
     
     XRL = [-b -b];
     YRL = [d_F d_F];
-    ZRL = [0 h_RL(i)];
+    ZRL = [y_RL h_RL(i)];
     plot3(XRL,YRL,ZRL*1000);
     
     xlim([-1 1]);
