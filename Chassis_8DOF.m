@@ -27,16 +27,16 @@ d_R = 0.6; %distance of COG from rear left tire (m)
 e_R = 0.6; %distance of COG from rear right tire (m)
 
 % Suspension Stifnesses
-k_SFR = 100000; %suspension stiffness front right (N/m)
-k_SFL = 100000; %suspension stiffness front left (N/m)
-k_SRR = 100000; %suspension stiffness rear right (N/m)
-k_SRL = 100000; %suspension stiffness rear left (N/m)
+k_SFR = 200000; %suspension stiffness front right (N/m)
+k_SFL = 200000; %suspension stiffness front left (N/m)
+k_SRR = 200000; %suspension stiffness rear right (N/m)
+k_SRL = 200000; %suspension stiffness rear left (N/m)
 
 % Tire Stifnesses
-k_TFR = 50000; %tire stiffness front right (N/m)
-k_TFL = 50000; %tire stiffness front left (N/m)
-k_TRR = 50000; %tire stiffness rear right (N/m)
-k_TRL = 50000; %tire stiffness rear left (N/m)
+k_TFR = 500000; %tire stiffness front right (N/m)
+k_TFL = 500000; %tire stiffness front left (N/m)
+k_TRR = 500000; %tire stiffness rear right (N/m)
+k_TRL = 500000; %tire stiffness rear left (N/m)
 
 % Suspension Damping Coefficients
 c_SFR = 500; %suspension damping coefficient front right (Ns/m)
@@ -51,50 +51,52 @@ c_TRR = 100; %tire damping coefficientv rear right (Ns/m)
 c_TRL = 100; %tire damping coefficient rear left (Ns/m)
 
 % Other Stiffnesses
-k_C = 10000;
+k_C = 20000;
 
 % Other Damping Coefficients
-c_C = 50;
+c_C = 100;
 
 %% Model
 % Initial Conditions
-z_c = 0.0;
-y_thetaC = 0;
-x_thetaCF = 0;
-x_thetaCR = 0;
+z_c = -0.015;
+y_thetaC = 0.025;
+x_thetaCF = 0.025;
+x_thetaCR = -0.03;
 x_WFR = 0;
 x_WFL = 0;
 x_WRR = 0;
 x_WRL = 0;
-zdot_c = 1;
-ydot_thetaC = 0;
-xdot_thetaCF = 0;
+zdot_c = 0.1;
+ydot_thetaC = 0.01;
+xdot_thetaCF = -0.025;
 xdot_thetaCR = 0;
 xdot_WFR = 0;
 xdot_WFL = 0;
 xdot_WRR = 0;
 xdot_WRL = 0;
 
-initial = [z_c, zdot_c;...%this is in the wrong order currently
-    y_thetaC, ydot_thetaC;...
-    x_thetaCF, xdot_thetaCF;...
-    x_thetaCR, xdot_thetaCR;...
-    x_WFR, xdot_WFR;...
-    x_WFL, xdot_WFL;...
-    x_WRR, xdot_WRR;...
+initial = [z_c, zdot_c,...
+    y_thetaC, ydot_thetaC,...
+    x_thetaCF, xdot_thetaCF,...
+    x_thetaCR, xdot_thetaCR,...
+    x_WFR, xdot_WFR,...
+    x_WFL, xdot_WFL,...
+    x_WRR, xdot_WRR,...
     x_WRL, xdot_WRL];
 
-time = [0 10];
+% initial = [z_C
+
+time = [0 5];
 
 % Forces & Moments
 g = 9.81;
 F_z = -m_C * g;
-M_y = 0;
-M_xF = 0;
+M_y = 500;
+M_xF = 800;
 M_xR = 0;
 
 % Floor Displacements & Velocities
-y_FR = 0;
+y_FR = 0.01;
 y_FL = 0;
 y_RR = 0;
 y_RL = 0;
@@ -252,6 +254,11 @@ for i = 1:time
     ZRL = [y_RL h_RL(i)];
     plot3(XRL,YRL,ZRL*1000);
     
+    scatter3(a,-e_F,(x_WFR(i) + (h_ride/2))*1000,100);
+    scatter3(a,d_F,(x_WFL(i) + (h_ride/2))*1000,100);
+    scatter3(-b,d_R,(x_WRR(i) + (h_ride/2))*1000,100);
+    scatter3(-b,-e_R,(x_WRL(i) + (h_ride/2))*1000,100);
+    
     xlim([-1 1]);
     ylim([-1 1]);
     zlim([0 h_ride * 2000]);
@@ -260,7 +267,7 @@ for i = 1:time
     zlabel('ride height (mm)');
     title('Chassis 8DOF Simulation');
     grid on
-    pause(0.005)
+    pause(0.001)
     
     hold off
 end
