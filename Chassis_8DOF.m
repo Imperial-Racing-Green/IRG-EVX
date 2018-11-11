@@ -20,7 +20,7 @@ I_CRx = 25; %chassis rear inertia around x (kg m^2)
 
 % Geometries
 a = 0.8; %distance of COG from front axle (m)
-b = 0.8; %distance of COG from rear axle (m)
+b = 0.7; %distance of COG from rear axle (m)
 d_F = 0.6; %distance of COG from front left tire (m)
 e_F = 0.6; %distance of COG from front right tire (m)
 d_R = 0.6; %distance of COG from rear left tire (m)
@@ -45,10 +45,10 @@ c_SRR = 500; %suspension damping coefficientv rear right (Ns/m)
 c_SRL = 500; %suspension damping coefficient rear left (Ns/m)
 
 % Tire Damping Coefficients
-c_TFR = 100; %tire damping coefficient front right (Ns/m)
-c_TFL = 100; %tire damping coefficient front left (Ns/m)
-c_TRR = 100; %tire damping coefficientv rear right (Ns/m)
-c_TRL = 100; %tire damping coefficient rear left (Ns/m)
+c_TFR = 800; %tire damping coefficient front right (Ns/m)
+c_TFL = 800; %tire damping coefficient front left (Ns/m)
+c_TRR = 800; %tire damping coefficientv rear right (Ns/m)
+c_TRL = 800; %tire damping coefficient rear left (Ns/m)
 
 % Other Stiffnesses
 k_C = 20000;
@@ -58,17 +58,17 @@ c_C = 100;
 
 %% Model
 % Initial Conditions
-z_c = -0.015;
-y_thetaC = 0.025;
-x_thetaCF = 0.025;
-x_thetaCR = -0.03;
+z_c = 0;
+y_thetaC = 0;
+x_thetaCF = 0;
+x_thetaCR = 0;
 x_WFR = 0;
 x_WFL = 0;
 x_WRR = 0;
 x_WRL = 0;
-zdot_c = 0.1;
-ydot_thetaC = 0.01;
-xdot_thetaCF = -0.025;
+zdot_c = 0;
+ydot_thetaC = 0;
+xdot_thetaCF = 0;
 xdot_thetaCR = 0;
 xdot_WFR = 0;
 xdot_WFL = 0;
@@ -91,12 +91,12 @@ time = [0 5];
 % Forces & Moments
 g = 9.81;
 F_z = -m_C * g;
-M_y = 500;
-M_xF = 800;
-M_xR = 0;
+M_y = 1500;
+M_xF = 700;
+M_xR = -700;
 
 % Floor Displacements & Velocities
-y_FR = 0.01;
+y_FR = 0;
 y_FL = 0;
 y_RR = 0;
 y_RL = 0;
@@ -268,6 +268,8 @@ for i = 1:time
     title('Chassis 8DOF Simulation');
     grid on
     pause(0.001)
+    
+    disp(num2str(i));
     
     hold off
 end
