@@ -7,11 +7,11 @@ clc
 
 %% Car Parameters
 % Masses
-m_C = 200; %car sprung mass (kg)
-m_WFR = 5; %front right wheel mass (kg)
-m_WFL = 5; %front left wheel mass (kg)
-m_WRR = 5; %rear right wheel mass (kg)
-m_WRL = 5; %rear left wheel mass (kg)
+m_C = 50; %car sprung mass (kg)
+m_WFR = 1; %front right wheel mass (kg)
+m_WFL = 1; %front left wheel mass (kg)
+m_WRR = 1; %rear right wheel mass (kg)
+m_WRL = 1; %rear left wheel mass (kg)
 
 % Intertias
 I_Cy = 100; %chassis interia around y (kg m^2)
@@ -20,38 +20,38 @@ I_CRx = 25; %chassis rear inertia around x (kg m^2)
 
 % Geometries
 a = 0.8; %distance of COG from front axle (m)
-b = 0.7; %distance of COG from rear axle (m)
-d_F = 0.6; %distance of COG from front left tire (m)
+b = 0.8; %distance of COG from rear axle (m)
+d_F = 0.60; %distance of COG from front left tire (m)
 e_F = 0.6; %distance of COG from front right tire (m)
 d_R = 0.6; %distance of COG from rear left tire (m)
 e_R = 0.6; %distance of COG from rear right tire (m)
 
 % Suspension Stifnesses
-k_SFR = 200000; %suspension stiffness front right (N/m)
-k_SFL = 200000; %suspension stiffness front left (N/m)
-k_SRR = 200000; %suspension stiffness rear right (N/m)
-k_SRL = 200000; %suspension stiffness rear left (N/m)
+k_SFR = 100; %suspension stiffness front right (N/m)
+k_SFL = 100; %suspension stiffness front left (N/m)
+k_SRR = 100; %suspension stiffness rear right (N/m)
+k_SRL = 100; %suspension stiffness rear left (N/m)
 
 % Tire Stifnesses
-k_TFR = 500000; %tire stiffness front right (N/m)
-k_TFL = 500000; %tire stiffness front left (N/m)
-k_TRR = 500000; %tire stiffness rear right (N/m)
-k_TRL = 500000; %tire stiffness rear left (N/m)
+k_TFR = 100; %tire stiffness front right (N/m)
+k_TFL = 100; %tire stiffness front left (N/m)
+k_TRR = 100; %tire stiffness rear right (N/m)
+k_TRL = 100; %tire stiffness rear left (N/m)
 
 % Suspension Damping Coefficients
-c_SFR = 500; %suspension damping coefficient front right (Ns/m)
-c_SFL = 500; %suspension damping coefficient front left (Ns/m)
-c_SRR = 500; %suspension damping coefficientv rear right (Ns/m)
-c_SRL = 500; %suspension damping coefficient rear left (Ns/m)
+c_SFR = 10; %suspension damping coefficient front right (Ns/m)
+c_SFL = 10; %suspension damping coefficient front left (Ns/m)
+c_SRR = 10; %suspension damping coefficientv rear right (Ns/m)
+c_SRL = 10; %suspension damping coefficient rear left (Ns/m)
 
 % Tire Damping Coefficients
-c_TFR = 800; %tire damping coefficient front right (Ns/m)
-c_TFL = 800; %tire damping coefficient front left (Ns/m)
-c_TRR = 800; %tire damping coefficientv rear right (Ns/m)
-c_TRL = 800; %tire damping coefficient rear left (Ns/m)
+c_TFR = 10; %tire damping coefficient front right (Ns/m)
+c_TFL = 10; %tire damping coefficient front left (Ns/m)
+c_TRR = 10; %tire damping coefficientv rear right (Ns/m)
+c_TRL = 10; %tire damping coefficient rear left (Ns/m)
 
 % Other Stiffnesses
-k_C = 20000;
+k_C = 200;
 
 % Other Damping Coefficients
 c_C = 100;
@@ -84,16 +84,14 @@ initial = [z_c, zdot_c,...
     x_WRR, xdot_WRR,...
     x_WRL, xdot_WRL];
 
-% initial = [z_C
-
-time = [0 5];
+time = [0 100];
 
 % Forces & Moments
 g = 9.81;
-F_z = -m_C * g;
-M_y = 1500;
-M_xF = 700;
-M_xR = -700;
+F_z = 0; %-m_C * g;
+M_y = 10;
+M_xF = 5;
+M_xR = -5;
 
 % Floor Displacements & Velocities
 y_FR = 0;
@@ -273,4 +271,4 @@ for i = 1:time
     
     hold off
 end
-
+%[pwelchD, pwelchF]=pwelch(interp1(t,z(:,1),linspace(0,5,500)),500,250,50000,800);plot(pwelchF,pwelchD);axis([0 6 0 inf]);
