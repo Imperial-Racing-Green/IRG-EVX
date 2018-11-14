@@ -38,14 +38,14 @@ params.susp_geometry.outboard_offset_tr = hardpoints.tr.outer - ...
 %Track Rod
 params.susp_geometry.tr_length = norm(hardpoints.tr.outer - ...
     hardpoints.tr.inner);
-params.susp_geometry.tr_inboard_x = hardpoints.tr.inner;
+params.susp_geometry.tr_inner_x = hardpoints.tr.inner;
 
 %Pushrod
 %TODO: should be able to deal with both push- and pull-rods...
 %But I'll deal with that later - it's not a major change
 params.susp_geometry.pr_length = norm(hardpoints.pr.outer - ...
     hardpoints.pr.inner);
-params.susp_geometry.pr_inboard_x = hardpoints.pr.inner;
+params.susp_geometry.pr_inner_x = hardpoints.pr.inner;
 
 %Tyre
 params.wheel_geometry.tyre_diameter = 464.82;
