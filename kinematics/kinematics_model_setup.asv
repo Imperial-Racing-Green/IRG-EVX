@@ -7,10 +7,10 @@ hardpoints_front.uwb.rear = [-177.74, 281.38, 264.58];
 hardpoints_front.uwb.outer = [-15.65, 545.1, 323.75];
 
 hardpoints_front.tr.inner = [75.89, 230, 201];
-hardpoints_front.tr.outer = [75.89, 552.49, 240.94];
+hardpoints_front.tr.outer = [75.89, 552.49, 240];
 
-hardpoints_front.pr.inner = [30, 195.29, 525.12];
-hardpoints_front.pr.outer = [15, 510.49, 138.41];
+hardpoints_front.pr.inner = [1 2 3];
+hardpoints_front.pr.outer = [1 2 3];
 
 hardpoints_front.wheel.tyre_diameter = 464.82;
 hardpoints_front.wheel.centre = [0 600 hardpoints_front.wheel.tyre_diameter/2];
