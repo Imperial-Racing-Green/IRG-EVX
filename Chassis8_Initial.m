@@ -1,4 +1,4 @@
-function initial = Initial()
+function initial = Chassis8_Initial()
 % Initial Conditions
 z_c = 0;
 y_thetaC = 0;
