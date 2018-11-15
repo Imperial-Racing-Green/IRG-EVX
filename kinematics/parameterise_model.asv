@@ -14,6 +14,8 @@ params.susp_geometry.uwb_inner_axis = [theta1_z,theta1_y,theta1_x];
 params.susp_geometry.uwb_length = norm(hardpoints.uwb.outer - ...
     params.susp_geometry.uwb_inner_x);
 
+params.susp_geometry.uwb_initial_angle = 0;
+
 %Lower wishbone
 params.susp_geometry.lwb_inner_x = 0.5.*(hardpoints.lwb.front+hardpoints.lwb.rear);
 axis2 = hardpoints.lwb.front-hardpoints.lwb.rear;
@@ -38,17 +40,29 @@ params.susp_geometry.outboard_offset_tr = hardpoints.tr.outer - ...
 %Track Rod
 params.susp_geometry.tr_length = norm(hardpoints.tr.outer - ...
     hardpoints.tr.inner);
-params.susp_geometry.tr_inboard_x = hardpoints.tr.inner;
+params.susp_geometry.tr_inner_x = hardpoints.tr.inner;
 
 %Pushrod
 %TODO: should be able to deal with both push- and pull-rods...
+%But I'll deal with that later - it's not a major change
 params.susp_geometry.pr_length = norm(hardpoints.pr.outer - ...
-    hardpoints.pr.inner);
-params.susp_geometry.pr_inboard_x = hardpoints.pr.inner;
+    hardpoints.pr.inner); %This should be a setup parameter as well
+params.susp_geometry.pr_inner_x = hardpoints.pr.inner;
+params.susp_geometry.pr_outer_offset = norm(
+
+%Inboard
+params.susp_geometry.rocker_pivot = hardpoints.inboard.rocker_pivot;
+%TODO: add in support for rocker not alligned parallel to XY plane
+%TODO: add in ARB model
+params.susp_geometry.rocker_pr_offset = hardpoints.pr.inner - ...
+    hardpoints.inboard.rocker_pivot;
+params.susp_geometry.rocker_damper_offset = hardpoints.inboard.rocker_to_damper - ...
+    hardpoints.inboard.rocker_pivot;
+params.susp_geometry.damper_to_chassis = hardpoints.inboard.damper_to_chassis;
 
 %Tyre
 params.wheel_geometry.tyre_diameter = 464.82;
 params.wheel_geometry.tyre_width = 190.5;
 
 %Chassis
-params.chassis_geometry.size = [500, 750, 750];
+params.chassis_geometry.size = [1000, 500, 750];

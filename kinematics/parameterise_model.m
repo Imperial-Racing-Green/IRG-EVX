@@ -46,8 +46,20 @@ params.susp_geometry.tr_inner_x = hardpoints.tr.inner;
 %TODO: should be able to deal with both push- and pull-rods...
 %But I'll deal with that later - it's not a major change
 params.susp_geometry.pr_length = norm(hardpoints.pr.outer - ...
-    hardpoints.pr.inner);
+    hardpoints.pr.inner); %This should be a setup parameter as well
 params.susp_geometry.pr_inner_x = hardpoints.pr.inner;
+params.susp_geometry.pr_outer_offset = norm(hardpoints.lwb.outer - ...
+    hardpoints.pr.outer);
+
+%Inboard
+params.susp_geometry.rocker_pivot = hardpoints.inboard.rocker_pivot;
+%TODO: add in support for rocker not alligned parallel to XY plane
+%TODO: add in ARB model
+params.susp_geometry.rocker_pr_offset = hardpoints.pr.inner - ...
+    hardpoints.inboard.rocker_pivot;
+params.susp_geometry.rocker_damper_offset = hardpoints.inboard.rocker_to_damper - ...
+    hardpoints.inboard.rocker_pivot;
+params.susp_geometry.damper_to_chassis = hardpoints.inboard.damper_to_chassis;
 
 %Tyre
 params.wheel_geometry.tyre_diameter = 464.82;
