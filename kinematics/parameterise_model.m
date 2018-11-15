@@ -14,6 +14,8 @@ params.susp_geometry.uwb_inner_axis = [theta1_z,theta1_y,theta1_x];
 params.susp_geometry.uwb_length = norm(hardpoints.uwb.outer - ...
     params.susp_geometry.uwb_inner_x);
 
+params.susp_geometry.uwb_initial_angle = 0;
+
 %Lower wishbone
 params.susp_geometry.lwb_inner_x = 0.5.*(hardpoints.lwb.front+hardpoints.lwb.rear);
 axis2 = hardpoints.lwb.front-hardpoints.lwb.rear;
@@ -52,4 +54,4 @@ params.wheel_geometry.tyre_diameter = 464.82;
 params.wheel_geometry.tyre_width = 190.5;
 
 %Chassis
-params.chassis_geometry.size = [500, 750, 750];
+params.chassis_geometry.size = [1000, 500, 750];

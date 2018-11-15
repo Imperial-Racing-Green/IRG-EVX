@@ -16,3 +16,4 @@ hardpoints_front.wheel.tyre_diameter = 464.82;
 hardpoints_front.wheel.centre = [0 600 hardpoints_front.wheel.tyre_diameter/2];
 
 params = parameterise_model(hardpoints_front);
+% clear hardpoints_front
