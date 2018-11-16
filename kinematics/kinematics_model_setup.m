@@ -13,9 +13,9 @@ hardpoints_front.pr.inner = [30, 195.29, 525.12];
 hardpoints_front.pr.outer = [15, 510.49, 138.41];
 
 hardpoints_front.inboard.rocker_pivot = [30, 216.66, 498.30];
-hardpoints_front.inboard.rocker_to_damper = [0, 88.56, 425.87];
-hardpoints_front.inboard.roll_damper_left = [0, 71.83, 504.31];
-hardpoints_front.inboard.damper_to_chassis = [0, 185.78, 271.56];
+hardpoints_front.inboard.rocker_to_damper = [30, 88.56, 425.87];
+hardpoints_front.inboard.roll_damper_left = [30, 71.83, 504.31];
+hardpoints_front.inboard.damper_to_chassis = [30, 185.78, 271.56];
 
 hardpoints_front.wheel.tyre_diameter = 464.82;
 hardpoints_front.wheel.centre = [0 600 hardpoints_front.wheel.tyre_diameter/2];
