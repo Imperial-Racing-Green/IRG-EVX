@@ -1,3 +1,5 @@
+clear
+
 hardpoints_front.lwb.front = [176.98, 252.3, 124.89];
 hardpoints_front.lwb.rear = [-175.12, 281.87, 126.41];
 hardpoints_front.lwb.outer = [8.93, 561.42, 140.75];
