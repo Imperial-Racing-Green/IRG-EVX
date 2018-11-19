@@ -12,5 +12,12 @@ hold on
 
 coef = [2 1 12.5 1.55];
 model_input = [0.0174533*SAplot, -650*ones(length(SAplot),1)];
-FYtest = Pacejka4_Model(coef,model_input);
-scatter(SAplot,FYtest)
+% FYtest = Pacejka4_Model(coef,model_input);
+% scatter(SAplot,FYtest)
+for i = 1:length(SAplot)
+    fy(i) = fx_model(0.0174533*SAplot(i),650);
+end
+scatter(SAplot,fy)
+
+
+

@@ -1,5 +1,5 @@
-function fy = Pacejka4_Model(a_slip,Fz)
-x1  =  a_slip;  %Slip
+function fy = fx_model(a_slip,Fz)
+x1  =  500*0.0174533*a_slip;  %Slip ratio, with fudge factor
 x2  = Fz;  % Fz
 P = [2 1 12.5 1.55]; %Fitted to FSAE TTC Round 6 Run 2
 D1  = P(1);
