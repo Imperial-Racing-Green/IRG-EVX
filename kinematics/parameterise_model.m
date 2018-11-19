@@ -1,33 +1,25 @@
 function params = parameterise_model(hardpoints)
 
+params.hardpoints_front = hardpoints;
 %Upper wishbone
-params.susp_geometry.uwb_inner_x = 0.5.*(hardpoints.uwb.front+hardpoints.uwb.rear);
-axis1 = hardpoints.uwb.front-hardpoints.uwb.rear;
+params.susp_geometry.uwb_f = hardpoints.uwb.front;
+params.susp_geometry.uwb_f_length = norm(hardpoints.uwb.outer - ...
+    hardpoints.uwb.front);
 
-theta1_z = atand(axis1(2)/axis1(1));
-theta1_y = atand(axis1(3)/axis1(1));
-theta1_x = 0; %No rotation in third axis needed because this
-%will be axis of rotation for revolute joint
-
-params.susp_geometry.uwb_inner_axis = [theta1_z,theta1_y,theta1_x];
-
-params.susp_geometry.uwb_length = norm(hardpoints.uwb.outer - ...
-    params.susp_geometry.uwb_inner_x);
+params.susp_geometry.uwb_r = hardpoints.uwb.rear;
+params.susp_geometry.uwb_r_length = norm(hardpoints.uwb.outer - ...
+    hardpoints.uwb.rear);
 
 params.susp_geometry.uwb_initial_angle = 0;
 
 %Lower wishbone
-params.susp_geometry.lwb_inner_x = 0.5.*(hardpoints.lwb.front+hardpoints.lwb.rear);
-axis2 = hardpoints.lwb.front-hardpoints.lwb.rear;
+params.susp_geometry.lwb_f = hardpoints.lwb.front;
+params.susp_geometry.lwb_f_length = norm(hardpoints.lwb.outer - ...
+    hardpoints.lwb.front);
 
-theta2_z = atand(axis2(2)/axis2(1));
-theta2_y = atand(axis2(3)/axis2(1));
-theta2_x = 0; %No rotation in third axis needed
-
-params.susp_geometry.lwb_inner_axis = [theta2_z,theta2_y,theta2_x];
-
-params.susp_geometry.lwb_length = norm(hardpoints.lwb.outer - ...
-    params.susp_geometry.lwb_inner_x);
+params.susp_geometry.lwb_r = hardpoints.lwb.rear;
+params.susp_geometry.lwb_r_length = norm(hardpoints.lwb.outer - ...
+    hardpoints.lwb.rear);
 
 %Outboard Assembly
 params.susp_geometry.outboard_offset_uwb = hardpoints.uwb.outer - ...
