@@ -48,7 +48,7 @@ params.susp_geometry.rocker_pivot = hardpoints.inboard.rocker_pivot;
 %TODO: add in support for rocker not alligned parallel to XY plane
 %TODO: add in ARB model
 pr_offset_x = -(hardpoints.pr.inner(2) - hardpoints.inboard.rocker_pivot(2));
-pr_offset_y = -(hardpoints.pr.inner(3) - hardpoints.inboard.rocker_pivot(3));
+pr_offset_y = (hardpoints.pr.inner(3) - hardpoints.inboard.rocker_pivot(3));
 params.susp_geometry.rocker_pr_offset = [pr_offset_x, pr_offset_y, 0];
 damper_offset_x = hardpoints.inboard.rocker_to_damper(2) - ...
     hardpoints.inboard.rocker_pivot(2);
