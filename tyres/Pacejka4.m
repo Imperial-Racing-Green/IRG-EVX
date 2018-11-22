@@ -1,0 +1,13 @@
+function [F_y,F_x,M_z] = Pacejka4(SA,SL,Fz)
+x1  =  0.0174533 .* SA;  %Slip
+x2  = Fz;  % Fz
+x3  =  150 * 0.0174533 .* SL;  %Slip ratio, with fudge factor
+P = [2 1 12.5 1.55]; %Fitted to FSAE TTC Round 6 Run 2
+D1  = P(1);
+D2  = P(2);
+B   = P(3);
+C   = P(4);
+D   = (D1 + D2/1000 .* x2) .* x2;   % peak value (normalized)
+F_y  = D .* sin(C .* atan(B .* x1));
+F_x  = D .*sin (C .* atan(B .* x3));
+M_z = 0;
