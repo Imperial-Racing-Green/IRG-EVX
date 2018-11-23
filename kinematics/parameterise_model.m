@@ -61,7 +61,6 @@ params.susp_geometry.damper_to_chassis = hardpoints.inboard.damper_to_chassis;
 %Tyre
 params.wheel_geometry.tyre_diameter = 464.82;
 params.wheel_geometry.tyre_width = 190.5;
-params.wheel_geometry.y_pos = hardpoints.wheel.centre(2);
 
 %Chassis
 params.chassis_geometry.size = [1000, 500, 750];
