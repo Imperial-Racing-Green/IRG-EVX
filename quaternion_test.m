@@ -8,6 +8,7 @@ for i = 1:sze(1)
 end
 camber = camber.*57.2958;
 toe = toe.*57.2958;
+rot = rot.*57.2958;
 plot(quaternion_out.Time,camber)
 hold on
 plot(quaternion_out.Time,toe)
