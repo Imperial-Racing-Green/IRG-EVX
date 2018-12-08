@@ -5,12 +5,6 @@ load("Z:\Tyre Test Consortium Data\Round 6\RunData_10inch_Cornering_Matlab_SI\B1
 datamode = 'lateral';
 % datamode = 'longitudinal';
 
-fy_norm = FY./FZ;
-
-idx = IA<0.5;
-
-plot(SA(idx), fy_norm(idx))
-
 figure
 plot(ET,FZ,'.'); 
 grid on
@@ -73,6 +67,7 @@ B = cell(length(P_binvalues), 1);
     S_V_surf_IA_P, Mu_surf_IA_P, CS_surf_IA_P, B_surf_IA_P, C_surf_IA_P, ...
     D_surf_IA_P, E_surf_IA_P, coef] = deal(B);
 
+idx2 = 1;
 for i=1:length(P_binvalues)
     for m=1:size(FZ_bin,2)
         for n=1:size(IA_bin,2)
@@ -114,7 +109,10 @@ for i=1:length(P_binvalues)
                 end
                 plot(-S_binfzia{i,n,m},pac_fit)
                 disp(num2str(coef{i,n,m}))
-                pause(1)
+                coef_out(idx2,:) = coef{i,n,m};
+                idx2 = idx2+1;
+%                 keyboard
+                pause(0.01)
 %             end
 
         end
