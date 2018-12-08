@@ -90,15 +90,19 @@ for i=1:length(P_binvalues)
             elseif strcmp(datamode, 'lateral')
                 F_binfzia{i,n,m}  =  FY(validIdx);  % Lateral Force Bins
                 NF_binfzia{i,n,m} =  NFY(validIdx); % Force Coefficient bins
-                S_binfzia{i,n,m}  =  SA(validIdx);  % Slip Angle Bins
+                S_binfzia{i,n,m}  =  0.0174533*SA(validIdx);  % Slip Angle Bins
+                S_binfzia{i,n,m}  =  0.0174533*SA(validIdx);  % Slip Angle Bins (convert deg to rad)
             end
             
-            coef = fit_pacejka(S_binfzia{i,n,m},F_binfzia{i,n,m});
+            coef = fit_pacejka(-S_binfzia{i,n,m},F_binfzia{i,n,m});
             figure
-            plot(S_binfzia{i,n,m},F_binfzia{i,n,m})
+            scatter(S_binfzia{i,n,m},F_binfzia{i,n,m})
             hold on
-            plot(S_binfzia{i,n,m},pacejka4(coef,S_binfzia{i,n,m}))
-            for idx = 
+            
+            for idx = 1:length(S_binfzia{i,n,m})
+                pac_fit(idx) = pacejka4(coef,S_binfzia{i,n,m}(idx));
+            end
+            plot(-S_binfzia{i,n,m},pac_fit)
             keyboard
         end
     end

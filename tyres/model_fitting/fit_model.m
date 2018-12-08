@@ -71,7 +71,7 @@ A = cell(length(P_binvalues),length(IA_binvalues),length(FZ_binvalues));
 B = cell(length(P_binvalues), 1);
 [B_P, C_P, D_P, E_P, S_S_P, S_V_P, mu_P, S_H_P, CS_P, S_H_surf_IA_P, ...
     S_V_surf_IA_P, Mu_surf_IA_P, CS_surf_IA_P, B_surf_IA_P, C_surf_IA_P, ...
-    D_surf_IA_P, E_surf_IA_P] = deal(B);
+    D_surf_IA_P, E_surf_IA_P, coef] = deal(B);
 
 for i=1:length(P_binvalues)
     for m=1:size(FZ_bin,2)
@@ -90,19 +90,33 @@ for i=1:length(P_binvalues)
             elseif strcmp(datamode, 'lateral')
                 F_binfzia{i,n,m}  =  FY(validIdx);  % Lateral Force Bins
                 NF_binfzia{i,n,m} =  NFY(validIdx); % Force Coefficient bins
+%                 S_binfzia{i,n,m}  =  SA(validIdx);  % Slip Angle Bins
                 S_binfzia{i,n,m}  =  0.0174533*SA(validIdx);  % Slip Angle Bins (convert deg to rad)
             end
             
-            coef = fit_pacejka(-S_binfzia{i,n,m},F_binfzia{i,n,m});
-            figure
-            plot(S_binfzia{i,n,m},F_binfzia{i,n,m})
-            hold on
+            coef{i,n,m} = fit_pacejka(-S_binfzia{i,n,m},F_binfzia{i,n,m});
             
-            for idx = 1:length(S_binfzia{i,n,m})
-                pac_fit(idx) = pacejka4(coef,S_binfzia{i,n,m}(idx));
-            end
-            plot(-S_binfzia{i,n,m},pac_fit)
-            keyboard
+            x = IA_binvalues;
+            y = FZ_binvalues;
+            
+            
+%             if (i==1) && (n==1) && (m==1)
+                clear pac_fit
+                if exist('h')
+                    close(h)
+                end
+                h = figure(5);
+                scatter(S_binfzia{i,n,m},F_binfzia{i,n,m})
+                hold on
+
+                for idx = 1:length(S_binfzia{i,n,m})
+                    pac_fit(idx) = pacejka4(coef{i,n,m},S_binfzia{i,n,m}(idx));
+                end
+                plot(-S_binfzia{i,n,m},pac_fit)
+                disp(num2str(coef{i,n,m}))
+                pause(1)
+%             end
+
         end
     end
 end

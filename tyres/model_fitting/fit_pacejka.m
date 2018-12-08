@@ -10,6 +10,7 @@ init_Sv = 0;
 init_Sh = 0;
 init_coef = [init_B, init_C, init_D, init_E, init_Sv, init_Sh];
 
-coef = lsqcurvefit(@pacejka4,init_coef,xdata,ydata);
+opts = optimset('MaxFunEvals',50000,'MaxIter',10000,'TolX',0.00001);
+coef = lsqcurvefit(@pacejka4,init_coef,xdata,ydata,[],[],opts);
 end
 
