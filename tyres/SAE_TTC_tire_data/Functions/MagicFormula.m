@@ -19,6 +19,6 @@ function [F] = MagicFormula(Coeff,Slip)
 %=======================
 B = Coeff(1);
 E = Coeff(2);
-F = sin(1/B*atan(B*(1-E)*Slip+E*atan(B.*Slip)));
+F = -sin(1/B*atan(B*(1-E)*Slip+E*atan(B.*Slip)));
 end
 
