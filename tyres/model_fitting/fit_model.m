@@ -1,7 +1,8 @@
 clear
 close all
 
-load("Z:\Tyre Test Consortium Data\Round 6\RunData_10inch_Cornering_Matlab_SI\B1654run21.mat")
+tic
+load("C:\Users\Owen Heaney\Documents\FSAE TTC Data\RunData_10inch_Cornering_Matlab_SI\B1654run21.mat")
 datamode = 'lateral';
 % datamode = 'longitudinal';
 
@@ -40,8 +41,8 @@ if( isempty(FZ_binvalues) || isempty(P_binvalues) || isempty(IA_binvalues) )
     error('One or more of the *_binValues arrays was empty.')
 end
 
-P_eps = 0.8;  % Pressure tolerance (psi)
-P_bin = P>(P_binvalues-P_eps-0.3)&P<(P_binvalues+P_eps); %(psi)
+P_eps = 8;  % Pressure tolerance
+P_bin = P>(P_binvalues-P_eps-0.3)&P<(P_binvalues+P_eps); 
 
 IA_eps = 0.2; % Inclination angle tolerance (deg)
 IA_bin = (IA>IA_binvalues-IA_eps)&(IA<IA_binvalues+IA_eps); %(deg)
@@ -112,9 +113,10 @@ for i=1:length(P_binvalues)
                 coef_out(idx2,:) = coef{i,n,m};
                 idx2 = idx2+1;
 %                 keyboard
-                pause(0.01)
+                pause(0.1)
 %             end
 
         end
     end
 end
+toc

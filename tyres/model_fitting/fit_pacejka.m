@@ -4,7 +4,8 @@ function [coef] = fit_pacejka(xdata,ydata)
 
 init_B = 6.9;
 init_C = 3.1;
-init_D = 700;
+% init_D = 700;
+init_D = max(ydata);
 init_E = 1.5;
 init_Sv = 0;
 init_Sh = 0;
