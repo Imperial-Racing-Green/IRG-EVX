@@ -1,0 +1,68 @@
+classdef pacejka4_model
+    %PACEJKA4_MODEL Summary of this class goes here
+    %   Detailed explanation goes here
+    
+    properties
+        B_fit
+        C_fit
+        D_fit
+        E_fit
+        Sv_fit
+        Sh_fit
+        pressures
+        forces
+        IAs
+    end
+    
+    methods
+        function obj = pacejka4_model(B,C,D,E,Sv,Sh,P,F,IA)
+            %PACEJKA4_MODEL Construct an instance of this class
+            %   Detailed explanation goes here
+            obj.B_fit = B;
+            obj.C_fit = C;
+            obj.D_fit = D;
+            obj.E_fit = E;
+            obj.Sv_fit = Sv;
+            obj.Sh_fit = Sh;
+            obj.pressures = P;
+            obj.forces = F;
+            obj.IAs = IA;
+            
+        end
+        
+        function [B, C, D, E, Sv, Sh] = get_coefficients(obj,P,IA,FZ)
+            if     (P==obj.pressures(1))
+                i = 1;
+            elseif (P==obj.pressures(2))
+                i = 2;
+            elseif (P==obj.pressures(3))
+                i = 3;
+            else 
+                error("Pressure must match test cases - model cannot interpolate!")
+            end
+            B = obj.B_fit{i}(IA,FZ);
+            C = obj.C_fit{i}(IA,FZ);
+            D = obj.D_fit{i}(IA,FZ);
+            E = obj.E_fit{i}(IA,FZ);
+            Sv = obj.Sv_fit{i}(IA,FZ);
+            Sh = obj.Sh_fit{i}(IA,FZ);
+        end
+        
+        function force = feval(obj,P,IA,FZ,slip)
+            %Evaluate forces at a given operating point
+            %   Detailed explanation goes here
+            [B, C, D, E, Sv, Sh] = obj.get_coefficients(P,IA,FZ);
+            force = obj.MagicFormula(slip,B,C,D,E,Sv,Sh);
+        end
+    end
+    
+    methods (Static)
+        
+        function out = MagicFormula(slip,B,C,D,E,Sv,Sh)
+            x = slip + Sh;
+            y = D*sin(C*atan(B*x - E*(B*x - atan(B*x))));
+            out = y + Sv;
+        end
+    end
+end
+
