@@ -2,7 +2,13 @@ clear
 close all
 
 tic
+
+% Hoosier 10" Lateral
 filename = "C:\Users\Owen Heaney\Documents\FSAE TTC Data\RunData_10inch_Cornering_Matlab_SI\B1654run21.mat";
+
+%Hoosier 10" Longitudinal & Combined
+% filename = "Z:\Tyre Test Consortium Data\Round 6\RunData_10inch_DriveBrake_Matlab_SI\B1654run35.mat";
+
 load(filename)
 datamode = 'lateral';
 % datamode = 'longitudinal';
@@ -51,11 +57,11 @@ IA_bin = (IA>IA_binvalues-IA_eps)&(IA<IA_binvalues+IA_eps); %(deg)
 FZ_eps1 = 50; % Normal force tolerance (N)
 FZ_bin = abs(FZ)>((FZ_binvalues-FZ_eps1))&abs(FZ)<((FZ_binvalues+FZ_eps1)); %(N)
 
-if strcmp(datamode, 'lateral')
+% if strcmp(datamode, 'lateral')
     S_0 = (-1<SA)&(SA<1);
-elseif strcmp(datamode, 'longitudinal')
-    S_0 = (-1<SR)&(SR<1);
-end
+% elseif strcmp(datamode, 'longitudinal')
+%     S_0 = (-1<SR)&(SR<1);
+% end
 
 [IA_mat,FZ_mat] = meshgrid(IA_binvalues,FZ_binvalues);
 
@@ -72,7 +78,11 @@ idx2 = 1;
 for i=1:length(P_binvalues)
     for m=1:size(FZ_bin,2)
         for n=1:size(IA_bin,2)
-            validIdx = FZ_bin(:,m) & P_bin(:,i) & IA_bin(:,n);% & S_0;
+            if strcmp(datamode, 'lateral')
+                validIdx = FZ_bin(:,m) & P_bin(:,i) & IA_bin(:,n);% & S_0;
+            elseif strcmp(datamode, 'longitudinal')
+                validIdx = FZ_bin(:,m) & P_bin(:,i) & IA_bin(:,n) & S_0;
+            end
             ET_binfzia{i,n,m}  =  ET(validIdx);  % Time Bins
             FZ_binfzia{i,n,m}  =  FZ(validIdx);  % Vertical Load bins
             IA_binfzia{i,n,m}  =  IA(validIdx);  % Inclination Angle bins

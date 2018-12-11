@@ -72,7 +72,7 @@ classdef pacejka4_model
             Sh = obj.Sh_fit_long{i}(IA,FZ);
         end
         
-        function force = feval(obj,P,IA,FZ,slip,type)
+        function force = get_force_output(obj,P,IA,FZ,slip,type)
             %Evaluate forces at a given operating point
             %   Detailed explanation goes here
             if type == 1
