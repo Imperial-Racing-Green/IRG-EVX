@@ -3,6 +3,7 @@ close all
 
 tic
 
+%% Data File Selection
 % Hoosier 10" Lateral
 filename = "C:\Users\Owen Heaney\Documents\FSAE TTC Data\RunData_10inch_Cornering_Matlab_SI\B1654run21.mat";
 
@@ -13,6 +14,11 @@ load(filename)
 datamode = 'lateral';
 % datamode = 'longitudinal';
 
+%% Plot Raw Data, make bins
+% Code plots some key test input data, then finds the values of these
+% inputs used in the test cases (i.e. the vertical loads used)
+
+%Vertical Force
 figure
 plot(ET,FZ,'.'); 
 grid on
@@ -22,6 +28,7 @@ title('Variation of FZ','FontSize',10);
 [countsFZ,edgesFZ] = histcounts(FZ);
 [~,locsFZ] = findpeaks([countsFZ(2), countsFZ, countsFZ(end-1)]);
 
+%Pressure
 figure 
 plot(ET,P);
 xlabel('Elapsed Time (s)');
@@ -31,6 +38,7 @@ title('Variation of Pressure','FontSize',10);
 [countsP,edgesP] = histcounts(P);
 [~,locsP] = findpeaks([countsP(2), countsP, countsP(end-1)]);
 
+%Inclination Angle
 figure 
 plot(ET,IA);
 xlabel('Elapsed Time (s)');
@@ -40,6 +48,7 @@ title('Variation of IA','FontSize',10);
 [countsIA,edgesIA] = histcounts(IA);
 [~,locsIA] = findpeaks([countsIA(2), countsIA, countsIA(end-1)]);
 
+%Extract bin values
 FZ_binvalues = unique(round(abs(edgesFZ(locsFZ))));
 P_binvalues = unique(round(edgesP(locsP)));
 IA_binvalues = unique(round(edgesIA(locsIA)));
@@ -65,6 +74,12 @@ FZ_bin = abs(FZ)>((FZ_binvalues-FZ_eps1))&abs(FZ)<((FZ_binvalues+FZ_eps1)); %(N)
 
 [IA_mat,FZ_mat] = meshgrid(IA_binvalues,FZ_binvalues);
 
+%% Data Fitting
+% Code loops through pressure, vertical load and camber (in that order),
+% fitting the 6 coefficients of the Pacejka model to the data for each test
+% case
+
+% Preallocate memory
 A = cell(length(P_binvalues),length(IA_binvalues),length(FZ_binvalues));
 [S_binfzia, F_binfzia, NF_binfzia, ET_binfzia, FZ_binfzia, IA_binfzia, ...
     MX_binfzia, MZ_binfzia, CS_fzia, mu_fzia, S_H_fzia, S_V_fzia, S_bar_fzia, ...
@@ -72,14 +87,17 @@ A = cell(length(P_binvalues),length(IA_binvalues),length(FZ_binvalues));
 
 Bb = cell(length(P_binvalues), 1);
 [B, C, D, E, Sh, Sv, B_coef, C_coef, D_coef, E_coef, Sv_coef, Sh_coef, B_surf, C_surf, ...
-    D_surf, E_surf, Sv_surf, Sh_surf, coef] = deal(Bb);
+    D_surf, E_surf, Sv_surf, Sh_surf, coef, resnorm] = deal(Bb);
 
 idx2 = 1;
 for i=1:length(P_binvalues)
     for m=1:size(FZ_bin,2)
         for n=1:size(IA_bin,2)
+            
+            %validIdx contains the indices of all data points with the
+            %desired input parameters
             if strcmp(datamode, 'lateral')
-                validIdx = FZ_bin(:,m) & P_bin(:,i) & IA_bin(:,n);% & S_0;
+                validIdx = FZ_bin(:,m) & P_bin(:,i) & IA_bin(:,n);
             elseif strcmp(datamode, 'longitudinal')
                 validIdx = FZ_bin(:,m) & P_bin(:,i) & IA_bin(:,n) & S_0;
             end
@@ -96,12 +114,17 @@ for i=1:length(P_binvalues)
             elseif strcmp(datamode, 'lateral')
                 F_binfzia{i,n,m}  =  FY(validIdx);  % Lateral Force Bins
                 NF_binfzia{i,n,m} =  NFY(validIdx); % Force Coefficient bins
-%                 S_binfzia{i,n,m}  =  SA(validIdx);  % Slip Angle Bins
                 S_binfzia{i,n,m}  =  0.0174533*SA(validIdx);  % Slip Angle Bins (convert deg to rad)
             end
             
-            coef{i,n,m} = fit_pacejka(-S_binfzia{i,n,m},F_binfzia{i,n,m});
+            %fit the Pacejka coefficients for the test case; slip negative
+            %because of the sign conventions used in the TTC being opposite
+            %to how the MF works
+            [coef{i,n,m}, resnorm{i,n,m}] = fit_pacejka(-S_binfzia{i,n,m},F_binfzia{i,n,m});
             disp(num2str(coef{i,n,m}))
+            disp(num2str(resnorm{i,n,m}))
+            
+            %Plotting of results 
             
 %             if (i==0) && (n==1) && (m==1)
                 clear pac_fit
@@ -111,18 +134,19 @@ for i=1:length(P_binvalues)
                 h = figure(5);
                 scatter(S_binfzia{i,n,m},F_binfzia{i,n,m})
                 hold on
-                pac_fit = zeros(length(S_binfzia{i,n,m}),1);
-                for idx = 1:length(S_binfzia{i,n,m})
-                    pac_fit(idx) = pacejka4(coef{i,n,m},S_binfzia{i,n,m}(idx));
+                pac_fit = zeros(500,1);
+                slip = linspace(-1,1,500);
+                for idx = 1:500
+                    pac_fit(idx) = pacejka4(coef{i,n,m},slip(idx));
                 end
-                plot(-S_binfzia{i,n,m},pac_fit)
-                
-%                 coef_out(idx2,:) = coef{i,n,m};
+                plot(-slip,pac_fit)
+                ylim([-4000 4000])
                 idx2 = idx2+1;
 %                 keyboard
                 pause(0.1)
 %             end
-
+            
+            % Put coefficients into separate arrays for outputting
             B_coef{i,n,m} = coef{i,n,m}(1);
             C_coef{i,n,m} = coef{i,n,m}(2); 
             D_coef{i,n,m} = coef{i,n,m}(3); 
@@ -133,9 +157,14 @@ for i=1:length(P_binvalues)
         end
     end
     
+    %% Fit Coefficient Surfaces
+    % Currently the code can only fit to a polynomial with 2 independent
+    % variables; using polyfitn might allow for fitting in more dimensions
+    % (TODO!)
     x = IA_binvalues;
     y = FZ_binvalues;
     
+    %partially convert coeffients into arrays rather than cells
     B{i} = permute(cell2mat(B_coef(i,:,:)),[3,2,1])';
     C{i} = permute(cell2mat(C_coef(i,:,:)),[3,2,1])';
     D{i} = permute(cell2mat(D_coef(i,:,:)),[3,2,1])';
@@ -143,6 +172,7 @@ for i=1:length(P_binvalues)
     Sv{i} = permute(cell2mat(Sv_coef(i,:,:)),[3,2,1])';
     Sh{i} = permute(cell2mat(Sh_coef(i,:,:)),[3,2,1])';
     
+    %Fit surfaces
     B_surf{i} = ResponseSurf(B{i},y,x,2);
     C_surf{i} = ResponseSurf(C{i},y,x,2);
     D_surf{i} = ResponseSurf(D{i},y,x,2);
@@ -150,76 +180,78 @@ for i=1:length(P_binvalues)
     Sv_surf{i} = ResponseSurf(Sv{i},y,x,2);
     Sh_surf{i} = ResponseSurf(Sh{i},y,x,2);
     
-    if(i==i)
+    % Plot surfaces
+    if(i==1)
         % Defining figures:
         [x_plot,y_plot] = meshgrid(0:0.25:4,linspace(FZ_binvalues(1),FZ_binvalues(end),11));      
         figure
-            ax2 = axes;
-            hold on
-            grid on
-            title('B vs. FZ vs. IA');
-            xlabel('Inclination Angle ({\circ}''s)','Rotation',20);
-            ylabel('F_Z (N)','Rotation',-30);
-%             ylim([0 2000]); zlim([0 3.5]); % To make graph limits the same uncomment this line and edit values
-            zlabel('B (-)');
-            view([-37.5 30]);
+        ax2 = axes;
+        hold on
+        grid on
+        title('B vs. FZ vs. IA');
+        xlabel('Inclination Angle ({\circ}''s)','Rotation',20);
+        ylabel('F_Z (N)','Rotation',-30);
+        zlabel('B (-)');
+        view([-37.5 30]);
+        
         figure
-            ax3 = axes;
-            hold on
-            grid on 
-            title('C vs. FZ vs. IA');
-            xlabel('Inclination Angle ({\circ}''s)');
-            ylabel('F_Z (N)','FontSize',10,'Rotation',-30);
-%             ylim([0 2000]); zlim([0 3.5]); % To make graph limits the same uncomment this line and edit values
-            zlabel('C (-)');
-            view([-37.5 30]);
-            
+        ax3 = axes;
+        hold on
+        grid on
+        title('C vs. FZ vs. IA');
+        xlabel('Inclination Angle ({\circ}''s)');
+        ylabel('F_Z (N)','FontSize',10,'Rotation',-30);
+        zlabel('C (-)');
+        view([-37.5 30]);
+        
         figure
-            ax4 = axes;
-            hold on
-            grid on 
-            title('D vs. FZ vs. IA','FontSize',10);
-            xlabel('Inclination Angle ({\circ}''s)','Rotation',20);
-            ylabel('F_Z (N)','Rotation',-30);
-%             ylim([0 2000]); zlim([0 3.5]); % To make graph limits the same uncomment this line and edit values
-            zlabel('D (-)','FontSize',10);
-            view([-37.5 30]);
+        ax4 = axes;
+        hold on
+        grid on
+        title('D vs. FZ vs. IA','FontSize',10);
+        xlabel('Inclination Angle ({\circ}''s)','Rotation',20);
+        ylabel('F_Z (N)','Rotation',-30);
+        zlabel('D (-)','FontSize',10);
+        view([-37.5 30]);
+        
         figure
-            ax5 = axes;
-            hold on
-            grid on 
-            title('E vs. FZ vs. IA','FontSize',10);
-            xlabel('Inclination Angle ({\circ}''s)','FontSize',10,'Rotation',20);
-            ylabel('F_Z (N)','Rotation',-30);
-%             ylim([0 2000]); zlim([0 3.5]); % To make graph limits the same uncomment this line and edit values
-            zlabel('E (-)');
-            view([-37.5 30]);
-    
-            
-            plot3(ax2,IA_mat,FZ_mat,B_surf{i}(IA_mat,FZ_mat),'.','MarkerSize',25,...
-                'MarkerEdgeColor',[i==1 i==2 i==3],'HandleVisibility','off');
-            mesh(ax2,x_plot,y_plot,(B_surf{i}(x_plot,y_plot)),'EdgeColor','none','LineWidth',2,...
-                'FaceAlpha',0.4,'FaceColor',[i==1 i==2 i==3],'DisplayName',[mat2str(P_binvalues(i)) ' kPa']);
-            plot3(ax3,IA_mat,FZ_mat,C_surf{i}(IA_mat,FZ_mat),'.','MarkerSize',25,...
-                'MarkerEdgeColor',[i==1 i==2 i==3],'HandleVisibility','off');
-            mesh(ax3,x_plot,y_plot,(C_surf{i}(x_plot,y_plot)),'EdgeColor','none','LineWidth',2,...
-                'FaceAlpha',0.4,'FaceColor',[i==1 i==2 i==3],'DisplayName',[mat2str(P_binvalues(i)) ' kPa']);
-            plot3(ax4,IA_mat,FZ_mat,D_surf{i}(IA_mat,FZ_mat),'.','MarkerSize',25,...
-                'MarkerEdgeColor',[i==1 i==2 i==3],'HandleVisibility','off');
-            mesh(ax4,x_plot,y_plot,(D_surf{i}(x_plot,y_plot)),'EdgeColor','none','LineWidth',2,...
-                'FaceAlpha',0.4,'FaceColor',[i==1 i==2 i==3],'DisplayName',[mat2str(P_binvalues(i)) ' kPa']);
-            plot3(ax5,IA_mat,FZ_mat,E_surf{i}(IA_mat,FZ_mat),'.','MarkerSize',25,...
-                'MarkerEdgeColor',[i==1 i==2 i==3],'HandleVisibility','off');
-            mesh(ax5,x_plot,y_plot,(E_surf{i}(x_plot,y_plot)),'EdgeColor','none','LineWidth',2,...
-                'FaceAlpha',0.4,'FaceColor',[i==1 i==2 i==3],'DisplayName',[mat2str(P_binvalues(i)) ' kPa']);
+        ax5 = axes;
+        hold on
+        grid on
+        title('E vs. FZ vs. IA','FontSize',10);
+        xlabel('Inclination Angle ({\circ}''s)','FontSize',10,'Rotation',20);
+        ylabel('F_Z (N)','Rotation',-30);zlabel('E (-)');
+        view([-37.5 30]);
+        
+        
+        plot3(ax2,IA_mat,FZ_mat,B_surf{i}(IA_mat,FZ_mat),'.','MarkerSize',25,...
+            'MarkerEdgeColor',[i==1 i==2 i==3],'HandleVisibility','off');
+        mesh(ax2,x_plot,y_plot,(B_surf{i}(x_plot,y_plot)),'EdgeColor','none','LineWidth',2,...
+            'FaceAlpha',0.4,'FaceColor',[i==1 i==2 i==3],'DisplayName',[mat2str(P_binvalues(i)) ' kPa']);
+        plot3(ax3,IA_mat,FZ_mat,C_surf{i}(IA_mat,FZ_mat),'.','MarkerSize',25,...
+            'MarkerEdgeColor',[i==1 i==2 i==3],'HandleVisibility','off');
+        mesh(ax3,x_plot,y_plot,(C_surf{i}(x_plot,y_plot)),'EdgeColor','none','LineWidth',2,...
+            'FaceAlpha',0.4,'FaceColor',[i==1 i==2 i==3],'DisplayName',[mat2str(P_binvalues(i)) ' kPa']);
+        plot3(ax4,IA_mat,FZ_mat,D_surf{i}(IA_mat,FZ_mat),'.','MarkerSize',25,...
+            'MarkerEdgeColor',[i==1 i==2 i==3],'HandleVisibility','off');
+        mesh(ax4,x_plot,y_plot,(D_surf{i}(x_plot,y_plot)),'EdgeColor','none','LineWidth',2,...
+            'FaceAlpha',0.4,'FaceColor',[i==1 i==2 i==3],'DisplayName',[mat2str(P_binvalues(i)) ' kPa']);
+        plot3(ax5,IA_mat,FZ_mat,E_surf{i}(IA_mat,FZ_mat),'.','MarkerSize',25,...
+            'MarkerEdgeColor',[i==1 i==2 i==3],'HandleVisibility','off');
+        mesh(ax5,x_plot,y_plot,(E_surf{i}(x_plot,y_plot)),'EdgeColor','none','LineWidth',2,...
+            'FaceAlpha',0.4,'FaceColor',[i==1 i==2 i==3],'DisplayName',[mat2str(P_binvalues(i)) ' kPa']);
 
     end
 end
-hLegend(1) = legend(ax2,'show');
-hLegend(2) = legend(ax3,'show');
-% hLegend(3) = legend(ax4,'show');
-hLegend(4) = legend(ax5,'show');
+try
+    hLegend(1) = legend(ax2,'show');
+    hLegend(2) = legend(ax3,'show');
+    % hLegend(3) = legend(ax4,'show');
+    hLegend(4) = legend(ax5,'show');
+catch 
+end
 
+%% Prepare results for saving
 % Data Value points
 IA_vect = IA_binvalues;
 FZ_vect = FZ_binvalues;
@@ -245,6 +277,8 @@ for Pidx = 2:numel(P_binvalues)
     Sv_Lookup3d_map = cat(3, Sv_Lookup3d_map, Sv_surf{Pidx}(IA_mat,FZ_mat));
 end
 
+
+%% Save Results
 [pathstr,name,ext] = fileparts(filename);
 
 save(fullfile(pwd,"surface_fits",[char(name) char("_MagicFormula_datapoints.mat")]),...
