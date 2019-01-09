@@ -67,5 +67,5 @@ params.wheel_geometry.tyre_width = 190.5;
 params.chassis_geometry.size = [1000, 500, 750];
 
 %Model inputs
-params.inputs.wheel_z = timeseries([zeros(1,100) linspace(-50, 50, 100)],linspace(0,2,200));
-params.inputs.tr_y = timeseries([linspace(-12.5, 12.5, 100) zeros(1,100)],linspace(0,2,200));
+params.inputs.wheel_z = timeseries([zeros(1,100) linspace(0,-25,8) -25 -25 linspace(-25, 25, 100)],linspace(0,2,210));
+params.inputs.tr_y = timeseries([linspace(-12.5, 12.5, 100) linspace(12.5,0,8) zeros(1,102)],linspace(0,2,210));
