@@ -68,4 +68,4 @@ params.chassis_geometry.size = [1000, 500, 750];
 
 %Model inputs
 params.inputs.wheel_z = timeseries([zeros(1,100) linspace(0,-25,8) -25 -25 linspace(-25, 25, 100)],linspace(0,2,210));
-params.inputs.tr_y = timeseries([linspace(-12.5, 12.5, 100) linspace(12.5,0,8) zeros(1,102)],linspace(0,2,210));
+params.inputs.tr_y = timeseries([linspace(-30, 30, 100) linspace(12.5,0,8) zeros(1,102)],linspace(0,2,210));
