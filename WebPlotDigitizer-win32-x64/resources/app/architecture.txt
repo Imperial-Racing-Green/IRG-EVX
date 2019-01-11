@@ -1,0 +1,33 @@
+Folders:
+- core: 
+    - basic data model
+    - core image processing and data handling algorithms that are independent of the UI.
+    - should be unit tested
+
+- widgets:
+    - ui widgets
+    - data is provided to these, these don't normally fetch stuff
+    - try to keep these independent of overall data structures
+    - they can call controllers?
+
+- tools:
+    - extension of graphics widget
+    - so many extensions, that it needs a folder
+
+- services:
+    - deal with the external world.
+    - interface to other clients.
+    - project files, exports etc.
+
+- controllers:
+    - operating logic
+    - need:
+        - appdata
+        - image handling
+        - data series mgmt
+        - calibration
+        - detection: auto, manual
+        - measurements
+        - (helper) browser info can go here
+        - (helper) i18n can go here too?
+

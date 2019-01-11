@@ -3,8 +3,8 @@ clear
 clc
 
 %% Load inputs
-csv_data = csvread('/Users/Foster/OneDrive/ME4/FYP/Track Generation/FSUK Track Centreline.csv');      	%Load csv data
-dLength = 1000;
+csv_data = csvread('C:\Users\Will\Documents\GitHub\IRG-EVX\FSUK Track Centreline.csv');      	%Load csv data
+dLength = 120;
 bPlot = true;
 
 %% Proccess the axis coordinates
@@ -45,6 +45,7 @@ for k = 2:1:length(yaw_angle)
     end
 end
 yaw_angle = smoothdata(yaw_angle,'sgolay',200);
+yaw_angle = yaw_angle - yaw_angle(1);
 adCurvature = (diff(yaw_angle))./dSpacing(1:end-1); %Calculate curvature using dl = rdTheta
 
 %% Plot the results
@@ -64,3 +65,9 @@ if (bPlot)
     hold off
 end
 
+for i = 1:length(yaw_angle)
+    yaw_angle2(i,1) = yaw_angle(length(yaw_angle) - i + 1);
+end
+yaw_angle2 = yaw_angle2 - yaw_angle2(1);
+
+csvwrite('FSUK Endurance.csv',[adPath,yaw_angle2]);

@@ -1,0 +1,11 @@
+- Save/Resume
+- Algo
+- interactive:
+    - input of weird files
+    - negative bar, log, polar log
+    - tar file save/resume
+
+fix:
+ - Links
+ - Windows console font
+
