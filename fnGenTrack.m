@@ -3,7 +3,7 @@ clear
 clc
 
 %% Load inputs
-csv_data = csvread('C:\Users\Will\Documents\GitHub\IRG-EVX\FSUK Track Centreline.csv');      	%Load csv data
+csv_data = csvread('/Users/Foster/Documents/GitHub/IRG-EVX/FSUK Track Centreline.csv');      	%Load csv data
 dLength = 120;
 bPlot = true;
 
