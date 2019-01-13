@@ -2,16 +2,26 @@
 clear all
 close all
 
-[x,y,theta_d,dist] = Track_Gen('FSUK Track Centreline.csv',1,1200,'On');
+[x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Centreline.csv',1,1200,'On');
 
 velocity_d = Vel_Init(dist,10);
 
 [velocity_t,theta_t,time] = dist2time(velocity_d,theta_d,dist);
 
-plot(time,theta_t);
-figure
-plot(dist,theta_d);
-figure
-plot(time,velocity);
-figure
-plot(dist,theta_d);
+velocity_t = [time,velocity_t];
+theta_t = [time,theta_t];
+
+% sim('EVX_Lap_Simulation',max(time));
+% 
+% plot(car_path.Data(:,1),car_path.Data(:,2));
+
+Fz = 500;
+[F_x,F_y,F_xmax,F_ymax] = tyre_fmax(Fz,10);
+
+% plot(time,theta_t);
+% figure
+% plot(dist,theta_d);
+% figure
+% plot(time,velocity_t);
+% figure
+% plot(dist,velocity_d);

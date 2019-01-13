@@ -1,11 +1,11 @@
-function [x,y,theta,Distance] = Track_Gen(filename,Interpolation,Length,Smoothing)
+function [x,y,theta,curvature,radius,Distance] = Track_Gen(filename,Interpolation,Length,Smoothing)
 
 %% Set Up
 Direction = 1;
 % Interpolation = 100;
 % Length = 1200;
 % Smoothing = 'On';
-Plots = 'Off';
+Plots = 'On';
 
 %% Read Data
 csv_data = csvread(filename);
@@ -60,12 +60,24 @@ for k = 2:1:length(theta)
     end
 end
 
+%% Curvature
+curvature = diff(theta)./diff(Distance);
+
 %% Smoothing
 if strcmpi(Smoothing,'On') == 1
-    windowSize = round(length(x) / 700);
+    windowSize = round(length(x) / 500);
     b = (1/windowSize)*ones(1,windowSize);
     a = 1;
     theta_filtered = filter(b,a,theta);
+    windowSize = round(length(x) / 50);
+    b = (1/windowSize)*ones(1,windowSize);
+    curvature_filtered = filter(b,a,curvature);
+end
+
+%% Radius
+radius = 1./curvature;
+if strcmpi(Smoothing,'On') == 1
+    radius_filtered = 1./curvature_filtered;
 end
 
 %% Plot
@@ -87,4 +99,33 @@ if strcmpi(Plots,'On') == 1
     title('Yaw Angle')
     xlabel('Distance (m)')
     ylabel('Yaw Angle (rad)')
+    
+    figure
+    hold on
+    plot(Distance(1:end-1),curvature);
+    if strcmpi(Smoothing,'On') == 1
+        plot(Distance(1:end-1),curvature_filtered);
+        legend('Original','Smoothed')
+    end
+    title('Curvature')
+    xlabel('Distance (m)')
+    ylabel('Curvature (1/m)')
+    
+    figure
+    hold on
+    plot(Distance(1:end-1),radius);
+    if strcmpi(Smoothing,'On') == 1
+        plot(Distance(1:end-1),radius_filtered);
+        legend('Original','Smoothed')
+    end
+    title('Radius')
+    xlabel('Distance (m)')
+    ylabel('Radius (1/m)')
+end
+
+%% Outputs
+if strcmpi(Smoothing,'On') == 1
+    curvature = curvature_filtered;
+    theta = theta_filtered;
+    radius = radius_filtered;
 end
