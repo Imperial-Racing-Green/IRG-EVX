@@ -1,4 +1,4 @@
-function params = parameterise_model(hardpoints)
+function params = parameterise_kine_model(hardpoints)
 
 params.hardpoints_front = hardpoints;
 %Upper wishbone
