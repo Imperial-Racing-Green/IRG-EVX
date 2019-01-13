@@ -38,15 +38,15 @@ params.susp_geometry.tr_inner_x = hardpoints.tr.inner;
 %TODO: should be able to deal with both push- and pull-rods...
 %But I'll deal with that later - it's not a major change
 params.susp_geometry.pr_length = norm(hardpoints.pr.outer - ...
-    hardpoints.pr.inner); %This should be a setup parameter as well
+    hardpoints.pr.inner) -5; %This should be a setup parameter as well
 params.susp_geometry.pr_inner_x = hardpoints.pr.inner;
 params.susp_geometry.pr_outer_offset = norm(hardpoints.lwb.outer - ...
     hardpoints.pr.outer);
 params.susp_geometry.pr_outer_offset_vec = hardpoints.lwb.outer - ...
     hardpoints.pr.outer;
 params.susp_geometry.pr_offset_rotation =...
-    vrrotvec2mat(vrrotvec(hardpoints.lwb.outer - hardpoints.lwb.rear,...
-    hardpoints.lwb.outer - hardpoints.pr.outer));
+    vrrotvec(hardpoints.lwb.rear - hardpoints.lwb.outer,...
+    hardpoints.pr.outer - hardpoints.lwb.outer);
 
 %Inboard
 params.susp_geometry.rocker_pivot = hardpoints.inboard.rocker_pivot;
@@ -70,6 +70,13 @@ params.wheel_geometry.tyre_width = 190.5;
 %Chassis
 params.chassis_geometry.size = [1000, 500, 750];
 
+%Damper characteristics
+params.damper.max_length = 200; %all in mm
+params.damper.stroke = 57;
+params.damper.min_length = params.damper.max_length - params.damper.stroke;
+
 %Model inputs
+
 params.inputs.wheel_z = timeseries([zeros(1,100) linspace(0,-25,8) -25 -25 linspace(-25, 25, 100)],linspace(0,2,210));
+params.inputs.damper_l = timeseries([180*ones(1,100) linspace(180,200,8) 200 200 linspace(200,200-57,100)],linspace(0,2,210));
 params.inputs.tr_y = timeseries([linspace(-30, 30, 100) linspace(12.5,0,8) zeros(1,102)],linspace(0,2,210));

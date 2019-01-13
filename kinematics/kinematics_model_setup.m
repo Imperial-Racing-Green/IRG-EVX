@@ -22,6 +22,6 @@ addpath([pwd '\kinematics\functions'])
 % 
 % hardpoints_front.wheel.tyre_diameter = 464.82;
 % hardpoints_front.wheel.centre = [0 600 hardpoints_front.wheel.tyre_diameter/2];
-load([pwd char("/kinematics/SUSF-P-001_V3_Hardpoints.mat")])
-params = parameterise_model(hardpoints_front);
+load([pwd char("/kinematics/EV3 Front Hardpoints 13.01.19.mat")])
+params = parameterise_kine_model(hardpoints_front);
 % clear hardpoints_front
