@@ -1,27 +1,47 @@
-clear
-close all
+function simOut = run_kine_sim(model_name,hardpoints_file,varargin)
+
 addpath([pwd '\kinematics'])
 addpath([pwd '\kinematics\functions'])
+addpath([pwd '\kinematics\geometries'])
 
+%% Sim options
+% hardpoints_file = [pwd char("/kinematics/geometries/SUSF-P-001_V3_Hardpoints.mat")];
+% 
+% model_name = 'Kinematics_Model';
+
+%options to be passed to sim() function
+
+if isempty(varargin)
+    sim_options = struct();
+    sim_options.SaveState = 'on';
+    sim_options.StateSaveName = 'xout';
+    sim_options.SaveOutput = 'on';
+    sim_options.OutputSaveName = 'yout';
+    sim_options.SaveFormat = 'Dataset';
+    sim_options.CaptureErrors = 'on';
+else
+    sim_options = varargin{1};
+end
+
+%% Initialisation
 disp("Loading car data...")
-load([pwd char("/kinematics/SUSF-P-001_V3_Hardpoints.mat")])
+hardpoints = load(hardpoints_file);
+hardpoints_front = hardpoints.hardpoints_front;
 
 disp("Parameterising model...")
 params = parameterise_kine_model(hardpoints_front);
 
 disp("Running simulation...")
-kine_model = load_system('Kinematics_Model');
+kine_model = load_system(model_name);
 simOut = struct();
 
 %Make the visualisation window only appear if requested
 %TODO: figure this out...
-simOut.config = getActiveConfigSet('Kinematics_Model'); %Useful to save settings either way
-simScapeMB = getComponent(getComponent(simOut.config,'Simscape'),'SimscapeMultibody');
+simOut.config = getActiveConfigSet(model_name); %Useful to save settings either way
+% simScapeMB = getComponent(getComponent(simOut.config,'Simscape'),'SimscapeMultibody');
 
 %And run the simulation!
-simOut.SimulationOutput = sim('Kinematics_Model','SaveState','on','StateSaveName','xout',...
-            'SaveOutput','on','OutputSaveName','yout',...
- 'SaveFormat', 'Dataset', 'CaptureErrors', 'on');
+simOut.SimulationOutput = sim(model_name,sim_options);
 
 disp("Simulation complete")
 
@@ -114,7 +134,7 @@ disp("Calculating simulation metrics...")
 metrics = struct();
 
 
-[val, idx] = min(abs(simOut.channels.z_contact_patch(vert_test_start:end))); 
+[~, idx] = min(abs(simOut.channels.z_contact_patch(vert_test_start:end))); 
 static_idx = vert_test_start + idx - 1; %Array index where sim result is closest to static position
 
 metrics.CamberGain_heave_coef = polyfit(simOut.channels.z_contact_patch(vert_test_start:end),simOut.channels.a_camber(vert_test_start:end),2);
@@ -145,3 +165,4 @@ metrics.MaxSteer_outside = min(simOut.channels.a_toe);
 simOut.metrics = metrics;
 
 disp("Done!")
+end
