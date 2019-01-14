@@ -31,6 +31,8 @@ hardpoints_front = hardpoints.hardpoints_front;
 disp("Parameterising model...")
 params = parameterise_kine_model(hardpoints_front);
 
+assignin('base','params',params);
+
 disp("Running simulation...")
 kine_model = load_system(model_name);
 simOut = struct();
@@ -43,8 +45,16 @@ simOut.config = getActiveConfigSet(model_name); %Useful to save settings either 
 %And run the simulation!
 simOut.SimulationOutput = sim(model_name,sim_options);
 
-disp("Simulation complete")
+err = [];
+try 
+    err = simOut.SimulationOutput.ErrorMessage;
+catch %Ironically if this errors it worked fine...
+    disp("Simulation complete")
+end
 
+if ~isempty(err) %If we had an error
+    error(err)
+end
 %% Tidy up simulation output variables
 disp("Post-processing sim result...")
 %Data Channels into channels struct
