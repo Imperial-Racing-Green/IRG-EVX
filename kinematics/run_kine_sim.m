@@ -19,6 +19,7 @@ if isempty(varargin)
     sim_options.OutputSaveName = 'yout';
     sim_options.SaveFormat = 'Dataset';
     sim_options.CaptureErrors = 'on';
+    sim_options.SrcWorkspace = 'current';
 else
     sim_options = varargin{1};
 end
@@ -31,7 +32,7 @@ hardpoints_front = hardpoints.hardpoints_front;
 disp("Parameterising model...")
 params = parameterise_kine_model(hardpoints_front);
 
-assignin('base','params',params);
+% assignin('base','params',params);
 
 disp("Running simulation...")
 kine_model = load_system(model_name);
@@ -42,8 +43,10 @@ simOut = struct();
 simOut.config = getActiveConfigSet(model_name); %Useful to save settings either way
 % simScapeMB = getComponent(getComponent(simOut.config,'Simscape'),'SimscapeMultibody');
 
+
 %And run the simulation!
 simOut.SimulationOutput = sim(model_name,sim_options);
+simOut.position_output = simOut.SimulationOutput.position_output;
 
 err = [];
 try 
@@ -99,13 +102,13 @@ vert_test_start = find(round(dl,2)~=round(dl(end),2),1,'last');
 %% Calculate Dynamic Instant Centre Position
 disp("Calculating additional data channels...")
 %First get the relevant data out
-uwb_out = [position_output.uwb_x.data, position_output.uwb_y.data,...
-    position_output.uwb_z.data];
+uwb_out = [simOut.position_output.uwb_x.data, simOut.position_output.uwb_y.data,...
+    simOut.position_output.uwb_z.data];
 uwb_front = params.hardpoints_front.uwb.front.*ones(size(uwb_out));
 uwb_rear = params.hardpoints_front.uwb.rear.*ones(size(uwb_out));
 
-lwb_out = [position_output.lwb_x.data, position_output.lwb_y.data,...
-    position_output.lwb_z.data];
+lwb_out = [simOut.position_output.lwb_x.data, simOut.position_output.lwb_y.data,...
+    simOut.position_output.lwb_z.data];
 lwb_front = params.hardpoints_front.lwb.front.*ones(size(lwb_out));
 lwb_rear = params.hardpoints_front.lwb.rear.*ones(size(lwb_out));
 
