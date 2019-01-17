@@ -1,16 +1,16 @@
 
-geometry_name = 'Rear Opt2 14.01.19';
+geometry_name = 'Rear Opt3 14.01.19';
 
 hardpoints_front.lwb.front = [-1300, 356, 135];
 hardpoints_front.lwb.rear = [-1691.94, 207.26, 126.53];
 hardpoints_front.lwb.outer = [-1525, 558, 125];
 
 hardpoints_front.uwb.front = [-1300, 356, 250.48];
-hardpoints_front.uwb.rear = [-1712.86, 281.42, 274.64];
+hardpoints_front.uwb.rear = [-1750.17, 263.14, 244.28];
 hardpoints_front.uwb.outer = [-1525, 558, 295.15];
 
-hardpoints_front.tr.inner = [-1614.9, 230, 201];
-hardpoints_front.tr.outer = [-1614.9, 558, 175];
+hardpoints_front.tr.inner = [-1614.9, 230, 185];
+hardpoints_front.tr.outer = [-1614.9, 558, 201];
 
 hardpoints_front.pr.inner = [-1500, 216.7, 498.3];
 hardpoints_front.pr.outer = [-1500, 510.49, 138.41];
