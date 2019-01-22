@@ -40,8 +40,10 @@ params = parameterise_kine_model(hardpoints_front);
 
 disp("Running simulation...")
 % kine_model = load_system(model_name);
+open_system([pwd '\kinematics\' model_name '.slx']);
 simOut = struct();
 
+% simOut.Model = kine_model;
 %Make the visualisation window only appear if requested
 %TODO: figure this out...
 simOut.config = getActiveConfigSet(model_name); %Useful to save settings either way
