@@ -1,5 +1,6 @@
 clear
 close all
+tic
 
 model_name = 'Kinematics_Model';
 
@@ -28,3 +29,4 @@ for i = 1:length(hardpoint_files)
     disp(['    Static Anti-Squat: ' num2str(sims{i}.metrics.AntiSquat_static)])
     disp(['    Static SVIC (X,Y,Z): ' num2str(sims{i}.channels.SVIC(sims{i}.metrics.static_idx,:))])
 end
+toc

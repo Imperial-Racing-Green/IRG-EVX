@@ -38,7 +38,7 @@ params.susp_geometry.tr_inner_x = hardpoints.tr.inner;
 %TODO: should be able to deal with both push- and pull-rods...
 %But I'll deal with that later - it's not a major change
 params.susp_geometry.pr_length = norm(hardpoints.pr.outer - ...
-    hardpoints.pr.inner) -10; %This should be a setup parameter as well
+    hardpoints.pr.inner) +12; %This should be a setup parameter as well
 params.susp_geometry.pr_inner_x = hardpoints.pr.inner;
 params.susp_geometry.pr_outer_offset = norm(hardpoints.lwb.outer - ...
     hardpoints.pr.outer);
@@ -50,6 +50,14 @@ params.susp_geometry.pr_offset_rotation =...
 
 %Inboard
 params.susp_geometry.rocker_pivot = hardpoints.inboard.rocker_pivot;
+if ~isfield(hardpoints.inboard,'rocker_axis') %For backwards compatibility with old hp files
+    params.susp_geometry.rocker_axis = [1,0,0];
+else
+    params.susp_geometry.rocker_axis = hardpoints.inboard.rocker_axis;
+end
+
+params.susp_geometry.rocker_axis_rotation = vrrotvec([1,0,0],... 
+    params.susp_geometry.rocker_axis);
 %TODO: add in support for rocker not alligned parallel to XY plane
 %TODO: add in ARB model
 pr_offset_x = (hardpoints.pr.inner(2) - hardpoints.inboard.rocker_pivot(2));
@@ -62,6 +70,8 @@ damper_offset_y = hardpoints.inboard.rocker_to_damper(3) - ...
 params.susp_geometry.rocker_damper_offset =...
     [damper_offset_y, damper_offset_x, 0];
 params.susp_geometry.damper_to_chassis = hardpoints.inboard.damper_to_chassis;
+
+
 
 %Tyre
 params.wheel_geometry.tyre_diameter = 464.82;
