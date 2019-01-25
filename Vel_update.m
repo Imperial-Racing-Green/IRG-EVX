@@ -8,7 +8,7 @@ Fz_FR_t = Fz_log.Data(:,2);
 Fz_RL_t = Fz_log.Data(:,3);
 Fz_RR_t = Fz_log.Data(:,4);
 
-time_d = interp1(dist_log.Data,dist_log.Time,dist);
+time_d = interp1(dist_log.Data .* (max(dist)/max(dist_log.Data)),dist_log.Time,dist);
 
 Fz_FL_d = interp1(Fz_log.Time,Fz_FL_t,time_d);
 Fz_FR_d = interp1(Fz_log.Time,Fz_FR_t,time_d);
@@ -17,13 +17,13 @@ Fz_RR_d = interp1(Fz_log.Time,Fz_RR_t,time_d);
 
 for i = 1:length(dist)
     [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
-        F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),10);
+        F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),20);
     [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),...
-        F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),10);
+        F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),20);
     [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),...
-        F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),10);
+        F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),20);
     [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),...
-        F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),10);
+        F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),20);
 end
 
 for i = 1:length(radius_d)
