@@ -2,7 +2,7 @@
 clear all
 close all
 
-[x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Centreline.csv',1,1200,'On');
+[x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Endurance.csv',1,1200,'On');
 
 mass = 250;
 
@@ -21,9 +21,6 @@ velocity_dnew = velocity_d + 0.5 .* (velocity_dmax - velocity_d);
 
 velocity_t = [time,velocity_t];
 theta_t = [time,theta_t];
-% theta.signals.values = [1,dist,theta_d];
-% theta.signals.dimensions = 2;
-% theta.time = 0;
 
 sim('EVX_Lap_Simulation',max(time));
 
