@@ -22,28 +22,7 @@ velocity_dnew = velocity_d + 0.5 .* (velocity_dmax - velocity_d);
 velocity_t = [time,velocity_t];
 theta_t = [time,theta_t];
 
-sim('EVX_Lap_Simulation',max(time));
+sim('EVX_Lap_Simulation',max(time)+5);
 
 velocity_log = diff(dist_log.Data)./diff(dist_log.Time);
 scatter(car_path.Data(1:end-1,1),car_path.Data(1:end-1,2),1,velocity_log);
-
-velocity_dmax = Vel_update(Fz_log,dist,dist_log,radius_d,mass);
-
-velocity_dnew = velocity_d + 0.5 .* (velocity_dmax - velocity_d);
-
-[velocity_t,theta_t,time] = dist2time(velocity_dnew,theta_d,dist);
-velocity_t = [time,velocity_t];
-theta_t = [time,theta_t];
-
-sim('EVX_Lap_Simulation',max(time));
-
-velocity_d = velocity_dnew;
-
-
-% plot(time,theta_t);
-% figure
-% plot(dist,theta_d);
-% figure
-% plot(time,velocity_t);
-% figure
-% plot(dist,velocity_d);
