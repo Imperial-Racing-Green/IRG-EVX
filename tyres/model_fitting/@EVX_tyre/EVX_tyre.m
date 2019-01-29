@@ -1,38 +1,35 @@
-classdef pacejka4_model
+classdef EVX_tyre
     %PACEJKA4_MODEL Summary of this class goes here
     %   Detailed explanation goes here
     
     properties
-        B_fit_lat
-        C_fit_lat
-        D_fit_lat
-        E_fit_lat
-        Sv_fit_lat
-        Sh_fit_lat
-        B_fit_long
-        C_fit_long
-        D_fit_long
-        E_fit_long
-        Sv_fit_long
-        Sh_fit_long
+        fit_params
         pressures
         forces
         IAs
+        lateral_data
+        longitudinal_data
     end
     
     methods
-        function obj = pacejka4_model(B,C,D,E,Sv,Sh,P,F,IA)
+        function obj = EVX_tyre(varargin)
             %PACEJKA4_MODEL Construct an instance of this class
             %   Detailed explanation goes here
-            obj.B_fit_lat = B;
-            obj.C_fit_lat = C;
-            obj.D_fit_lat = D;
-            obj.E_fit_lat = E;
-            obj.Sv_fit_lat = Sv;
-            obj.Sh_fit_lat = Sh;
-            obj.pressures = P;
-            obj.forces = F;
-            obj.IAs = IA;
+            obj.fit_params = struct();
+            if length(varargin) == 2
+                obj.lateral_data = varargin{1};
+                obj.longitudinal_data = varargin{2};
+            elseif length(varargin) == 9
+                obj.fit_params.B_fit_lat = B;
+                obj.fit_params.C_fit_lat = C;
+                obj.fit_params.D_fit_lat = D;
+                obj.fit_params.E_fit_lat = E;
+                obj.fit_params.Sv_fit_lat = Sv;
+                obj.fit_params.Sh_fit_lat = Sh;
+                obj.fit_params.pressures = P;
+                obj.fit_params.forces = F;
+                obj.fit_params.IAs = IA;
+            end
             
         end
         
@@ -43,7 +40,7 @@ classdef pacejka4_model
                 i = 2;
             elseif (P==obj.pressures(3))
                 i = 3;
-            else 
+            else
                 error("Pressure must match test cases - model cannot interpolate!")
             end
             B = obj.B_fit_lat{i}(IA,FZ);
@@ -61,7 +58,7 @@ classdef pacejka4_model
                 i = 2;
             elseif (P==obj.pressures(3))
                 i = 3;
-            else 
+            else
                 error("Pressure must match test cases - model cannot interpolate!")
             end
             B = obj.B_fit_long{i}(IA,FZ);
