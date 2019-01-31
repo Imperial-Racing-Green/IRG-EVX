@@ -138,7 +138,7 @@ for i=1:length(P_binvalues)
                 close(h)
             end
             h = figure('units','normalized','outerposition',[0 0 1 1]);
-            subplot(121)
+%             subplot(121)
             scatter(S_binfzia{i,n,m},F_binfzia{i,n,m})
             hold on
             pac_fit = zeros(500,1);
@@ -148,9 +148,11 @@ for i=1:length(P_binvalues)
             end
             plot(-slip,pac_fit)
             ylim([-4000 4000])
+            xlim([-0.6 0.6])
             idx2 = idx2+1;
-            xlabel('slip angle (rad)')
-            ylabel('lateral force (N)')
+            xlabel('Slip Angle (rad)')
+            ylabel('Lateral Force (N)')
+            legend('Test Data','Pacejka Fit')
             
 %             B2= polyvaln(B_surf, [70, 180, 0]);
 %             C2= polyvaln(C_surf, [70, 180, 0]);
@@ -164,11 +166,11 @@ for i=1:length(P_binvalues)
 %             end
 %             plot(-slip,pac_fit2)
             
-            subplot(122)
-            scatter(pacejka4(coef{i,n,m},-S_binfzia{i,n,m}),residual{i,n,m})
-            xlabel('Predicted Fy (N)')
-            ylabel('residual')
-            %keyboard
+%             subplot(122)
+%             scatter(pacejka4(coef{i,n,m},-S_binfzia{i,n,m}),residual{i,n,m})
+%             xlabel('Predicted Fy (N)')
+%             ylabel('residual')
+%             %keyboard
             pause(1)
             
             % Put coefficients into separate arrays for outputting
@@ -307,6 +309,10 @@ for i = 1:length(FZ_binvalues)
     end
 end
 scatter3(x2, y2, z2)
+xlabel('Vertical Load [N]')
+ylabel('Inclination Angle [deg]')
+zlabel('D')
+legend('Model Fit','Test Points')
 
 %% Prepare results for saving
 % Data Value points
