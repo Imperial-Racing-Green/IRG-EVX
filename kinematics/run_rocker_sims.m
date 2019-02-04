@@ -10,13 +10,15 @@ hardpoints_front.pr.inner = [-1450.02019254, 332.79367658, 409.22359437];
 hardpoints_front.pr.outer = [-1500, 508.9995, 129];
 
 hardpoints_front.inboard.rocker_pivot = [-1430.2792, 280.80474504, 393.425];
-hardpoints_front.inboard.rocker_axis = [-1420.8986663+1430.27925115,...
-    284.24708875-280.80474504,...
-    393.81871066-393.42514026];
+% hardpoints_front.inboard.rocker_axis = [-1420.8986663+1430.27925115,...
+%     284.24708875-280.80474504,...
+%     393.81871066-393.42514026];
+hardpoints_front.inboard.rocker_axis = [-1420.88075954, 284.0440638, 394.50919258] -...
+    hardpoints_front.inboard.rocker_pivot;
 % hardpoints_front.inboard.rocker_to_damper = [-1416.658, 265.09, 470.67];
 hardpoints_front.inboard.rocker_to_damper = [-1430.99641115, 257.29627671, 469.88975691];
 hardpoints_front.inboard.roll_damper_left = [-1500, 71.83, 504.31];
-hardpoints_front.inboard.damper_to_chassis = [-1387.94427501, 85.49560915, 437.77987995];
+hardpoints_front.inboard.damper_to_chassis = [-1369.5314339, 95.42463989, 420.7000246];
 
 % hardpoints_front.tr.inner = [-1700.535, 259.37, 240.492];
 % hardpoints_front.tr.outer = [-1616.96, 555.288, 242.011];
@@ -41,6 +43,9 @@ disp(['Option ' num2str(i)])
     disp(['    Camber Gain: ' num2str(sim.metrics.CamberGain_heave_coef(2))])
     disp(['    Static RCH: ' num2str(sim.metrics.RCH_static)])
     disp(['    Static UWBO: ' num2str(sim.position_output.uwb_z.data(sim.metrics.static_idx))])
+    disp(['    Static PRO_x: ' num2str(sim.position_output.pr_x.data(sim.metrics.static_idx))])
+    disp(['    Static PRO_y: ' num2str(sim.position_output.pr_y.data(sim.metrics.static_idx))])
+    disp(['    Static PRO_z: ' num2str(sim.position_output.pr_z.data(sim.metrics.static_idx))])
     disp(['    Static Anti-Squat: ' num2str(sim.metrics.AntiSquat_static)])
     disp(['    Static SVIC (X,Y,Z): ' num2str(sim.channels.SVIC(sim.metrics.static_idx,:))])
 % point1 = [-1378.57, 421.95, 279.98];
