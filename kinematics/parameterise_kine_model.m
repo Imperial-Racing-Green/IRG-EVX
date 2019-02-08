@@ -38,15 +38,35 @@ params.susp_geometry.tr_inner_x = hardpoints.tr.inner;
 %TODO: should be able to deal with both push- and pull-rods...
 %But I'll deal with that later - it's not a major change
 params.susp_geometry.pr_length = norm(hardpoints.pr.outer - ...
-    hardpoints.pr.inner) + 5; %This should be a setup parameter as well
+    hardpoints.pr.inner) + 0; %This offset should be a setup parameter as well
 params.susp_geometry.pr_inner_x = hardpoints.pr.inner;
 params.susp_geometry.pr_outer_offset = norm(hardpoints.lwb.outer - ...
     hardpoints.pr.outer);
-params.susp_geometry.pr_outer_offset_vec = hardpoints.lwb.outer - ...
-    hardpoints.pr.outer;
-params.susp_geometry.pr_offset_rotation =...
-    vrrotvec(hardpoints.lwb.rear - hardpoints.lwb.outer,...
-    hardpoints.pr.outer - hardpoints.lwb.outer);
+params.susp_geometry.pr_outer_offset_vec = hardpoints.pr.outer - ...
+    hardpoints.lwb.outer;
+
+%dirty hack because I cba fixing the rotations
+params.susp_geometry.pr_outer_offset_vec(1) = -params.susp_geometry.pr_outer_offset_vec(1);
+params.susp_geometry.pr_outer_offset_vec(2) = -params.susp_geometry.pr_outer_offset_vec(2);
+
+%coordinate transform to correctly place the PRO in space
+lwb_rear_coord(:,1) = (hardpoints.lwb.outer - hardpoints.lwb.rear)';
+lwb_rear_coord(:,1) = lwb_rear_coord(:,1)./norm(lwb_rear_coord(:,1));
+
+lwb_rear_coord(:,3) = [-1;lwb_rear_coord(1,1)/lwb_rear_coord(2,1);0];
+lwb_rear_coord(:,3) = lwb_rear_coord(:,3)./norm(lwb_rear_coord(:,3));
+
+lwb_rear_coord(:,2) = cross(lwb_rear_coord(:,1),lwb_rear_coord(:,3));
+lwb_rear_coord(:,2) = lwb_rear_coord(:,2)./norm(lwb_rear_coord(:,2));
+
+basis = [1 0 0; 0 1 0; 0 0 1];
+
+params.susp_geometry.pr_offset_rotation = zeros(3);
+for i = 1:3
+    for j = 1:3
+        params.susp_geometry.pr_offset_rotation(i,j) = -dot(basis(:,j), lwb_rear_coord(:,i));
+    end
+end
 
 %Inboard
 params.susp_geometry.rocker_pivot = hardpoints.inboard.rocker_pivot;

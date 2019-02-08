@@ -7,7 +7,7 @@ hardpoints_front.tr.inner = [-1700.535, 259.37, 240.492];
 hardpoints_front.tr.outer = [-1616.96, 555.288, 242.011];
 
 hardpoints_front.pr.inner = [-1450.02019254, 332.79367658, 409.22359437];
-hardpoints_front.pr.outer = [-1500, 508.9995, 129];
+hardpoints_front.pr.outer = [-1500, 508.9995, 179];
 
 hardpoints_front.inboard.rocker_pivot = [-1430.2792, 280.80474504, 393.425];
 % hardpoints_front.inboard.rocker_axis = [-1420.8986663+1430.27925115,...
