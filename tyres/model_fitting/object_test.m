@@ -1,15 +1,14 @@
+clear
+close all
 
-tyre_model = EVX_tyre(lateral_data, longitudinal_data);
-tyre_model.fit_model();
+% Hoosier 10" Lateral
+filename_lat = "C:\Users\Owen Heaney\Documents\FSAE TTC Data\RunData_10inch_Cornering_Matlab_SI\B1654run21.mat";
 
-SA = linspace(-10, 10, 200);
-SR = linspace(-1,1,200);
-FZ = 750*ones(200,1);
-IA = 2*ones(200,1);
-P = 90;
+%Hoosier 10" Longitudinal & Combined
+filename_long = "Z:\Tyre Test Consortium Data\Round 6\RunData_10inch_DriveBrake_Matlab_SI\B1654run35.mat";
 
-tyre_model.mu_scaling_x = 0.67;
-tyre_model.mu_scaling_y = 0.67;
-tyre_model.mu_scaling_z = 0.67;
+tyre_model = EVX_tyre(filename_lat, filename_long);
 
-[fx,fy,mz] = tyre_model.get_forces(SA,SR,FZ,IA,P);
+% coef_long = tyre_model.fit_coefficients(filename_long)
+
+tyre_model = tyre_model.make_full_model()
