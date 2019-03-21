@@ -82,14 +82,7 @@ end
 
 %% Plot
 if strcmpi(Plots,'On') == 1
-    hold on
-    plot(x,y,'k');
-    scatter(x(1),y(1),'x','r');
-    title('Track Map')
-    xlabel('x Direction (m)')
-    ylabel('y Direction (m)')
-    
-    figure
+
     hold on
     plot(Distance,theta);
     if strcmpi(Smoothing,'On') == 1
@@ -121,6 +114,14 @@ if strcmpi(Plots,'On') == 1
     title('Radius')
     xlabel('Distance (m)')
     ylabel('Radius (1/m)')
+    
+    figure
+    hold on
+    plot(x,y,'k');
+    scatter(x(1),y(1),'x','r');
+    title('Track Map')
+    xlabel('x Direction (m)')
+    ylabel('y Direction (m)')
 end
 
 %% Outputs

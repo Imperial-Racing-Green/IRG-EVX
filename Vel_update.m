@@ -47,16 +47,18 @@ for i = 1:length(radius_d)
     else
     Fy_RR(i) = interp1(F_yRRmax(:,1,i),F_yRRmax(:,2,i),0,'spline');
     end
-    Fy(i) = Fy_FL(i) + Fy_FR(i) + Fy_RL(i) + Fy_RR(i);
-    v_x(i) = (abs((Fy(i) * radius_d(i))/mass))^0.5;
+%     Fy(i) = Fy_FL(i) + Fy_FR(i) + Fy_RL(i) + Fy_RR(i);
+%     v_x(i) = (abs((Fy(i) * radius_d(i))/mass))^0.5;
 end
+Fy = Fy_FL + Fy_FR + Fy_RL + Fy_RR;
+v_x = (abs((Fy .* radius_d)/mass)).^0.5;
 
 v_x(v_x > 200) = 200;
 
 %% Applying power limit
 
 v_x2 = zeros(length(dist),1);
-v_x2(1) = 0;
+% v_x2(1) = 0;
 Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
 
 for i = 1:length(dist)-1
@@ -97,11 +99,12 @@ for i = 1:length(dist)-1
     
     Fx_sum = sum(Fx_real);
     
-    Fx_sum =  Fx_sum - Aero_Forces(v_x2(i));
+    [F_L,F_D] = Aero_Forces(v_x2(i));
+    Fx_sum =  Fx_sum - F_D;
     
     a_x = Fx_sum / mass;
     
-    v_x2(i+1) = (v_x2(i)^2 + 2 * a_x * (dist(i+1) - dist(i)))^0.5;
+    v_x2(i+1) = (v_x2(i)^2 + (2*a_x*(dist(i+1) - dist(i))))^0.5;
 end
 
 %% Apply Braking Limit
@@ -145,11 +148,12 @@ for i = length(dist):-1:2
     
     Fx_sum = sum(Fx_real);
     
-    Fx_sum =  Fx_sum - Aero_Forces(v_x2(i));
+    [F_L,F_D] = Aero_Forces(v_x2(i));
+    Fx_sum =  Fx_sum - F_D;
     
     a_x = Fx_sum / mass;
     
-    v_x3(i-1) = (v_x3(i)^2 - 2 * a_x * (dist(i) - dist(i-1)))^0.5;
+    v_x3(i-1) = (v_x3(i)^2 - (2*a_x*(dist(i) - dist(i-1))))^0.5;
 end
 
 %% Output
