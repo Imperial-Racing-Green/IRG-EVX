@@ -1,4 +1,4 @@
-function [coef,testcases] = fit_coefficients(filename)
+function [coef,testcases, testcase_cell] = fit_coefficients(obj, filename)
 %FIT_DATASET Summary of this function goes here
 %   Detailed explanation goes here
 data = load(filename);
@@ -57,7 +57,9 @@ elseif strcmp(datatype, 'long')
 end
 
 idx2 = 1;
-h = figure('units','normalized','outerposition',[0 0 1 1]);
+if obj.verbosity
+    h = figure('units','normalized','outerposition',[0 0 1 1]);
+end
 for j = 1:length(SA_binvalues)
     for i=1:length(P_binvalues)
         for m=1:size(FZ_bin,2)
@@ -94,7 +96,10 @@ for j = 1:length(SA_binvalues)
                     [coef{i,n,m,j}] = fit_pacejka(SR_binfzia{i,n,m,j},FX_binfzia{i,n,m,j},datatype);
                     %TODO: need to fit some sort of combined slip coefficients
                 end
-                disp(num2str(coef{i,n,m,j}))
+                
+                if obj.verbosity
+                    disp(num2str(coef{i,n,m,j}))
+                end
                 
                 testcases(idx2,1) = P_binvalues(i);
                 testcases(idx2,3) = IA_binvalues(n);
@@ -102,30 +107,32 @@ for j = 1:length(SA_binvalues)
                 if strcmp(datatype, 'long')
                     testcases(idx2,4) = SA_binvalues(j);
                 end
+                testcase_cell{i,n,m,j} = testcases(idx2,:);
                 
                 %Plotting of results
                 
-                            %             subplot(121)
-                            if strcmp(datatype, 'long')
-                                scatter(-SR_binfzia{i,n,m,j},FX_binfzia{i,n,m,j})
-                                xlabel('Slip Ratio')
-                                ylabel('Longitudinal Force (N)')
-                            elseif strcmp(datatype, 'lat')
-                                scatter(SA_binfzia{i,n,m,j},FY_binfzia{i,n,m,j})
-                                xlabel('Slip Angle (rad)')
-                                ylabel('Lateral Force (N)')
-                            end
-                            hold on
-                            [pac_fit, slip] = eval_pacejka(coef{i,n,m,j});
-                            plot(-slip,pac_fit)
-                            ylim([-4000 4000])
-                            xlim([-0.6 0.6])
-                            idx2 = idx2+1;
-                            legend('Test Data','Pacejka Fit')
-                            grid on
-                            hold off
-                            pause(1)
-%                             keyboard
+                if obj.verbosity
+                    if strcmp(datatype, 'long')
+                        scatter(-SR_binfzia{i,n,m,j},FX_binfzia{i,n,m,j})
+                        xlabel('Slip Ratio')
+                        ylabel('Longitudinal Force (N)')
+                    elseif strcmp(datatype, 'lat')
+                        scatter(SA_binfzia{i,n,m,j},FY_binfzia{i,n,m,j})
+                        xlabel('Slip Angle (rad)')
+                        ylabel('Lateral Force (N)')
+                    end
+                    hold on
+                    [pac_fit, slip] = eval_pacejka(coef{i,n,m,j});
+                    plot(-slip,pac_fit)
+                    ylim([-4000 4000])
+                    xlim([-0.6 0.6])
+                    
+                    legend('Test Data','Pacejka Fit')
+                    grid on
+                    hold off
+                    pause(1)
+                end
+                idx2 = idx2+1;
             end
         end
         
