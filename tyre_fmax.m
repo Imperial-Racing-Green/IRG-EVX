@@ -28,41 +28,48 @@ end
 % ylabel('Fy')
 
 k = boundary(Force(:,1),Force(:,2),0);
-k2 = k(1:end-1);
-k = k2;
+% k2 = k(1:end-1);
+% k = k2;
+k = k(1:end-1);
 
-xmin = 1;
-xmax = 1;
-ymin = 1;
-ymax = 1;
-% k_xmax = zeros(length(k),1);
-% k_xmin = zeros(length(k),1);
-% k_ymax = zeros(length(k),1);
-% k_ymin = zeros(length(k),1);
-for i = 1:length(k)
-    Fx = Force(k(i),1);
-    Fy = Force(k(i),2);
-    if Fx >= 0
-%         F_xmax(xmax) = Force(k(i),1);
-        k_xmax(xmax) = k(i);
-        xmax = xmax + 1;
-    end
-    if Fx <= 0
-%         F_xmin(xmin) = Force(k(i),1);
-        k_xmin(xmin) = k(i);
-        xmin = xmin + 1;
-    end
-    if Fy >= 0
-%         F_ymax(ymax) = Force(k(i),2);
-        k_ymax(ymax) = k(i);
-        ymax = ymax + 1;
-    end
-    if Fy <= 0
-%         F_ymin(ymin) = Force(k(i),2);
-        k_ymin(ymin) = k(i);
-        ymin = ymin + 1;
-    end
-end
+% xmin = 1;
+% xmax = 1;
+% ymin = 1;
+% ymax = 1;
+% % k_xmax = zeros(length(k),1);
+% % k_xmin = zeros(length(k),1);
+% % k_ymax = zeros(length(k),1);
+% % k_ymin = zeros(length(k),1);
+% for i = 1:length(k)
+%     Fx = Force(k(i),1);
+%     Fy = Force(k(i),2);
+%     if Fx >= 0
+% %         F_xmax(xmax) = Force(k(i),1);
+%         k_xmax(xmax) = k(i);
+%         xmax = xmax + 1;
+%     end
+%     if Fx <= 0
+% %         F_xmin(xmin) = Force(k(i),1);
+%         k_xmin(xmin) = k(i);
+%         xmin = xmin + 1;
+%     end
+%     if Fy >= 0
+% %         F_ymax(ymax) = Force(k(i),2);
+%         k_ymax(ymax) = k(i);
+%         ymax = ymax + 1;
+%     end
+%     if Fy <= 0
+% %         F_ymin(ymin) = Force(k(i),2);
+%         k_ymin(ymin) = k(i);
+%         ymin = ymin + 1;
+%     end
+% end
+Fx = Force(k,1);
+Fy = Force(k,2);
+k_xmax = k(Fx >= 0);
+k_xmin = k(Fx <= 0);
+k_ymax = k(Fy >= 0);
+k_ymin = k(Fy <= 0);
 
 if abs(Fz) == 0
     F_xmax = 0;
