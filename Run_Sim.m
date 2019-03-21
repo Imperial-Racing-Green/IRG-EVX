@@ -1,11 +1,18 @@
 %% Run Sim Here
-clear all
+clear
 close all
-
+%% Loading Car and Stuff like weather
 [Car,Environment] = Load_Params();
 
+%% Running Kinematics
+% Front_kine = run_kine_sim('Kinematics_Model',Car.Sus.Front.Hardpoints);
+% Rear_kine = run_kine_sim('Kinematics_Model',Car.Sus.Rear.Hardpoints);
+
+%% Loading Track
 [x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Endurance.csv',1,1200,'On');
 
+
+%% Running Sim
 mass = 250;
 
 Fz_log.Data = mass .* -9.81 .* ones(length(dist),4) ./ 4;
