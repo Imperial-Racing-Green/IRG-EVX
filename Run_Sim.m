@@ -11,6 +11,10 @@ close all
 %% Loading Track
 [x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Endurance.csv',1,1200,'On');
 
+%% Powertrain Setup
+
+load('Model6Data.mat');
+
 
 %% Running Sim
 mass = 250;
