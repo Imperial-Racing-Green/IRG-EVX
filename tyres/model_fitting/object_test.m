@@ -67,3 +67,17 @@ for i = 1:length(tyre_model.longitudinal_model)
         %     scatter3(x_test,y_test,coef_test)
     end
 end
+load(fullfile(pwd,'tyres','tyre_profile_lap.mat'))
+close
+figure
+[b,a] = butter(6,0.35);
+
+fz_FL = filter(b,a,fz_prof.Data(:,1));
+sa_FL = filter(b,a,sa_prof.Data(:,1));
+sr_FL = filter(b,a,sr_prof.Data(:,1));
+subplot(311)
+plot(fz_prof.Time,fz_FL)
+subplot(312)
+plot(sa_prof.Time,sa_FL)
+subplot(313)
+plot(sr_prof.Time,sr_FL)
