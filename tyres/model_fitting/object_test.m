@@ -10,16 +10,14 @@ filename_long = "Z:\Tyre Test Consortium Data\Round 6\RunData_10inch_DriveBrake_
 tyre_model = EVX_tyre(filename_lat, filename_long);
 tyre_model.verbosity = 0;
 
-% coef_long = tyre_model.fit_coefficients(filename_long)
-
 tyre_model = tyre_model.make_full_model();
 
 [X1, X2, X3] = ndgrid(unique(tyre_model.testcases_lat(:,1)),...
     unique(tyre_model.testcases_lat(:,3)), unique(tyre_model.testcases_lat(:,2)));
 
-for i = 1:6
-    coefs_out(i) = tyre_model.lateral_model{i}(84,4,180);
-end
+% for i = 1:6
+%     coefs_out(i) = tyre_model.lateral_model{i}(84,4,180);
+% end
 
 figure(1)
 coefs = {'B','C','D','E','Sv','Sh'};
@@ -36,7 +34,6 @@ for i = 1:length(tyre_model.lateral_model)
     coef_test = squeeze(tyre_model.lateral_model{i}.Values(2,:,:));
     
     subplot(2,3,i)
-    hold on
     contourf(x_fit,y_fit,coef)
     colorbar;
     title(coefs{i})
@@ -44,10 +41,9 @@ for i = 1:length(tyre_model.lateral_model)
 end
 
 figure(2)
-coefs = {'B','C','D','E','Sv','Sh'};
 for i = 1:length(tyre_model.longitudinal_model)
     for j = 1:length(tyre_model.longitudinal_model{i})
-        figure(j)
+%         figure(j)
         x = linspace(tyre_model.longitudinal_model{i}.GridVectors{3}(1),tyre_model.longitudinal_model{i}.GridVectors{3}(end),100);
         y = linspace(tyre_model.longitudinal_model{i}.GridVectors{2}(1),tyre_model.longitudinal_model{i}.GridVectors{2}(end),100);
         
@@ -60,24 +56,73 @@ for i = 1:length(tyre_model.longitudinal_model)
         coef_test = squeeze(tyre_model.longitudinal_model{i}.Values(2,:,:));
         
         subplot(2,3,i)
-        hold on
         contourf(x_fit,y_fit,coef)
         colorbar;
         title(coefs{i})
         %     scatter3(x_test,y_test,coef_test)
     end
 end
-load(fullfile(pwd,'tyres','tyre_profile_lap.mat'))
-close
-figure
-[b,a] = butter(6,0.35);
 
-fz_FL = filter(b,a,fz_prof.Data(:,1));
-sa_FL = filter(b,a,sa_prof.Data(:,1));
-sr_FL = filter(b,a,sr_prof.Data(:,1));
-subplot(311)
-plot(fz_prof.Time,fz_FL)
-subplot(312)
-plot(sa_prof.Time,sa_FL)
-subplot(313)
-plot(sr_prof.Time,sr_FL)
+% load(fullfile(pwd,'tyres','tyre_profile_lap.mat'))
+% 
+% figure
+% [b,a] = butter(6,0.35);
+% 
+% fz_FL = filter(b,a,fz_prof.Data(:,1));
+% sa_FL = filter(b,a,sa_prof.Data(:,1));
+% sr_FL = filter(b,a,sr_prof.Data(:,1));
+% subplot(311)
+% plot(fz_prof.Time,fz_FL)
+% subplot(312)
+% plot(sa_prof.Time,sa_FL)
+% subplot(313)
+% plot(sr_prof.Time,sr_FL)
+% 
+% 
+% P = 84*ones(length(fz_FL),1);
+% IA = 2*ones(length(fz_FL),1);
+% figure
+% [Fx, Fy, Mz] = tyre_model.get_forces(sr_FL,sa_FL,P,IA,fz_FL);
+% subplot(211)
+% plot(fz_prof.Time,Fx)
+% subplot(212)
+% plot(fz_prof.Time,Fy)
+% 
+
+x = -0.3:0.01:0.3;
+y = -0.3:0.01:0.3;
+x = x/0.0174533;
+[x,y] = meshgrid(x,y);
+
+for i = 1:size(x,1)
+    for j = 1:size(x,2)
+        [FX(i,j),FY(i,j),~] = tyre_model.get_forces(y(i,j),x(i,j),84,2,-1000);
+    end
+end
+figure
+% contourf(x,y,FX)
+surf(x,y,FX,'EdgeColor','none')
+colorbar
+xlabel('Slip Angle [deg]')
+ylabel('Slip Ratio [-]')
+zlabel('Longitudinal Force [N]')
+title('Combined Longitudinal Force')
+axis vis3d
+figure
+% contourf(x,y,FY)
+surf(x,y,FY,'EdgeColor','none')
+colorbar
+xlabel('Slip Angle [deg]')
+ylabel('Slip Ratio [-]')
+zlabel('Lateral Force [N]')
+title('Combined Lateral Force')
+axis vis3d
+figure
+F_tot = sqrt(FX.^2 + FY.^2);
+contourf(x,y,F_tot)
+colorbar
+xlabel('Slip Angle [deg]')
+ylabel('Slip Ratio [-]')
+zlabel('Combined Force [N]')
+title('Combined Force Magnitude')
+axis vis3d

@@ -68,7 +68,7 @@ classdef EVX_tyre
                 close
              end
             
-             disp("Longitudinal and lateral coefficients available - proceding with model fitting")
+             disp("Longitudinal and lateral coefficients available - proceding with combined model fitting")
              disp("(though not actually because I haven't written the code yet lol)")
              %TODO: Write the code
         end
@@ -81,6 +81,51 @@ classdef EVX_tyre
             [obj.coef_long, obj.testcases_long, obj.testcase_cell_long] = obj.fit_coefficients(obj.longitudinal_data);
             obj.coef_long_pure = obj.coef_long(:,:,:,end);
 %             obj.coef_long_pure = 
+        end
+        
+        function coef = get_coefficients_long(obj,P,IA,FZ)
+            coef = zeros(length(FZ),length(obj.longitudinal_model));
+            for j = 1:length(FZ)
+                for i = 1:length(obj.longitudinal_model)
+                    coef(j,i) = obj.longitudinal_model{i}(P(j),IA(j),FZ(j));
+                end
+            end
+        end
+        
+        function coef = get_coefficients_lat(obj,P,IA,FZ)
+            coef = zeros(length(FZ),length(obj.lateral_model));
+            for j = 1:length(FZ)
+                for i = 1:length(obj.lateral_model)
+                    coef(j,i) = obj.lateral_model{i}(P(j),IA(j),FZ(j));
+                end
+            end
+        end
+        
+        function [FX, FY, MZ] = get_forces(obj,SR,SA,P,IA,FZ)
+            SA = 0.0174533*SA;
+            FZ = -FZ;
+            
+            if SR==0 && SA==0
+                G_x = 0;
+                G_y = 0;
+            else
+                slip_direction = atan(abs(SR)./abs(SA));
+                G_x = sin(slip_direction);
+                G_y = cos(slip_direction);
+            end
+            
+            coef_x = obj.get_coefficients_long(P,IA,FZ);
+            coef_y = obj.get_coefficients_lat(P,IA,FZ);
+            if any(isnan(coef_x)) || any(isnan(coef_y))
+                keyboard
+            end
+            
+            for i = 1:size(coef_x,1)
+                FX = G_x*obj.pacejka4(coef_x(i,:),SR);
+                FY = G_y*obj.pacejka4(coef_y(i,:),SA);
+%                 keyboard
+            end
+            MZ = zeros(length(SR),1);
         end
         
         [coef,testcases,coef_lat] = fit_coefficients(obj,filename)
