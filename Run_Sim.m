@@ -13,7 +13,7 @@ close all
 
 %% Powertrain Setup
 
-load('Model6Data.mat');
+load('PowertrainData.mat');
 
 
 %% Running Sim
@@ -26,7 +26,7 @@ dist_log.Time = linspace(0,120,length(dist))';
 
 velocity_d = zeros(length(dist),1);
 velocity_dmax = Vel_update(Fz_log,dist,dist_log,radius_d,mass);
-velocity_dnew = velocity_d + 0.5 .* (velocity_dmax - velocity_d);
+velocity_dnew = velocity_d + 0.9 .* (velocity_dmax - velocity_d);
 
 % velocity_d = Vel_Init(dist,10);
 % 
