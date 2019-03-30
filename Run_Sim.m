@@ -5,8 +5,8 @@ close all
 [Car,Environment] = Load_Params();
 
 %% Running Kinematics
-% Front_kine = run_kine_sim('Kinematics_Model',Car.Sus.Front.Hardpoints);
-% Rear_kine = run_kine_sim('Kinematics_Model',Car.Sus.Rear.Hardpoints);
+Front_kine = run_kine_sim('Kinematics_Model',Car.Sus.Front.Hardpoints);
+Rear_kine = run_kine_sim('Kinematics_Model',Car.Sus.Rear.Hardpoints);
 
 %% Loading Track
 [x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Endurance.csv',1,1200,'On');
@@ -26,7 +26,7 @@ dist_log.Time = linspace(0,120,length(dist))';
 
 velocity_d = zeros(length(dist),1);
 velocity_dmax = Vel_update(Fz_log,dist,dist_log,radius_d,mass);
-velocity_dnew = velocity_d + 0.9 .* (velocity_dmax - velocity_d);
+velocity_dnew = velocity_d + 1 .* (velocity_dmax - velocity_d);
 
 % velocity_d = Vel_Init(dist,10);
 % 
@@ -34,9 +34,10 @@ velocity_dnew = velocity_d + 0.9 .* (velocity_dmax - velocity_d);
 % 
 % Track = table(x(1:end-1),y(1:end-1),theta_d,velocity_dnew);
 
-sim('EVX_Lap_Simulation',max(time)+2.5);
+sim('EVX_Lap_Simulation',max(time)*2);
 
 velocity_log = diff(dist_log.Data)./diff(dist_log.Time);
+lap_time = max(dist_log.Time);
 
 scatter(car_path.Data(1:end-1,1),car_path.Data(1:end-1,2),1,velocity_log);
 
