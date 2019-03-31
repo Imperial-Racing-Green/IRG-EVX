@@ -83,37 +83,37 @@ end
 %% Plot
 if strcmpi(Plots,'On') == 1
 
-    hold on
-    plot(Distance,theta);
-    if strcmpi(Smoothing,'On') == 1
-        plot(Distance,theta_filtered);
-        legend('Original','Smoothed')
-    end
-    title('Yaw Angle')
-    xlabel('Distance (m)')
-    ylabel('Yaw Angle (rad)')
-    
-    figure
-    hold on
-    plot(Distance(1:end-1),curvature);
-    if strcmpi(Smoothing,'On') == 1
-        plot(Distance(1:end-1),curvature_filtered);
-        legend('Original','Smoothed')
-    end
-    title('Curvature')
-    xlabel('Distance (m)')
-    ylabel('Curvature (1/m)')
-    
-    figure
-    hold on
-    plot(Distance(1:end-1),radius);
-    if strcmpi(Smoothing,'On') == 1
-        plot(Distance(1:end-1),radius_filtered);
-        legend('Original','Smoothed')
-    end
-    title('Radius')
-    xlabel('Distance (m)')
-    ylabel('Radius (1/m)')
+%     hold on
+%     plot(Distance,theta);
+%     if strcmpi(Smoothing,'On') == 1
+%         plot(Distance,theta_filtered);
+%         legend('Original','Smoothed')
+%     end
+%     title('Yaw Angle')
+%     xlabel('Distance (m)')
+%     ylabel('Yaw Angle (rad)')
+%     
+%     figure
+%     hold on
+%     plot(Distance(1:end-1),curvature);
+%     if strcmpi(Smoothing,'On') == 1
+%         plot(Distance(1:end-1),curvature_filtered);
+%         legend('Original','Smoothed')
+%     end
+%     title('Curvature')
+%     xlabel('Distance (m)')
+%     ylabel('Curvature (1/m)')
+%     
+%     figure
+%     hold on
+%     plot(Distance(1:end-1),radius);
+%     if strcmpi(Smoothing,'On') == 1
+%         plot(Distance(1:end-1),radius_filtered);
+%         legend('Original','Smoothed')
+%     end
+%     title('Radius')
+%     xlabel('Distance (m)')
+%     ylabel('Radius (1/m)')
     
     figure
     hold on

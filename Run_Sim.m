@@ -9,7 +9,8 @@ Front_kine = run_kine_sim('Kinematics_Model',Car.Sus.Front.Hardpoints);
 Rear_kine = run_kine_sim('Kinematics_Model',Car.Sus.Rear.Hardpoints);
 
 %% Loading Track
-[x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Endurance.csv',1,1200,'On');
+Track_Dist = 1200; %track distance in metres
+[x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Endurance.csv',1,Track_Dist,'On');
 
 %% Powertrain Setup
 
