@@ -24,7 +24,7 @@ y = y - y(1);
 
 %% Interpolation
 npoint_old = linspace(0,1,length(x))';
-npoint_new = linspace(0,1,Interpolation * length(x))';
+npoint_new = linspace(0,1,Interpolation)';
 
 method = 'spline'; 
 x = (interp1( npoint_old, x, npoint_new, method));
@@ -115,7 +115,7 @@ if strcmpi(Plots,'On') == 1
 %     xlabel('Distance (m)')
 %     ylabel('Radius (1/m)')
     
-    figure
+%     figure
     hold on
     plot(x,y,'k');
     scatter(x(1),y(1),'x','r');
