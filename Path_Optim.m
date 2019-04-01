@@ -23,8 +23,9 @@ for i = 1:length(x)
     x_right(i) = x0(i) + (track_width/2) * sin(theta(i));
     y_right(i) = y0(i) - (track_width/2) * cos(theta(i));
 end
-plot(x_left,y_left,'k--');
-plot(x_right,y_right,'k--');
+hold on
+plot(x_left,y_left,'k-');
+plot(x_right,y_right,'k-');
 ub = [x_max',y_max'];
 lb = [x_min',y_min'];
 opts = optimset('Display','iter','Algorithm','interior-point', 'MaxIter', Iterations, 'MaxFunEvals', Inf...

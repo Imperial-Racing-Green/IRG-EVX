@@ -13,33 +13,23 @@ close all
 load('PowertrainData.mat');
 
 %% Loading Track
+
 Track_Dist = 1200; %track distance in metres
 Track_Width = 5; %track width in meteres
-Max_Track_Resolution = 0.5; %track points per metre
+Max_Track_Resolution = 0.75; %track points per metre
 Steps = 1; %steps in optmisation smoothness
 % Resolutions = linspace(0.5,Max_Track_Resolution,Steps);
-Resolutions = 0.5;
-Iterations = 100; %max iterations for optmisation
-% for i = 1:length(Resolutions)
-    [x0,y0,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Endurance.csv',Track_Dist*Resolutions,Track_Dist,'On');
-%     if i == 1
-        x = x0;
-        y = y0;
-%     end
-    [x_new,y_new] = Path_Optim(x,y,x0,y0,theta_d,Track_Width,Iterations);
-    plot(x_new,y_new,'r')
-%     pause(0.01);
-%     npoint_old = linspace(0,1,Resolutions(i)*Track_Dist);
-%     npoint_new = linspace(0,1,Resolutions(i+1)*Track_Dist);
+Resolution = 0.5;
+Iterations = 500; %max iterations for optmisation
 
-%     x = (interp1( npoint_old, x_new, npoint_new))';
-%     y = (interp1( npoint_old, y_new, npoint_new))';
-    
-%     Iterations = Iterations / 2;
-% end
+%[x,y,theta,curvature,radius,Distance] = Track_Gen(filename,Interpolation,Length,Smoothing,Line_Optim,Track_Width,Optim_Iterations)
+[x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Endurance.csv',Track_Dist*Resolution,Track_Dist,'On','On',Track_Width,Iterations);
+
+%     [x_new,y_new] = Path_Optim(x,y,x0,y0,theta_d,Track_Width,Iterations);
+
 
 %% Running Sim
-mass = 250;
+mass = 270;
 
 Fz_log.Data = mass .* -9.81 .* ones(length(dist),4) ./ 4;
 Fz_log.Time = linspace(0,120,length(dist))';
