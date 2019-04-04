@@ -7,12 +7,18 @@ A = [];
 b = [];
 Aeq = [];
 beq = [];
-c = [];
-ceq = [];
 nonlcon = @PathCon;
 
 theta(length(theta)+1) = theta(end);
 
+x_min = zeros(length(x),1);
+x_max = zeros(length(x),1);
+y_min = zeros(length(x),1);
+y_max = zeros(length(x),1);
+x_left = zeros(length(x),1);
+x_right = zeros(length(x),1);
+y_left = zeros(length(x),1);
+y_right = zeros(length(x),1);
 for i = 1:length(x)
     x_min(i) = min(x0(i) + (track_width/2) * sin(theta(i)),x0(i) - (track_width/2) * sin(theta(i)));
     x_max(i) = max(x0(i) + (track_width/2) * sin(theta(i)),x0(i) - (track_width/2) * sin(theta(i)));
@@ -23,6 +29,7 @@ for i = 1:length(x)
     x_right(i) = x0(i) + (track_width/2) * sin(theta(i));
     y_right(i) = y0(i) - (track_width/2) * cos(theta(i));
 end
+
 hold on
 plot(x_left,y_left,'k-');
 plot(x_right,y_right,'k-');
