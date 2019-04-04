@@ -1,4 +1,4 @@
-function [x,y,theta,curvature,radius,Distance] = Track_Gen(filename,Interpolation,Length,Smoothing)
+function [x,y,theta,curvature,radius,Distance] = Track_Gen(filename,Interpolation,Length,Smoothing,Line_Optim,Track_Width,Optim_Iterations)
 
 %% Set Up
 Direction = 1;
@@ -24,7 +24,7 @@ y = y - y(1);
 
 %% Interpolation
 npoint_old = linspace(0,1,length(x))';
-npoint_new = linspace(0,1,Interpolation * length(x))';
+npoint_new = linspace(0,1,Interpolation)';
 
 method = 'spline'; 
 x = (interp1( npoint_old, x, npoint_new, method));
@@ -40,6 +40,7 @@ end
 %% Path Length Adjust
 Spacing = ((diff(x)).^2 + (diff(y)).^2).^0.5;    	%Magnitude distance between successive coordinates
 Distance = cumsum(Spacing);                       	%Cumulative segment/path length
+Distance = Distance - Distance(1)/3;
 
 if Length > 0
     Ratio = Length/max(Distance);
@@ -58,6 +59,34 @@ for k = 2:1:length(theta)
         r = round(dChange/pi);
         theta(k) = theta(k) - r*pi;
     end
+end
+
+%% Driving Line Optimisation
+if strcmpi(Line_Optim,'On') == 1
+    x0 = x;
+    y0 = y;
+    [x_new,y_new] = Path_Optim(x,y,x0,y0,theta,Track_Width,Optim_Iterations);
+    
+%     if strcmpi(Plots,'On') == 1
+%         plot(x_new,y_new,'r')
+%     end
+    x = x_new;
+    y = y_new;
+    
+    %Yaw Angle again
+    theta = atan2(diff(y),diff(x));
+    
+    % Address Discontinuities
+    for k = 2:1:length(theta)
+        dChange = theta(k) - theta(k-1);
+        if (abs(dChange) > 0.9*pi)
+            r = round(dChange/pi);
+            theta(k) = theta(k) - r*pi;
+        end
+    end
+    Spacing = ((diff(x)).^2 + (diff(y)).^2).^0.5;    	%Magnitude distance between successive coordinates
+    Distance = cumsum(Spacing);                       	%Cumulative segment/path length
+    Distance = Distance - Distance(1)/3;
 end
 
 %% Curvature
@@ -83,41 +112,41 @@ end
 %% Plot
 if strcmpi(Plots,'On') == 1
 
-    hold on
-    plot(Distance,theta);
-    if strcmpi(Smoothing,'On') == 1
-        plot(Distance,theta_filtered);
-        legend('Original','Smoothed')
-    end
-    title('Yaw Angle')
-    xlabel('Distance (m)')
-    ylabel('Yaw Angle (rad)')
+%     hold on
+%     plot(Distance,theta);
+%     if strcmpi(Smoothing,'On') == 1
+%         plot(Distance,theta_filtered);
+%         legend('Original','Smoothed')
+%     end
+%     title('Yaw Angle')
+%     xlabel('Distance (m)')
+%     ylabel('Yaw Angle (rad)')
+%     
+%     figure
+%     hold on
+%     plot(Distance(1:end-1),curvature);
+%     if strcmpi(Smoothing,'On') == 1
+%         plot(Distance(1:end-1),curvature_filtered);
+%         legend('Original','Smoothed')
+%     end
+%     title('Curvature')
+%     xlabel('Distance (m)')
+%     ylabel('Curvature (1/m)')
+%     
+%     figure
+%     hold on
+%     plot(Distance(1:end-1),radius);
+%     if strcmpi(Smoothing,'On') == 1
+%         plot(Distance(1:end-1),radius_filtered);
+%         legend('Original','Smoothed')
+%     end
+%     title('Radius')
+%     xlabel('Distance (m)')
+%     ylabel('Radius (1/m)')
     
-    figure
+%     figure
     hold on
-    plot(Distance(1:end-1),curvature);
-    if strcmpi(Smoothing,'On') == 1
-        plot(Distance(1:end-1),curvature_filtered);
-        legend('Original','Smoothed')
-    end
-    title('Curvature')
-    xlabel('Distance (m)')
-    ylabel('Curvature (1/m)')
-    
-    figure
-    hold on
-    plot(Distance(1:end-1),radius);
-    if strcmpi(Smoothing,'On') == 1
-        plot(Distance(1:end-1),radius_filtered);
-        legend('Original','Smoothed')
-    end
-    title('Radius')
-    xlabel('Distance (m)')
-    ylabel('Radius (1/m)')
-    
-    figure
-    hold on
-    plot(x,y,'k');
+    plot(x,y,'r');
     scatter(x(1),y(1),'x','r');
     title('Track Map')
     xlabel('x Direction (m)')
