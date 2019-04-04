@@ -96,33 +96,46 @@ x = x/0.0174533;
 
 for i = 1:size(x,1)
     for j = 1:size(x,2)
-        [FX(i,j),FY(i,j),~] = tyre_model.get_forces(y(i,j),x(i,j),84,2,-1000);
+        [FX_model(i,j),FY_model(i,j),~] = tyre_model.get_forces(y(i,j),x(i,j),84,2,-1080);
     end
 end
+
+load(filename_long)
+
 figure
 % contourf(x,y,FX)
-surf(x,y,FX,'EdgeColor','none')
+surf(x,y,FX_model,'EdgeColor','none')
 colorbar
+hold on
+scatter3(-SA(FZ<-950),SR(FZ<-950),FX(FZ<-950))
 xlabel('Slip Angle [deg]')
 ylabel('Slip Ratio [-]')
 zlabel('Longitudinal Force [N]')
 title('Combined Longitudinal Force')
 axis vis3d
+
 figure
 % contourf(x,y,FY)
-surf(x,y,FY,'EdgeColor','none')
+surf(x,y,FY_model,'EdgeColor','none')
 colorbar
+hold on
+scatter3(-SA(FZ<-950),SR(FZ<-950),FY(FZ<-950))
 xlabel('Slip Angle [deg]')
 ylabel('Slip Ratio [-]')
 zlabel('Lateral Force [N]')
 title('Combined Lateral Force')
 axis vis3d
+
 figure
-F_tot = sqrt(FX.^2 + FY.^2);
-contourf(x,y,F_tot)
+F_tot = sqrt(FX_model.^2 + FY_model.^2);
+% surf(x,y,F_tot)
+contourf(x,y,F_tot,0:100:2500)
 colorbar
 xlabel('Slip Angle [deg]')
 ylabel('Slip Ratio [-]')
 zlabel('Combined Force [N]')
 title('Combined Force Magnitude')
-axis vis3d
+% axis vis3d
+
+figure
+plot(x',FX_model')
