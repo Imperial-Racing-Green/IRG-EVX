@@ -137,9 +137,9 @@ classdef EVX_tyre
         end
         
         function obj = fit_stiffness(obj)
-            data = load(obj.filename_lat);
+            data = load(obj.lateral_data);
             coef = polyfit(data.FZ,10*data.RL,2);
-            obj.vertical_stiffness = coef(2);
+            obj.vertical_stiffness = 1000/coef(2); %k in N/m
             obj.static_radius = coef(3);
             %This is a very very basic model - simply plotting the data
             %makes it clear that the loaded radius is a function of much

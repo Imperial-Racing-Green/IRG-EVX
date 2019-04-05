@@ -1,12 +1,23 @@
 clear
 close all
 
-% Hoosier 10" Lateral
-filename_lat = "C:\Users\Owen Heaney\Documents\FSAE TTC Data\RunData_10inch_Cornering_Matlab_SI\B1654run21.mat";
+try
+    % Hoosier 10" Lateral
+    filename_lat = "C:\Users\Owen Heaney\Documents\FSAE TTC Data\RunData_10inch_Cornering_Matlab_SI\B1654run21.mat";
+    load(filename_lat)
+catch
+    warning("Unable to find lateral data file")
+    filename_lat = input("Please enter lateral data file path: ",'s');
+end
 
-%Hoosier 10" Longitudinal & Combined
-filename_long = "Z:\Tyre Test Consortium Data\Round 6\RunData_10inch_DriveBrake_Matlab_SI\B1654run35.mat";
-
+try
+    %Hoosier 10" Longitudinal & Combined
+    filename_long = "C:\Users\Owen Heaney\Documents\FSAE TTC Data\RunData_10inch_DriveBrake_Matlab_SI\B1654run35.mat";
+    load(filename_long)
+catch
+    warning("Unable to find longitudinal data file")
+    filename_long = input("Please enter longitudinal data file path: ",'s');
+end
 tyre_model = EVX_tyre(filename_lat, filename_long);
 tyre_model.verbosity = 0;
 
