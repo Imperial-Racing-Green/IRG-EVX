@@ -5,7 +5,7 @@ component motion_ratio
 % ratio
 annotations
     Icon = 'motion_ratio.png';
-  end
+end
 
 nodes
     Chassis = foundation.mechanical.translational.translational; % C:left
