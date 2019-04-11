@@ -30,13 +30,13 @@ for i = 1:length(x)
     y_right(i) = y0(i) - (track_width/2) * cos(theta(i));
 end
 
-hold on
-plot(x_left,y_left,'k-');
-plot(x_right,y_right,'k-');
 ub = [x_max',y_max'];
 lb = [x_min',y_min'];
 opts = optimset('Display','iter','Algorithm','interior-point', 'MaxIter', Iterations, 'MaxFunEvals', Inf...
-    ,'TolCon',1e-10,'TolX',1e-10);
+    ,'TolCon',1e-20,'TolX',1e-20);
 new = fmincon(fun,initial,A,b,Aeq,beq,lb,ub,nonlcon,opts);
 x_new = new(:,1);
 y_new = new(:,2);
+hold on
+plot(x_left-x_new(1),y_left-y_new(1),'k-');
+plot(x_right-x_new(1),y_right-y_new(1),'k-');

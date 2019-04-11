@@ -61,7 +61,7 @@ v_x2 = zeros(length(dist),1);
 % v_x2(1) = 0;
 Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
 
-for i = 1:length(dist)-1
+for i = 1:length(dist)-2
     v_x2(i) = min(v_x2(i),v_x(i));
     Fy_real = (mass * v_x2(i)^2)/radius_d(i);
     Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
@@ -112,7 +112,7 @@ end
 v_x3 = zeros(length(dist),1);
 v_x3(end) = v_x2(end);
 
-for i = length(dist):-1:2
+for i = length(dist)-1:-1:2
     v_x3(i) = min(v_x3(i),v_x2(i));
     Fy_real = (mass * v_x2(i)^2)/radius_d(i-1);
     Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;

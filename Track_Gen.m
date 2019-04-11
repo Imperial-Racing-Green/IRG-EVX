@@ -40,7 +40,7 @@ end
 %% Path Length Adjust
 Spacing = ((diff(x)).^2 + (diff(y)).^2).^0.5;    	%Magnitude distance between successive coordinates
 Distance = cumsum(Spacing);                       	%Cumulative segment/path length
-Distance = Distance - Distance(1)/3;
+% Distance = Distance - Distance(1)/3;
 
 if Length > 0
     Ratio = Length/max(Distance);
@@ -86,7 +86,7 @@ if strcmpi(Line_Optim,'On') == 1
     end
     Spacing = ((diff(x)).^2 + (diff(y)).^2).^0.5;    	%Magnitude distance between successive coordinates
     Distance = cumsum(Spacing);                       	%Cumulative segment/path length
-    Distance = Distance - Distance(1)/3;
+%     Distance = Distance - Distance(1)/3;
 end
 
 %% Curvature
@@ -154,8 +154,12 @@ if strcmpi(Plots,'On') == 1
 end
 
 %% Outputs
+x = x - x(1);
+y = y - y(1);
+Distance = [0;Distance];
 if strcmpi(Smoothing,'On') == 1
     curvature = curvature_filtered;
     theta = theta_filtered;
     radius = radius_filtered;
 end
+theta = [theta(1);theta];

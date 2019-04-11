@@ -10,6 +10,11 @@ Car.Stifness.Chassis = 50000;
 
 Environment.Gravity = -9.81;
 
+Car.Dimension.WheelFL.Radius = 0.175;
+Car.Dimension.WheelFR.Radius = 0.175;
+Car.Dimension.WheelRL.Radius = 0.175;
+Car.Dimension.WheelRR.Radius = 0.175;
+
 load([pwd,'\kinematics\geometries\EV3 Front Hardpoints 13.01.19.mat']);
 Car.Sus.Front.Hardpoints = hardpoints_front;
 load([pwd,'\kinematics\geometries\Final rear Outboard 01.02.19.mat']);

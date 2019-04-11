@@ -15,7 +15,7 @@ load('PowertrainData.mat');
 %% Loading Track
 
 Track_Dist = 1200; %track distance in metres
-Track_Width = 4; %track width in meteres
+Track_Width = 5; %track width in meteres
 % Max_Track_Resolution = 1; %track points per metre
 Steps = 1; %steps in optmisation smoothness
 % Resolutions = linspace(0.5,Max_Track_Resolution,Steps);
@@ -42,68 +42,50 @@ dist_log.Time = linspace(0,120,length(dist))';
 
 velocity_d = zeros(length(dist),1);
 velocity_dmax = Vel_update(Fz_log,dist,dist_log,radius_d,mass);
-velocity_dnew = velocity_d + 0.75 .* (velocity_dmax - velocity_d);
+velocity_dnew = velocity_d + 0.4 .* (velocity_dmax - velocity_d);
 
 % velocity_d = Vel_Init(dist,10);
 % 
 [velocity_t,theta_t,time] = dist2time(velocity_dnew,theta_d,dist);
 % 
 % Track = table(x(1:end-1),y(1:end-1),theta_d,velocity_dnew);
-initial_velocity = velocity_dnew(1);
 
-sim('EVX_Lap_Simulation',max(time)*1.5);
+sim('EVX_Lap_Simulation',max(time)*3);
 
 velocity_log = diff(dist_log.Data)./diff(dist_log.Time);
 lap_time = max(dist_log.Time);
 
 scatter(car_path.Data(1:end-1,1),car_path.Data(1:end-1,2),1,velocity_log);
 
-%% Optimisation
-figure
-iter = 1;
-Limit_d = 0;
-% Limit_Perc = sum(Limit_d)/length(Limit_d);
-while min(Limit_Perc) < 0.95
-Limit_Perc = sum(Limit_d)/length(Limit_d);
-Power_Lim = Limits.signals.values(:,1);
-Traction_Lim = Limits.signals.values(:,2);
-Brake_Lim = Limits.signals.values(:,3);
-Corner_Lim = Limits.signals.values(:,4);
-Brake_Lim(1:end-1) = Brake_Lim(2:end);
-Limit = sign(Power_Lim + Traction_Lim + Brake_Lim + Corner_Lim);
-Limit_d = interp1(dist_log.Data,Limit,dist,'nearest');
-Limit_d(isnan(Limit_d)) = 1;
-velocity_step = 0.25;
-velocity_dnew = velocity_step .* (1-Limit_d) + velocity_dnew;
-sim('EVX_Lap_Simulation',max(time)*1.5);
-lap_time = max(dist_log.Time);
-subplot(2,2,1)
-hold on
-ylabel('Velocity Target (m/s)')
-xlabel('Distance (m)')
-plot(dist,velocity_dnew);
-subplot(2,2,2)
-ylabel('Lap Time (s)')
-xlabel('Iteration Number')
-hold on
-scatter(iter,lap_time);
-subplot(2,2,3)
-hold off
-plot(dist,Limit_d);
-ylabel('Limit Found (1/0)')
-xlabel('Distance (m)')
-ylim([0 2])
-subplot(2,2,4)
-hold on
-scatter(iter,Limit_Perc * 100);
-ylabel('Limit Percentage (%)')
-xlabel('Iteration Number')
-iter = iter + 1;
-end
-velocity_log = diff(dist_log.Data)./diff(dist_log.Time);
-lap_time = max(dist_log.Time);
+%% Lap Optimisation
+Driver_Model = 2;
+Pedal = Driver_Inputs.Pedal_Position.Data;
+Steering = Driver_Inputs.Steering_Wheel_Angle.Data;
+Time = Driver_Inputs.Steering_Wheel_Angle.Time;
+Dist_log = dist_log.Data;
+% Pedal_new = interp1(Dist_log,Pedal,dist,'linear');
+% Steering_new = interp1(Dist_log,Steering,dist,'linear');
+z = [Steering,Pedal];
+global Steering_run
+global Pedal_run
+[lap_time] = Lap_Optim(z,Time);
 
-scatter(car_path.Data(1:end-1,1),car_path.Data(1:end-1,2),1,velocity_log);
+initial = [Steering,Pedal];
+
+fun = @(z) Lap_Optim(z,Time);
+A = [];
+b = [];
+Aeq = [];
+beq = [];
+nonlcon = @(z) Lap_Con(z,x,y);
+ub = [90*ones(length(Time),1),100*ones(length(Time),1)];
+lb = [-90*ones(length(Time),1),-100*ones(length(Time),1)];
+Iterations = 1; %max iterations for optmisation
+opts = optimset('Display','iter','Algorithm','interior-point', 'MaxIter', Iterations, 'MaxFunEvals', Inf...
+    ,'TolCon',1e-10,'TolX',1e-10);
+new_Inputs = fmincon(fun,initial,A,b,Aeq,beq,lb,ub,nonlcon,opts);
+
+
 
 %% Stuff
 velocity_log = [0;velocity_log];
