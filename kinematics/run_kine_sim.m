@@ -51,7 +51,20 @@ simOut.config = getActiveConfigSet(model_name); %Useful to save settings either 
 
 
 %And run the simulation!
+try
 simOut.SimulationOutput = sim(model_name,sim_options);
+catch err
+    if strcmp(model_name,'Kinematics_Model')
+        disp('Error running sim - incorrect model file specified')
+        yn = input('Do you want to continue using Kinematics_Sim.slx? ','s');
+        if strcmp(yn,'y') || strcmp(yn,'Y')
+            simOut.SimulationOutput = sim('Kinematics_Sim',sim_options);
+        else
+            error(err)
+        end
+    end
+end
+
 simOut.position_output = simOut.SimulationOutput.position_output;
 
 err = [];

@@ -1,0 +1,35 @@
+component motion_ratio
+% Motion Ratio
+% Implements a translational motion ratio between the two ports - the velocity
+% of port D is equal to the velocity of port C divided by the given motion 
+% ratio
+annotations
+    Icon = 'motion_ratio.png';
+end
+
+nodes
+    Chassis = foundation.mechanical.translational.translational; % C:left
+    Damper = foundation.mechanical.translational.translational; % D:right
+end
+
+parameters
+    ratio = { 1, '1' }; % Motion ratio
+end
+
+variables
+    f_in = { 0, 'N' };  
+    f_out = { 0, 'N' };   
+end
+
+branches
+    f_in  : Chassis.f -> *;
+    f_out : Damper.f -> *;
+end
+
+equations
+    assert(ratio~=0)
+    f_out == -f_in/ratio;
+    Chassis.v == Damper.v/ratio;
+end
+
+end

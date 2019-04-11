@@ -1,6 +1,7 @@
 classdef EVX_tyre
-    %PACEJKA4_MODEL Summary of this class goes here
-    %   Detailed explanation goes here
+    %EVX_TYRE Object containing code for tyre modelling and evaluation
+    % in EVX lap simulations. Contains code for fitting models from 
+    % raw data and evaluating fitted models
     
     properties
         lateral_data
@@ -16,6 +17,8 @@ classdef EVX_tyre
         verbosity
         lateral_model
         longitudinal_model
+        vertical_stiffness
+        static_radius
     end
     
     methods
@@ -68,9 +71,14 @@ classdef EVX_tyre
                 close
              end
             
-             disp("Longitudinal and lateral coefficients available - proceding with combined model fitting")
-             disp("(though not actually because I haven't written the code yet lol)")
-             %TODO: Write the code
+             disp("Longitudinal and lateral coefficients available - model complete")
+             
+             disp("Fitting vertical stiffness")
+             
+             obj = obj.fit_stiffness;
+             
+             disp("Done")
+             
         end
         
         function obj = fit_coef_lat(obj)
@@ -106,8 +114,8 @@ classdef EVX_tyre
             FZ = -FZ;
             
             if SR==0 && SA==0
-                G_x = 0;
-                G_y = 0;
+                G_x = 1;
+                G_y = 1;
             else
                 slip_direction = atan(abs(SR)./abs(SA));
                 G_x = sin(slip_direction);
@@ -116,9 +124,9 @@ classdef EVX_tyre
             
             coef_x = obj.get_coefficients_long(P,IA,FZ);
             coef_y = obj.get_coefficients_lat(P,IA,FZ);
-            if any(isnan(coef_x)) || any(isnan(coef_y))
-                keyboard
-            end
+%             if any(isnan(coef_x)) || any(isnan(coef_y))
+%                 keyboard
+%             end
             
             for i = 1:size(coef_x,1)
                 FX = G_x*obj.pacejka4(coef_x(i,:),SR);
@@ -126,6 +134,20 @@ classdef EVX_tyre
 %                 keyboard
             end
             MZ = zeros(length(SR),1);
+        end
+        
+        function obj = fit_stiffness(obj)
+            data = load(obj.lateral_data);
+            coef = polyfit(data.FZ,10*data.RL,2);
+            obj.vertical_stiffness = 1000/coef(2); %k in N/m
+            obj.static_radius = coef(3);
+            %This is a very very basic model - simply plotting the data
+            %makes it clear that the loaded radius is a function of much
+            %more than just the vertical load, but this will work as a
+            %first stab at it - I imagine that it shouldn't be too
+            %difficult to fit some sort of multi-dimensional surface from
+            %the data but that's for a later day
+            %In particular the inflation pressure will have a big impact
         end
         
         [coef,testcases,coef_lat] = fit_coefficients(obj,filename)

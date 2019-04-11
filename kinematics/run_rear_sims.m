@@ -2,7 +2,7 @@ clear
 close all
 tic
 
-model_name = 'Kinematics_Model';
+model_name = 'Kinematics_Sim';
 
 hardpoints_base = load([pwd '/kinematics/geometries/Rear Opt1 14.01.19.mat']);
 hardpoint2 = hardpoints_base.hardpoints_front;

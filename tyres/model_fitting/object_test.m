@@ -1,12 +1,23 @@
 clear
 close all
 
-% Hoosier 10" Lateral
-filename_lat = "C:\Users\Owen Heaney\Documents\FSAE TTC Data\RunData_10inch_Cornering_Matlab_SI\B1654run21.mat";
+try
+    % Hoosier 10" Lateral
+    filename_lat = "C:\Users\Owen Heaney\Documents\FSAE TTC Data\RunData_10inch_Cornering_Matlab_SI\B1654run21.mat";
+    load(filename_lat)
+catch
+    warning("Unable to find lateral data file")
+    filename_lat = input("Please enter lateral data file path: ",'s');
+end
 
-%Hoosier 10" Longitudinal & Combined
-filename_long = "Z:\Tyre Test Consortium Data\Round 6\RunData_10inch_DriveBrake_Matlab_SI\B1654run35.mat";
-
+try
+    %Hoosier 10" Longitudinal & Combined
+    filename_long = "C:\Users\Owen Heaney\Documents\FSAE TTC Data\RunData_10inch_DriveBrake_Matlab_SI\B1654run35.mat";
+    load(filename_long)
+catch
+    warning("Unable to find longitudinal data file")
+    filename_long = input("Please enter longitudinal data file path: ",'s');
+end
 tyre_model = EVX_tyre(filename_lat, filename_long);
 tyre_model.verbosity = 0;
 
@@ -96,33 +107,46 @@ x = x/0.0174533;
 
 for i = 1:size(x,1)
     for j = 1:size(x,2)
-        [FX(i,j),FY(i,j),~] = tyre_model.get_forces(y(i,j),x(i,j),84,2,-1000);
+        [FX_model(i,j),FY_model(i,j),~] = tyre_model.get_forces(y(i,j),x(i,j),84,2,-1080);
     end
 end
+
+load(filename_long)
+
 figure
 % contourf(x,y,FX)
-surf(x,y,FX,'EdgeColor','none')
+surf(x,y,FX_model,'EdgeColor','none')
 colorbar
+hold on
+scatter3(-SA(FZ<-950),SR(FZ<-950),FX(FZ<-950))
 xlabel('Slip Angle [deg]')
 ylabel('Slip Ratio [-]')
 zlabel('Longitudinal Force [N]')
 title('Combined Longitudinal Force')
 axis vis3d
+
 figure
 % contourf(x,y,FY)
-surf(x,y,FY,'EdgeColor','none')
+surf(x,y,FY_model,'EdgeColor','none')
 colorbar
+hold on
+scatter3(-SA(FZ<-950),SR(FZ<-950),FY(FZ<-950))
 xlabel('Slip Angle [deg]')
 ylabel('Slip Ratio [-]')
 zlabel('Lateral Force [N]')
 title('Combined Lateral Force')
 axis vis3d
+
 figure
-F_tot = sqrt(FX.^2 + FY.^2);
-contourf(x,y,F_tot)
+F_tot = sqrt(FX_model.^2 + FY_model.^2);
+% surf(x,y,F_tot)
+contourf(x,y,F_tot,0:100:2500)
 colorbar
 xlabel('Slip Angle [deg]')
 ylabel('Slip Ratio [-]')
 zlabel('Combined Force [N]')
 title('Combined Force Magnitude')
-axis vis3d
+% axis vis3d
+
+figure
+plot(x',FX_model')
