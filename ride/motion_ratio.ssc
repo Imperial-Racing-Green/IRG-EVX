@@ -28,8 +28,10 @@ end
 
 equations
     assert(ratio~=0)
-    f_out == -f_in/ratio;
-    Chassis.v == Damper.v/ratio;
+%     f_out == -f_in/ratio;
+%     Chassis.v == Damper.v/ratio;
+    f_out == -f_in*ratio;
+    Chassis.v == Damper.v*ratio;
 end
 
 end
