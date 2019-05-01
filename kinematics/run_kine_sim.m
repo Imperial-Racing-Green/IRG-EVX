@@ -168,7 +168,7 @@ for i = 1:n_data %Calculate heave properties
     SV_delta = SVIC(i,1:2:3) - [simOut.channels.x_contact_patch(i), simOut.channels.z_contact_patch(i)];
     
     AntiSquat(i) = 100 * (SVSA(2)./SVSA(1)) ./ (h/l);
-    AntiDive(i) = 50 * (SV_delta(2)/SV_delta(1)) / (h/l);
+    AntiDive(i) = 50 * (SV_delta(2)./SV_delta(1)) ./ (h/l);
 end
 
 simOut.channels.FVIC = FVIC;
@@ -176,14 +176,41 @@ simOut.channels.SVIC = SVIC;
 simOut.channels.l_RCH_heave = RCH_heave';
 simOut.channels.r_antiSquat = AntiSquat';
 simOut.channels.r_antiDive = AntiDive';
+
+[~, idx] = min(abs(simOut.channels.z_contact_patch(vert_test_start:end))); 
+static_idx = vert_test_start + idx - 1; %Array index where sim result is closest to static position
+roll_data_backwards = idx-1;
+roll_data_forwards = length(simOut.channels.z_contact_patch) - static_idx;
+roll_data_length = min([roll_data_backwards, roll_data_forwards]);
+
+% RCH_roll = zeros(roll_data_length,2);
+for i = 1:roll_data_length %Calculate roll properties
+    idx_up = static_idx + i;
+    idx_down = static_idx - i;
+    a_roll(i) = asind(channels.z_contact_patch(idx_up)/channels.y_contact_patch(idx_up));
+    z_wheels = [channels.z_contact_patch(idx_up), channels.z_contact_patch(idx_down)];
+    IC_up(i,:) = FVIC(idx_up,2:3);
+    IC_down(i,:) = FVIC(idx_down,2:3);
+    IC_down(i,1) = -IC_down(i,1); %The other wheel has an IC on the other side of the car so swap y
+    wheel_loc_up(i,:) = [channels.y_contact_patch(idx_up) channels.z_contact_patch(idx_up)];
+    wheel_loc_down(i,:) = [-channels.y_contact_patch(idx_down) channels.z_contact_patch(idx_down)];
+    [RCH_roll(i,1),RCH_roll(i,2)] = lineintersect([wheel_loc_up(i,:) IC_up(i,:)],[wheel_loc_down(i,:) IC_down(i,:)]);
+end
+
+simOut.channels.RCH_roll = RCH_roll;
+simOut.channels.a_roll = a_roll';
+simOut.channels.IC_roll_up = IC_up;
+simOut.channels.IC_roll_down = IC_down;
+simOut.channels.wheel_roll_up = wheel_loc_up;
+simOut.channels.wheel_roll_down = wheel_loc_down;
+
 %% Metrics
 % Calculates several useful parameters for at-a-glance sim result analysis
 disp("Calculating simulation metrics...")
 metrics = struct();
 
 
-[~, idx] = min(abs(simOut.channels.z_contact_patch(vert_test_start:end))); 
-static_idx = vert_test_start + idx - 1; %Array index where sim result is closest to static position
+
 
 metrics.CamberGain_heave_coef = polyfit(simOut.channels.z_contact_patch(vert_test_start:end),simOut.channels.a_camber(vert_test_start:end),2);
 % metrics.CamberGain_roll_coef

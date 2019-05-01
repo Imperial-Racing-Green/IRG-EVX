@@ -78,7 +78,6 @@ end
 
 params.susp_geometry.rocker_axis_rotation = vrrotvec([1,0,0],... 
     params.susp_geometry.rocker_axis);
-%TODO: add in support for rocker not alligned parallel to XY plane
 %TODO: add in ARB model
 pr_offset_x = (hardpoints.pr.inner(2) - hardpoints.inboard.rocker_pivot(2));
 pr_offset_y = (hardpoints.pr.inner(3) - hardpoints.inboard.rocker_pivot(3));
