@@ -51,7 +51,7 @@ for i = 1:length(radius_d)
 %     v_x(i) = (abs((Fy(i) * radius_d(i))/mass))^0.5;
 end
 Fy = Fy_FL + Fy_FR + Fy_RL + Fy_RR;
-v_x = (abs((Fy .* radius_d)/mass)).^0.5;
+v_x = (abs((Fy .* radius_d')/mass)).^0.5;
 
 v_x(v_x > 200) = 200;
     
@@ -101,10 +101,10 @@ for i = 1:length(dist)-2
     
     [F_L,F_D] = Aero_Forces(v_x2(i),Environment);
     Fx_sum = Fx_sum - F_D;
-    Fz_FL_d = Fz_FL_d - ((F_L * (1 - Car.Balance.Aerobalance))/2);
-    Fz_FR_d = Fz_FR_d - ((F_L * (1 - Car.Balance.Aerobalance))/2);
-    Fz_RL_d = Fz_RL_d - ((F_L * (Car.Balance.Aerobalance))/2);
-    Fz_RR_d = Fz_RR_d - ((F_L * (Car.Balance.Aerobalance))/2);
+    Fz_FL_d(i) = Fz_FL_d(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+    Fz_FR_d(i) = Fz_FR_d(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+    Fz_RL_d(i) = Fz_RL_d(i) - ((F_L * (Car.Balance.Aerobalance))/2);
+    Fz_RR_d(i) = Fz_RR_d(i) - ((F_L * (Car.Balance.Aerobalance))/2);
     Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
     
     a_x = Fx_sum / mass;
@@ -155,10 +155,10 @@ for i = length(dist)-1:-1:2
     
     [F_L,F_D] = Aero_Forces(v_x2(i),Environment);
     Fx_sum = Fx_sum - F_D;
-    Fz_FL_d = Fz_FL_d - ((F_L * (1 - Car.Balance.Aerobalance))/2);
-    Fz_FR_d = Fz_FR_d - ((F_L * (1 - Car.Balance.Aerobalance))/2);
-    Fz_RL_d = Fz_RL_d - ((F_L * (Car.Balance.Aerobalance))/2);
-    Fz_RR_d = Fz_RR_d - ((F_L * (Car.Balance.Aerobalance))/2);
+    Fz_FL_d(i) = Fz_FL_d(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+    Fz_FR_d(i) = Fz_FR_d(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+    Fz_RL_d(i) = Fz_RL_d(i) - ((F_L * (Car.Balance.Aerobalance))/2);
+    Fz_RR_d(i) = Fz_RR_d(i) - ((F_L * (Car.Balance.Aerobalance))/2);
     Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
     
     a_x = Fx_sum / mass;

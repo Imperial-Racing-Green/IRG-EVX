@@ -3,8 +3,12 @@ clear all
 close all
 % Save results location
 SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP';
-FolderName = 'Test';
+FolderName = 'SkidPad_Test';
 SimName = {'Test'};
+
+% trackmap = 'Racing_Line.mat';
+trackmap = 'Acceleration_Track.mat';
+% trackmap = 'SkidPad_Track.mat';
 
 %% Sweep inputs
 sweep = 0;                      % Choose whether to sweep or not
@@ -23,6 +27,7 @@ else
     nSweeps = 1;
 end
 
+%% End of sim inputs!!!
 for iSweep = 1:nSweeps
 
     %% Loading Car and Stuff like weather
@@ -56,7 +61,7 @@ for iSweep = 1:nSweeps
     %% [x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Endurance.csv',Track_Dist*Resolution,Track_Dist,'On','On',Track_Width,Iterations);
 
     % Load racing line to skip repeatedely optimising the same track everytime
-    load('Racing_Line.mat')
+    load(trackmap)
     %     [x_new,y_new] = Path_Optim(x,y,x0,y0,theta_d,Track_Width,Iterations);
 
 
@@ -96,7 +101,8 @@ for iSweep = 1:nSweeps
     scatter(car_path.Data(1:end-1,1),car_path.Data(1:end-1,2),1,velocity_log);
     
     % Create vCar trace from interpoloated input velocity
-    vCar = interp1(dist,velocity_dnew,dist_log.Data);
+% %     vCar = interp1(dist,velocity_dnew,dist_log.Data);
+    vCar = ((Horizontal_Dynamics.Velocities.v_x.Data.^2) + (Horizontal_Dynamics.Velocities.v_y.Data.^2)).^0.5;
     % Separate pedal position into throttle and brake
     Driver_Inputs.rThrottle = Driver_Inputs.Pedal_Position;
     Driver_Inputs.rThrottle.Data(Driver_Inputs.rThrottle.Data < 0) = 0;
@@ -109,7 +115,7 @@ for iSweep = 1:nSweeps
     end
     sim_output_vars = {'Vertical_Dynamics','car_path','Fz_log','dist_log',...
                    'Horizontal_Dynamics','Limits','Driver_Inputs','vCar'};
-    save([SaveLocation '\' FolderName '\' SimName{iSweep} '.mat'],sim_output_vars)
+    save([SaveLocation '\' FolderName '\' SimName{iSweep} '.mat'],sim_output_vars{:})
     
 end
 
