@@ -1,4 +1,4 @@
-function velocity_d = Vel_update(Fz_log,dist,dist_log,radius_d,mass)
+function velocity_d = Vel_update(Fz_log,dist,dist_log,radius_d,mass,Environment,Car)
 
 
 %% Finding max velocity at each curvature
@@ -54,7 +54,7 @@ Fy = Fy_FL + Fy_FR + Fy_RL + Fy_RR;
 v_x = (abs((Fy .* radius_d)/mass)).^0.5;
 
 v_x(v_x > 200) = 200;
-
+    
 %% Applying power limit
 
 v_x2 = zeros(length(dist),1);
@@ -99,8 +99,13 @@ for i = 1:length(dist)-2
     
     Fx_sum = sum(Fx_real);
     
-    [F_L,F_D] = Aero_Forces(v_x2(i));
-    Fx_sum =  Fx_sum - F_D;
+    [F_L,F_D] = Aero_Forces(v_x2(i),Environment);
+    Fx_sum = Fx_sum - F_D;
+    Fz_FL_d = Fz_FL_d - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+    Fz_FR_d = Fz_FR_d - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+    Fz_RL_d = Fz_RL_d - ((F_L * (Car.Balance.Aerobalance))/2);
+    Fz_RR_d = Fz_RR_d - ((F_L * (Car.Balance.Aerobalance))/2);
+    Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
     
     a_x = Fx_sum / mass;
     
@@ -148,8 +153,13 @@ for i = length(dist)-1:-1:2
     
     Fx_sum = sum(Fx_real);
     
-    [F_L,F_D] = Aero_Forces(v_x2(i));
-    Fx_sum =  Fx_sum - F_D;
+    [F_L,F_D] = Aero_Forces(v_x2(i),Environment);
+    Fx_sum = Fx_sum - F_D;
+    Fz_FL_d = Fz_FL_d - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+    Fz_FR_d = Fz_FR_d - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+    Fz_RL_d = Fz_RL_d - ((F_L * (Car.Balance.Aerobalance))/2);
+    Fz_RR_d = Fz_RR_d - ((F_L * (Car.Balance.Aerobalance))/2);
+    Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
     
     a_x = Fx_sum / mass;
     
