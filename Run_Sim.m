@@ -6,8 +6,9 @@ SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
 FolderName = 'Test1_CoG';
 SimName = {'Test'};
 
- trackmap = 'Racing_Line.mat';
-%trackmap = 'Acceleration_Track.mat';
+
+% trackmap = 'Racing_Line.mat';
+trackmap = 'Acceleration_Track.mat';
 % trackmap = 'SkidPad_Track.mat';
 
 %% Sweep inputs
