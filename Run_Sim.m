@@ -7,8 +7,22 @@ FolderName = 'SkidPad_Test';
 SimName = {'Test'};
 
 % trackmap = 'Racing_Line.mat';
-trackmap = 'Acceleration_Track.mat';
-% trackmap = 'SkidPad_Track.mat';
+% trackmap = 'Racing_Line_ClosedLoop.mat';
+trackmap = 'Acceleration_Track2.mat';
+% trackmap = 'SkidPad_Track2.mat';
+
+%% vCar conditions for the sim
+% % Racing_Line_ClosedLoop 
+% BoundaryConditions.vCar_start = 28;
+% BoundaryConditions.vCar_end = 28;
+
+% Acceleration_Track 
+BoundaryConditions.vCar_start = 0;
+BoundaryConditions.vCar_end = [];
+
+% % SkidPad_Track 
+% BoundaryConditions.vCar_start = 12;
+% BoundaryConditions.vCar_end = 12;
 
 %% Sweep inputs
 sweep = 0;                      % Choose whether to sweep or not
@@ -58,7 +72,7 @@ for iSweep = 1:nSweeps
     Iterations = 5000; %max iterations for optmisation
 
     %[x,y,theta,curvature,radius,Distance] = Track_Gen(filename,Interpolation,Length,Smoothing,Line_Optim,Track_Width,Optim_Iterations)
-    %% [x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Endurance.csv',Track_Dist*Resolution,Track_Dist,'On','On',Track_Width,Iterations);
+% %     [x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Endurance.csv',Track_Dist*Resolution,Track_Dist,'On','On',Track_Width,Iterations);
 
     % Load racing line to skip repeatedely optimising the same track everytime
     load(trackmap)
@@ -83,7 +97,7 @@ for iSweep = 1:nSweeps
     dist_log.Time = linspace(0,120,length(dist))';
 
     velocity_d = zeros(length(dist),1);
-    velocity_dmax = Vel_update(Fz_log,dist,dist_log,radius_d,mass,Environment,Car);
+    velocity_dmax = Vel_update(Fz_log,dist,dist_log,radius_d,mass,Environment,Car,BoundaryConditions);
     velocity_dnew = velocity_d + 0.9 .* (velocity_dmax - velocity_d);
 
     % velocity_d = Vel_Init(dist,10);
