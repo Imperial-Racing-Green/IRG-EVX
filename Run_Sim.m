@@ -6,8 +6,8 @@ SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP'
 FolderName = 'SkidPad_Test';
 SimName = {'Test'};
 
-trackmap = 'Racing_Line.mat';
-% trackmap = 'Acceleration_Track.mat';
+% trackmap = 'Racing_Line.mat';
+trackmap = 'Acceleration_Track.mat';
 % trackmap = 'SkidPad_Track.mat';
 
 %% Sweep inputs

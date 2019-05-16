@@ -15,6 +15,12 @@ Fz_FR_d = interp1(Fz_log.Time,Fz_FR_t,time_d);
 Fz_RL_d = interp1(Fz_log.Time,Fz_RL_t,time_d);
 Fz_RR_d = interp1(Fz_log.Time,Fz_RR_t,time_d);
 
+% Define static forces before downforce is added
+Fz_FL_static = Fz_FL_d;
+Fz_FR_static = Fz_FR_d;
+Fz_RL_static = Fz_RL_d;
+Fz_RR_static = Fz_RR_d;
+
 for i = 1:length(dist)
     [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
         F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),20);
@@ -56,7 +62,7 @@ v_x = (abs((Fy .* radius_d')/mass)).^0.5;
 v_x(v_x > 200) = 200;
 
 % Add downforce
-for i = 1:length(v_x)
+for i = 1:length(v_x)-2
     [F_L,F_D] = Aero_Forces(v_x(i),Environment,Car);
     Fz_FL_d(i) = Fz_FL_d(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
     Fz_FR_d(i) = Fz_FR_d(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
@@ -109,10 +115,10 @@ for i = 1:length(dist)-2
     
     [F_L,F_D] = Aero_Forces(v_x2(i),Environment,Car);
     Fx_sum = Fx_sum - F_D;
-    Fz_FL_d(i) = Fz_FL_d(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
-    Fz_FR_d(i) = Fz_FR_d(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
-    Fz_RL_d(i) = Fz_RL_d(i) - ((F_L * (Car.Balance.Aerobalance))/2);
-    Fz_RR_d(i) = Fz_RR_d(i) - ((F_L * (Car.Balance.Aerobalance))/2);
+    Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+    Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+    Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.Aerobalance))/2);
+    Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.Aerobalance))/2);
     Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
     
     a_x = Fx_sum / mass;
@@ -163,10 +169,10 @@ for i = length(dist)-1:-1:2
     
     [F_L,F_D] = Aero_Forces(v_x2(i),Environment,Car);
     Fx_sum = Fx_sum - F_D;
-    Fz_FL_d(i) = Fz_FL_d(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
-    Fz_FR_d(i) = Fz_FR_d(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
-    Fz_RL_d(i) = Fz_RL_d(i) - ((F_L * (Car.Balance.Aerobalance))/2);
-    Fz_RR_d(i) = Fz_RR_d(i) - ((F_L * (Car.Balance.Aerobalance))/2);
+    Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+    Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+    Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.Aerobalance))/2);
+    Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.Aerobalance))/2);
     Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
     
     a_x = Fx_sum / mass;

@@ -1,18 +1,39 @@
 function [Car,Environment] = Load_Params()
 
 % Car component masses (kg)
-Car.Mass.Chassis = 200;
-Car.Mass.WheelFL = 10;
-Car.Mass.WheelFR = 10;
-Car.Mass.WheelRL = 10;
-Car.Mass.WheelRR = 10;
-Car.Mass.Driver = 70;
+% Wheels (tyre + rim)
+Car.Mass.WheelFL = 2.5 + 1.75;
+Car.Mass.WheelFR = 2.5 + 1.75;
+Car.Mass.WheelRL = 2.5 + 1.75;
+Car.Mass.WheelRR = 2.5 + 1.75;
+% Driver
+Car.Mass.Driver = 68;
+% Suspension
+Car.Mass.Suspension = 24;
+% Chassis (front + rear)
+Car.Mass.Chassis = 22.5 + 7.5;
+% Battery
+Car.Mass.Battery = 52.5;
+% Powertrain
+Car.Mass.Powertrain = 50;
+% Steering 
+Car.Mass.Steering = 5;
+% Pedals
+Car.Mass.Pedals = 2.5;
+% Firewall
+Car.Mass.Seat_Firewall = 5;
+% Cooling 
+Car.Mass.Cooling = 5;
+% Electrics
+Car.Mass.Electrics = 10;
+% Aero
 Car.Mass.FrontWing = 7; 
 Car.Mass.RearWing = 10;
-Car.Mass.Total = Car.Mass.Chassis + Car.Mass.WheelFL +...
-                 Car.Mass.WheelFR + Car.Mass.WheelRL +...
-                 Car.Mass.WheelRR + Car.Mass.Driver + ...
-                 Car.Mass.FrontWing + Car.Mass.RearWing;
+% Total
+Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
+                 Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
+                 Car.Mass.Powertrain + Car.Mass.Steering + Car.Mass.Pedals + Car.Mass.Seat_Firewall + ...
+                 Car.Mass.Cooling + Car.Mass.Electrics + Car.Mass.FrontWing + Car.Mass.RearWing;
 
 Car.Stifness.Chassis = 50000;
 
