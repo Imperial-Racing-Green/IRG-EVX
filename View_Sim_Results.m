@@ -1,7 +1,7 @@
 clear
 clc
 % Breakdown of the main ouput params the lapsim
-Sim = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\CoG_Test\Sim2.mat';
+Sim = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Test1_CoG';
 
 Results = load(Sim);
 

@@ -2,16 +2,16 @@
 clear all
 close all
 % Save results location
-SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP';
-FolderName = 'SkidPad_Test';
+SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
+FolderName = 'Test1_CoG';
 SimName = {'Test'};
 
-% trackmap = 'Racing_Line.mat';
-trackmap = 'Acceleration_Track.mat';
+ trackmap = 'Racing_Line.mat';
+%trackmap = 'Acceleration_Track.mat';
 % trackmap = 'SkidPad_Track.mat';
 
 %% Sweep inputs
-sweep = 0;                      % Choose whether to sweep or not
+sweep = 1;                      % Choose whether to sweep or not
 sweep_param = {'Car.Balance.CoG'};    % Variable within car structure to be swept
 sweep_values = [0.40 0.45 0.50 0.55 0.60 0.65];
 if sweep == 1

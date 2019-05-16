@@ -2,7 +2,7 @@
 clear
 clc
 
-FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\CoG_Test';
+FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Test1_CoG';
 listing = dir(FolderName);
 listing = struct2table(listing);
 listing(listing.isdir == 1,:) = [];
