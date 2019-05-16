@@ -32,6 +32,11 @@ Car.Dimension.WheelFL.Radius = 0.175;
 Car.Dimension.WheelFR.Radius = 0.175;
 Car.Dimension.WheelRL.Radius = 0.175;
 Car.Dimension.WheelRR.Radius = 0.175;
+Car.Dimension.FrontalArea = 1.2*1.4;
+
+% Car aero performance
+Car.AeroPerformance.C_L = 2.57;
+Car.AeroPerformance.C_D = 1.33;
 
 load([pwd,'\kinematics\geometries\EV3 Front Hardpoints 13.01.19.mat']);
 Car.Sus.Front.Hardpoints = hardpoints_front;
