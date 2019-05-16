@@ -26,8 +26,8 @@ if sweep == 1
 else
     nSweeps = 1;
 end
-
 %% End of sim inputs!!!
+
 for iSweep = 1:nSweeps
 
     %% Loading Car and Stuff like weather
