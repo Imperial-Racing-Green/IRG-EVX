@@ -1,14 +1,16 @@
-function velocity_d = Vel_update(Fz_log,dist,dist_log,radius_d,mass,Environment,Car)
-
+function velocity_d = Vel_update(Fz_log,dist,dist_log,radius_d,mass,Environment,Car,BoundaryConditions)
 
 %% Finding max velocity at each curvature
+
+radius_d = interp1([1:length(radius_d)],radius_d,[1:length(dist)]);
 
 Fz_FL_t = Fz_log.Data(:,1);
 Fz_FR_t = Fz_log.Data(:,2);
 Fz_RL_t = Fz_log.Data(:,3);
 Fz_RR_t = Fz_log.Data(:,4);
 
-time_d = interp1(dist_log.Data .* (max(dist)/max(dist_log.Data)),dist_log.Time,dist);
+% time_d = interp1(dist_log.Data .* (max(dist)/max(dist_log.Data)),dist_log.Time,dist);
+time_d = dist_log.Time;
 
 Fz_FL_d = interp1(Fz_log.Time,Fz_FL_t,time_d);
 Fz_FR_d = interp1(Fz_log.Time,Fz_FR_t,time_d);
@@ -57,12 +59,12 @@ for i = 1:length(radius_d)
 %     v_x(i) = (abs((Fy(i) * radius_d(i))/mass))^0.5;
 end
 Fy = Fy_FL + Fy_FR + Fy_RL + Fy_RR;
-v_x = (abs((Fy .* radius_d')/mass)).^0.5;
+v_x = (abs((Fy .* radius_d)/mass)).^0.5;
 
 v_x(v_x > 200) = 200;
 
 % Add downforce
-for i = 1:length(v_x)-2
+for i = 1:length(v_x)
     [F_L,F_D] = Aero_Forces(v_x(i),Environment,Car);
     Fz_FL_d(i) = Fz_FL_d(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
     Fz_FR_d(i) = Fz_FR_d(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
@@ -72,10 +74,12 @@ end
     
 %% Applying power limit
 v_x2 = zeros(length(dist),1);
-% v_x2(1) = 0;
+if ~isempty(BoundaryConditions.vCar_start)
+    v_x2(1) = BoundaryConditions.vCar_start;
+end
 Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
 
-for i = 1:length(dist)-2
+for i = 1:length(dist)-1
     v_x2(i) = min(v_x2(i),v_x(i));
     Fy_real = (mass * v_x2(i)^2)/radius_d(i);
     Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
@@ -129,9 +133,13 @@ end
 %% Apply Braking Limit
 
 v_x3 = zeros(length(dist),1);
-v_x3(end) = v_x2(end);
+if ~isempty(BoundaryConditions.vCar_end)
+    v_x3(end) = BoundaryConditions.vCar_end;
+else
+    v_x3(end) = v_x2(end);
+end
 
-for i = length(dist)-1:-1:2
+for i = length(dist):-1:2
     v_x3(i) = min(v_x3(i),v_x2(i));
     Fy_real = (mass * v_x2(i)^2)/radius_d(i-1);
     Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
@@ -146,21 +154,21 @@ for i = length(dist)-1:-1:2
     if Fz_FR_d(i) == 0
         Fx_FRreal = 0;
     else
-    Fx_FRreal = interp1(F_xFRmin(:,2,i),F_xFRmin(:,1,i),Fy_FRreal);
+        Fx_FRreal = interp1(F_xFRmin(:,2,i),F_xFRmin(:,1,i),Fy_FRreal);
     end
     
     Fy_RLreal = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
     if Fz_RL_d(i) == 0
         Fx_RLreal = 0;
     else
-    Fx_RLreal = interp1(F_xRLmin(:,2,i),F_xRLmin(:,1,i),Fy_RLreal);
+        Fx_RLreal = interp1(F_xRLmin(:,2,i),F_xRLmin(:,1,i),Fy_RLreal);
     end
     
     Fy_RRreal = (Fz_RR_d(i) / Fz_sum(i)) * Fy_real;
     if Fz_RR_d(i) == 0
         Fx_RRreal = 0;
     else
-    Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal);
+        Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal);
     end
     
     Fx_real = [Fx_FLreal;Fx_FRreal;Fx_RLreal;Fx_RRreal];
@@ -179,6 +187,7 @@ for i = length(dist)-1:-1:2
     
     v_x3(i-1) = (v_x3(i)^2 - (2*a_x*(dist(i) - dist(i-1))))^0.5;
 end
+v_x3(1) = min(v_x3(1),v_x2(1));
 
 %% Output
 
