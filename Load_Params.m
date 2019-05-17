@@ -35,7 +35,7 @@ Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Ma
                  Car.Mass.Powertrain + Car.Mass.Steering + Car.Mass.Pedals + Car.Mass.Seat_Firewall + ...
                  Car.Mass.Cooling + Car.Mass.Electrics + Car.Mass.FrontWing + Car.Mass.RearWing;
 
-Car.Stifness.Chassis = 50000;
+Car.Stiffness.Chassis = 50000;
 
 % Percentage of car length from most frontwards point 
 Car.Balance.CoG = 0.60; 
