@@ -1,8 +1,6 @@
-function velocity_d = Vel_update(Fz_log,dist,dist_log,radius_d,mass,Environment,Car,BoundaryConditions)
+function velocity_d = Vel_update(Fz_log,dist,dist_log,radius_d,Environment,Car,BoundaryConditions)
 
 %% Finding max velocity at each curvature
-
-radius_d = interp1([1:length(radius_d)],radius_d,[1:length(dist)]);
 
 Fz_FL_t = Fz_log.Data(:,1);
 Fz_FR_t = Fz_log.Data(:,2);
@@ -23,53 +21,62 @@ Fz_FR_static = Fz_FR_d;
 Fz_RL_static = Fz_RL_d;
 Fz_RR_static = Fz_RR_d;
 
-for i = 1:length(dist)
-    [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
-        F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),20);
-    [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),...
-        F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),20);
-    [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),...
-        F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),20);
-    [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),...
-        F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),20);
-end
+eps = 101;
+eps_lim = 100;
+v_x_check = zeros(1,length(dist));
+while eps >= eps_lim
 
-for i = 1:length(radius_d)
-    if sum(abs(F_yFLmax(:,1,i))) == 0
-        Fy_FL(i) = 0;
-    else
-        Fy_FL(i) = interp1(F_yFLmax(:,1,i),F_yFLmax(:,2,i),0,'spline');
+    for i = 1:length(dist)
+        [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
+            F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),20);
+        [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),...
+            F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),20);
+        [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),...
+            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),20);
+        [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),...
+            F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),20);
     end
-    if sum(abs(F_yFRmax(:,1,i))) == 0
-        Fy_FR(i) = 0;
-    else
-        Fy_FR(i) = interp1(F_yFRmax(:,1,i),F_yFRmax(:,2,i),0,'spline');
-    end
-    if sum(abs(F_yRLmax(:,1,i))) == 0
-        Fy_RL(i) = 0;
-    else
-        Fy_RL(i) = interp1(F_yRLmax(:,1,i),F_yRLmax(:,2,i),0,'spline');
-    end
-    if sum(abs(F_yRRmax(:,1,i))) == 0
-        Fy_RR(i) = 0;
-    else
-        Fy_RR(i) = interp1(F_yRRmax(:,1,i),F_yRRmax(:,2,i),0,'spline');
-    end
-%     Fy(i) = Fy_FL(i) + Fy_FR(i) + Fy_RL(i) + Fy_RR(i);
-%     v_x(i) = (abs((Fy(i) * radius_d(i))/mass))^0.5;
-end
-Fy = Fy_FL + Fy_FR + Fy_RL + Fy_RR;
-v_x = (abs((Fy .* radius_d)/mass)).^0.5;
 
-v_x(v_x > 200) = 200;
+    for i = 1:length(radius_d)
+        if sum(abs(F_yFLmax(:,1,i))) == 0
+            Fy_FL(i) = 0;
+        else
+            Fy_FL(i) = interp1(F_yFLmax(:,1,i),F_yFLmax(:,2,i),0,'spline');
+        end
+        if sum(abs(F_yFRmax(:,1,i))) == 0
+            Fy_FR(i) = 0;
+        else
+            Fy_FR(i) = interp1(F_yFRmax(:,1,i),F_yFRmax(:,2,i),0,'spline');
+        end
+        if sum(abs(F_yRLmax(:,1,i))) == 0
+            Fy_RL(i) = 0;
+        else
+            Fy_RL(i) = interp1(F_yRLmax(:,1,i),F_yRLmax(:,2,i),0,'spline');
+        end
+        if sum(abs(F_yRRmax(:,1,i))) == 0
+            Fy_RR(i) = 0;
+        else
+            Fy_RR(i) = interp1(F_yRRmax(:,1,i),F_yRRmax(:,2,i),0,'spline');
+        end
+    end
+    Fy = Fy_FL + Fy_FR + Fy_RL + Fy_RR;
+    v_x = (abs((Fy .* radius_d)/Car.Mass.Total)).^0.5;
 
-% Add downforce
-for i = 1:length(v_x)
-    [F_L,F_D] = Aero_Forces(v_x(i),Environment,Car);
-    Fz_FL_d(i) = Fz_FL_d(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
-    Fz_FR_d(i) = Fz_FR_d(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
-    Fz_RL_d(i) = Fz_RL_d(i) - ((F_L * (Car.Balance.Aerobalance))/2);
-    Fz_RR_d(i) = Fz_RR_d(i) - ((F_L * (Car.Balance.Aerobalance))/2);
+    v_x(v_x > 200) = 200;
+
+    % Add downforce
+    for i = 1:length(v_x)
+        [F_L,F_D] = Aero_Forces(v_x(i),Environment,Car);
+        Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+        Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+        Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.Aerobalance))/2);
+        Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.Aerobalance))/2);
+    end
+    
+    % Check for convergence of velocities
+    eps = sum(v_x - v_x_check);
+    disp(['Approaching vCar convergence criterion: ' num2str((eps_lim/eps)*100) ' %'])
+    v_x_check = v_x;
 end
     
 %% Applying power limit
@@ -81,7 +88,16 @@ Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
 
 for i = 1:length(dist)-1
     v_x2(i) = min(v_x2(i),v_x(i));
-    Fy_real = (mass * v_x2(i)^2)/radius_d(i);
+    
+    [F_L,F_D] = Aero_Forces(v_x2(i),Environment,Car);
+    % Recalculate downforce
+    Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+    Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+    Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.Aerobalance))/2);
+    Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.Aerobalance))/2);
+    Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
+    
+    Fy_real = (Car.Mass.Total * v_x2(i)^2)/radius_d(i);
     Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
     if Fz_FL_d(i) == 0
         Fx_FLreal = 0;
@@ -116,16 +132,10 @@ for i = 1:length(dist)-1
     Fx_real = min(Motor_Fx,Fx_real);
     
     Fx_sum = sum(Fx_real);
+    % Account for drag
+    Fx_sum = Fx_sum - F_D;    
     
-    [F_L,F_D] = Aero_Forces(v_x2(i),Environment,Car);
-    Fx_sum = Fx_sum - F_D;
-    Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
-    Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
-    Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.Aerobalance))/2);
-    Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.Aerobalance))/2);
-    Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
-    
-    a_x = Fx_sum / mass;
+    a_x = Fx_sum / Car.Mass.Total;
     
     v_x2(i+1) = (v_x2(i)^2 + (2*a_x*(dist(i+1) - dist(i))))^0.5;
 end
@@ -141,7 +151,16 @@ end
 
 for i = length(dist):-1:2
     v_x3(i) = min(v_x3(i),v_x2(i));
-    Fy_real = (mass * v_x2(i)^2)/radius_d(i-1);
+    
+    [F_L,F_D] = Aero_Forces(v_x2(i),Environment,Car);
+    % Recalculate downforce
+    Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+    Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
+    Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.Aerobalance))/2);
+    Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.Aerobalance))/2);
+    Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
+    
+    Fy_real = (Car.Mass.Total * v_x2(i)^2)/radius_d(i-1);
     Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
     
     if Fz_FL_d(i) == 0
@@ -174,16 +193,10 @@ for i = length(dist):-1:2
     Fx_real = [Fx_FLreal;Fx_FRreal;Fx_RLreal;Fx_RRreal];
     
     Fx_sum = sum(Fx_real);
-    
-    [F_L,F_D] = Aero_Forces(v_x2(i),Environment,Car);
+    % Account for drag
     Fx_sum = Fx_sum - F_D;
-    Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
-    Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.Aerobalance))/2);
-    Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.Aerobalance))/2);
-    Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.Aerobalance))/2);
-    Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
-    
-    a_x = Fx_sum / mass;
+        
+    a_x = Fx_sum / Car.Mass.Total;
     
     v_x3(i-1) = (v_x3(i)^2 - (2*a_x*(dist(i) - dist(i-1))))^0.5;
 end

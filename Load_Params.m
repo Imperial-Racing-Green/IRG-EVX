@@ -38,7 +38,7 @@ Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Ma
 Car.Stiffness.Chassis = 50000;
 
 % Percentage of car length from most frontwards point 
-Car.Balance.CoG = 0.60; 
+Car.Balance.CoG = 0.55; 
 Car.Balance.Aerobalance = 0.55;
 
 % Environment condtions

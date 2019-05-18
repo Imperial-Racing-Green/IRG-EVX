@@ -1,4 +1,4 @@
-function Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep,Solver)
+function Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep)
 
 if Sweep.Choose == 1
     nSweeps = length(Sweep.Values);
@@ -49,6 +49,7 @@ for iSweep = 1:nSweeps
     load(trackmap)
     %     [x_new,y_new] = Path_Optim(x,y,x0,y0,theta_d,Track_Width,Iterations);
     radius_d = interp1([1:length(radius_d)],radius_d,[1:length(dist)]);
+    radius_d(isnan(radius_d)) = 1e5; % Replace NaN's with straights
 
     %% Running Sim
     ControlSystemDriverModel = Simulink.Variant('Driver_Model == 1');
@@ -65,41 +66,53 @@ for iSweep = 1:nSweeps
     dist_log.Data = dist;
     dist_log.Time = linspace(0,120,length(dist))';
 
-    vCar = Vel_update(Fz_log,dist,dist_log,radius_d,Car.Mass.Total,Environment,Car,BoundaryConditions);
+    vCar = Vel_update(Fz_log,dist,dist_log,radius_d,Environment,Car,BoundaryConditions);
     sLap = dist;
-    for i = 1:length(vCar) - 1
+    tLap = [];
+    for i = 1:(length(vCar)-1)
         tLap(i,1) = 2*(sLap(i+1)-sLap(i))/(vCar(i)+vCar(i+1));
     end
-    tLap = cumsum(tLap);
+
     for i = 1:length(vCar)
         T = Motor_Torque(vCar(i),0.175,3,240,80000)' ./ [Car.Dimension.WheelFL.Radius Car.Dimension.WheelFR.Radius Car.Dimension.WheelRL.Radius Car.Dimension.WheelRR.Radius];
         Force.Engine.Thrust.FL(i,1) = T(1);
         Force.Engine.Thrust.FR(i,1) = T(2);
         Force.Engine.Thrust.RL(i,1) = T(3);
         Force.Engine.Thrust.RR(i,1) = T(4);
-        [Force.Aero.Downforce(i,1),Force.Aero.Drag(i,1)] = Aero_Forces(vCar(i),Environment,Car);
+        [Force.Aero.Downforce(i,1), Force.Aero.Drag(i,1)] = Aero_Forces(vCar(i),Environment,Car);
     end
+    Force.Engine.Thrust.Total = Force.Engine.Thrust.FL + Force.Engine.Thrust.FR + Force.Engine.Thrust.RL + Force.Engine.Thrust.RR;
+    a_x_temp = diff(vCar)./tLap;
+    a_x = interp1([1:(length(vCar)-1)]',a_x_temp,[1:length(vCar)]');
+    Fx_real = Car.Mass.Total * a_x;
+    Fx_mechanical = Fx_real + Force.Aero.Drag;
+    fwd_T = Fx_mechanical;
+    fwd_T(fwd_T <= 0) = 0;
+    bkd_T = -Fx_mechanical;
+    bkd_T(bkd_T <= 0) = 0;
+    rThrottle = fwd_T ./ Force.Engine.Thrust.Total;
+    rBrake = bkd_T/max(bkd_T); % Shouild really divide by maximum Fx of tyres for breaking potential
     % Tyre forces
     % Fz
     Fz.FL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (1 - Car.Balance.CoG)) /2) - (Force.Aero.Downforce * (1 - Car.Balance.Aerobalance))/2;
     Fz.FR = Fz.FL;
     Fz.RL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (Car.Balance.CoG)) /2) - (Force.Aero.Downforce * (Car.Balance.Aerobalance))/2;
     Fz.RR = Fz.RL;
-    %Fx
     for i = 1:length(vCar)
         [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
             F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz.FL(i),20);
         Fy.FL(i) = interp1(F_yFLmax(:,1,i),F_yFLmax(:,2,i),0,'spline');
-        Fy_real = (Car.Mass.Total * vCar(i)^2)/radius_d(i);
-        Fy_FLreal = (Fz.FL(i) / sum(Fz.FL(i)+Fz.FR(i)+Fz.RL(i)+Fz.RR(i))) * Fy_real;
+        Fy_real(i) = (Car.Mass.Total * vCar(i)^2)/radius_d(i);
+        Fy_FLreal = (Fz.FL(i) / sum(Fz.FL(i)+Fz.FR(i)+Fz.RL(i)+Fz.RR(i))) * Fy_real(i);
         Fx.FL(i) = interp1(F_xFLmax(:,2,i),F_xFLmax(:,1,i),Fy_FLreal);        
         
         [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),...
             F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz.RL(i),20);
         Fy.RL(i) = interp1(F_yRLmax(:,1,i),F_yRLmax(:,2,i),0,'spline');
-        Fy_RLreal = (Fz.RL(i) / sum(Fz.FL(i)+Fz.FR(i)+Fz.RL(i)+Fz.RR(i))) * Fy_real;
+        Fy_RLreal = (Fz.RL(i) / sum(Fz.FL(i)+Fz.FR(i)+Fz.RL(i)+Fz.RR(i))) * Fy_real(i);
         Fx.RL(i) = interp1(F_xRLmax(:,2,i),F_xRLmax(:,1,i),Fy_RLreal);  
     end
+    a_y = Fy_real / Car.Mass.Total;
     Fy.FR = Fy.FL;
     Fx.FR = Fx.FL;
     Fy.RR = Fy.RL;
@@ -118,14 +131,21 @@ for iSweep = 1:nSweeps
     Force.Wheel.Fz.RL = Fz.RL;
     Force.Wheel.Fz.RR = Fz.RR;
     
+    aSteeringWheel = curve_d;
+    gLat = a_y / abs(Environment.Gravity);
+    gLong = a_x / abs(Environment.Gravity);
+    tLap = cumsum(tLap);
+    tLap = [0; tLap];
+    Laptime = tLap(end);
     % Save results to desired location
-    if iSweep == 1
-        mkdir([SaveLocation '\' FolderName])
+    yourFolder = [SaveLocation '\' FolderName];
+    if ~exist(yourFolder, 'dir')
+       mkdir(yourFolder)
     end
-    sim_output_vars = {'vCar','sLap','tLap','Force'};
+    sim_output_vars = {'vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle','rBrake'};
     save([SaveLocation '\' FolderName '\' SimName{iSweep} '.mat'],sim_output_vars{:})
     
-    disp(['Sims completed:  ' num2str(iSweep) '/' num2str(nSweeps) '       Laptime: ' num2str(tLap(end)) 's'])
+    disp(['Sims completed:  ' num2str(iSweep) '/' num2str(nSweeps) '       Laptime: ' num2str(Laptime) 's'])
 end
     
 end
