@@ -1,4 +1,4 @@
-function velocity_d = Vel_update(Fz_log,dist,dist_log,radius_d,mass,Environment,Car,BoundaryConditions)
+function velocity_d = Vel_update(Fz_log,dist,dist_log,radius_d,Environment,Car,BoundaryConditions)
 
 %% Finding max velocity at each curvature
 
@@ -59,7 +59,7 @@ for i = 1:length(radius_d)
 %     v_x(i) = (abs((Fy(i) * radius_d(i))/mass))^0.5;
 end
 Fy = Fy_FL + Fy_FR + Fy_RL + Fy_RR;
-v_x = (abs((Fy .* radius_d)/mass)).^0.5;
+v_x = (abs((Fy .* radius_d)/Car.Mass.Total)).^0.5;
 
 v_x(v_x > 200) = 200;
 
@@ -81,7 +81,7 @@ Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
 
 for i = 1:length(dist)-1
     v_x2(i) = min(v_x2(i),v_x(i));
-    Fy_real = (mass * v_x2(i)^2)/radius_d(i);
+    Fy_real = (Car.Mass.Total * v_x2(i)^2)/radius_d(i);
     Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
     if Fz_FL_d(i) == 0
         Fx_FLreal = 0;
@@ -125,7 +125,7 @@ for i = 1:length(dist)-1
     Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.Aerobalance))/2);
     Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
     
-    a_x = Fx_sum / mass;
+    a_x = Fx_sum / Car.Mass.Total;
     
     v_x2(i+1) = (v_x2(i)^2 + (2*a_x*(dist(i+1) - dist(i))))^0.5;
 end
@@ -141,7 +141,7 @@ end
 
 for i = length(dist):-1:2
     v_x3(i) = min(v_x3(i),v_x2(i));
-    Fy_real = (mass * v_x2(i)^2)/radius_d(i-1);
+    Fy_real = (Car.Mass.Total * v_x2(i)^2)/radius_d(i-1);
     Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
     
     if Fz_FL_d(i) == 0
@@ -183,7 +183,7 @@ for i = length(dist):-1:2
     Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.Aerobalance))/2);
     Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
     
-    a_x = Fx_sum / mass;
+    a_x = Fx_sum / Car.Mass.Total;
     
     v_x3(i-1) = (v_x3(i)^2 - (2*a_x*(dist(i) - dist(i-1))))^0.5;
 end

@@ -65,7 +65,7 @@ for iSweep = 1:nSweeps
     dist_log.Data = dist;
     dist_log.Time = linspace(0,120,length(dist))';
 
-    vCar = Vel_update(Fz_log,dist,dist_log,radius_d,Car.Mass.Total,Environment,Car,BoundaryConditions);
+    vCar = Vel_update(Fz_log,dist,dist_log,radius_d,Environment,Car,BoundaryConditions);
     sLap = dist;
     for i = 1:length(vCar) - 1
         tLap(i,1) = 2*(sLap(i+1)-sLap(i))/(vCar(i)+vCar(i+1));

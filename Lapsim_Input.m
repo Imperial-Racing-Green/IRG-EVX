@@ -4,8 +4,8 @@ close all
 clc
 
 %% Save results location
-SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP';
-FolderName = 'C_D_Sweep';
+SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
+FolderName = 'Test';
 SimName = {'Test'};
 
 %% Trackmap
@@ -28,8 +28,8 @@ BoundaryConditions.vCar_end = 28;
 
 %% Sweep inputs
 Sweep.Choose = 1;                                      % Choose whether to sweep or not
-Sweep.Param = {'Car.AeroPerformance.C_D'};                     % Variable within car structure to be swept
-Sweep.Values = 0.2:0.2:2;
+Sweep.Param = {'Car.AeroPerformance.C_L'};                     % Variable within car structure to be swept
+Sweep.Values = [0.5 2.5];
 
 %% Solver
 % Choose one or the other!
