@@ -1,12 +1,16 @@
 function [F_x,F_y,F_xmax,F_ymax,F_xmin,F_ymin] = tyre_fmax(Fz,points)
 
+% Slip ratio
 SL = linspace(-1,1,points);
 
+% Slip angle
 SA = linspace(-30,30,points);
 
 [SA,SL] = meshgrid(SA,SL);
 
 [F_x,F_y,~] = PacejkaTest(SA,SL,Fz);
+% Columns of F_x are the the lateral loading capability of a tyre under a
+% set Fz. Each row is at a different slip ratio. Same format for F_y
 % F_x = rmmissing(F_x);
 % F_y = rmmissing(F_y);
 F_x(isnan(F_x)) = 0;
@@ -27,9 +31,9 @@ end
 % xlabel('Fx')
 % ylabel('Fy')
 
+% Find outer edge boundary of tyre potential forces
 k = boundary(Force(:,1),Force(:,2),0);
-% k2 = k(1:end-1);
-% k = k2;
+% Remove repeated point
 k = k(1:end-1);
 
 % xmin = 1;

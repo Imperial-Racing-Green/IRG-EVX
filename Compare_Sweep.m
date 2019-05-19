@@ -66,21 +66,14 @@ xlabel('sLap (m)')
 ylabel('Total thrust (N)')
 grid minor
 
-sim_number = [];
-laptime = [];
-if steady_state
-    for i = 1:length(filenames)
-        sim_number(i) = i;
-        laptime(i) = Results.(['Sim' num2str(i)]).tLap(end);
-    end
-else
-    for i = 1:length(filenames)
-        sim_number(i) = i;
-        laptime(i) = max(Results.(['Sim' num2str(i)]).dist_log.Time);
-    end
-end
+
 figure('Name','Laptime sensitivity','NumberTitle','off');
-plot(sim_number,laptime,'b-o','LineWidth',2)
+for i = 1:length(filenames)
+    sims(i) = i;
+    laptimes(i) = Results.(['Sim' num2str(i)]).Laptime;
+end
+plot(sims,laptimes,'b-o','LineWidth',1.2)
+hold on
 xlabel('Sim number')
 ylabel('Laptime (s)')
 grid minor

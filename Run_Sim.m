@@ -14,8 +14,8 @@ trackmap = 'Acceleration_Track2.mat';
 
 %% vCar conditions for the sim
 % % Racing_Line_ClosedLoop 
-% BoundaryConditions.vCar_start = 28;
-% BoundaryConditions.vCar_end = 28;
+% BoundaryConditions.vCar_start = 35;
+% BoundaryConditions.vCar_end = 35;
 
 % Acceleration_Track 
 BoundaryConditions.vCar_start = 0;
@@ -85,12 +85,10 @@ for iSweep = 1:nSweeps
     InputDefinedDriverModel = Simulink.Variant('Driver_Model == 2');
     Driver_Model = 1;
 
-    mass = Car.Mass.Total;
-
     % Distribute mass based on CoG location
     Fz_log = [];
     dist_log = [];
-    Fz_log.Data = mass .* Environment.Gravity .* ones(length(dist),4) ./ 2; % Total weight split evenly across each axis
+    Fz_log.Data = Car.Mass.Total .* Environment.Gravity .* ones(length(dist),4) ./ 2; % Total weight split evenly across each axis
     Fz_log.Data(:,[1,2]) = Fz_log.Data(:,[1,2]) * (1 - Car.Balance.CoG);
     Fz_log.Data(:,[3,4]) = Fz_log.Data(:,[3,4]) * (Car.Balance.CoG);
     Fz_log.Time = linspace(0,120,length(dist))';
@@ -98,7 +96,7 @@ for iSweep = 1:nSweeps
     dist_log.Time = linspace(0,120,length(dist))';
 
     velocity_d = zeros(length(dist),1);
-    velocity_dmax = Vel_update(Fz_log,dist,dist_log,radius_d,mass,Environment,Car,BoundaryConditions);
+    velocity_dmax = Vel_update(Fz_log,dist,dist_log,radius_d,Environment,Car,BoundaryConditions);
     velocity_dnew = velocity_d + 0.9 .* (velocity_dmax - velocity_d);
 
     % velocity_d = Vel_Init(dist,10);
