@@ -1,0 +1,27 @@
+component TwoDoFChassis
+    
+    parameters
+        a = {1, 'm'}; %Distance from front wheel to CoG
+        b = {1, 'm'}; %Distance from rear wheel to CoG
+    end
+    
+    variables
+        x = { value = { 0, 'm' }, priority = priority.high };   % Position
+        theta = { value = { 0, 'deg' }, priority = priority.high };   % Pitch
+    end
+    
+    nodes
+        Front = foundation.mechanical.translational.translational; % Front:left
+        Rear = foundation.mechanical.translational.translational; % Rear:left
+        Vertical = foundation.mechanical.translational.translational; % Vertical:right
+        Rotational = foundation.mechanical.rotational.rotational; % Rotational:right
+    end
+    
+    equations
+        Vertical.v == (b/(a+b))*Front.v + (a/(a+b))*Rear.v;
+        Rotational.w == acosd((Rear.v - Front.v)/(a+b));
+        Vertical.f == Front.f + Rear.f;
+        Rotational.t == b*Rear.f - a*Front.f;
+    end
+    
+end

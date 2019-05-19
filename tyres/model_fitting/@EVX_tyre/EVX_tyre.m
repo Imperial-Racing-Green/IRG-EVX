@@ -88,7 +88,6 @@ classdef EVX_tyre
         function obj = fit_coef_long(obj)
             [obj.coef_long, obj.testcases_long, obj.testcase_cell_long] = obj.fit_coefficients(obj.longitudinal_data);
             obj.coef_long_pure = obj.coef_long(:,:,:,end);
-%             obj.coef_long_pure = 
         end
         
         function coef = get_coefficients_long(obj,P,IA,FZ)
@@ -124,14 +123,10 @@ classdef EVX_tyre
             
             coef_x = obj.get_coefficients_long(P,IA,FZ);
             coef_y = obj.get_coefficients_lat(P,IA,FZ);
-%             if any(isnan(coef_x)) || any(isnan(coef_y))
-%                 keyboard
-%             end
             
             for i = 1:size(coef_x,1)
                 FX = G_x*obj.pacejka4(coef_x(i,:),SR);
                 FY = G_y*obj.pacejka4(coef_y(i,:),SA);
-%                 keyboard
             end
             MZ = zeros(length(SR),1);
         end
