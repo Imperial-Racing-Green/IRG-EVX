@@ -75,7 +75,7 @@ while eps >= eps_lim
     
     % Check for convergence of velocities
     eps = sum(v_x - v_x_check);
-    disp(['Approaching vCar convergence criterion: ' num2str((eps_lim/eps)*100) ' %'])
+    disp(['Approaching vCar convergence criterion: ' num2str(min((eps_lim/eps),1)*100) ' %'])
     v_x_check = v_x;
 end
     
@@ -126,14 +126,17 @@ for i = 1:length(dist)-1
         Fx_RRreal = interp1(F_xRRmax(:,2,i),F_xRRmax(:,1,i),Fy_RRreal);
     end
     
-    Motor_Fx = Motor_Torque(v_x2(i),0.175,3,240,80000) ./ 0.175;
-    Fx_real = [Fx_FLreal;Fx_FRreal;Fx_RLreal;Fx_RRreal];
+    Motor_Fx = Motor_Torque(v_x2(i),Car.Dimension.WheelRL.Radius,Car.Powertrain) ./ ...
+                        [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
+                        Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+    Fx_real = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
     
     Fx_real = min(Motor_Fx,Fx_real);
     
     Fx_sum = sum(Fx_real);
-    % Account for drag
-    Fx_sum = Fx_sum - F_D;    
+    % Account for drag and rolling resistance
+    Fx_rollres = -Fz_sum(i)*Car.Tyres.Coefficients.RollingResistance; % Assume all wheels (including driven wheels) contribute
+    Fx_sum = Fx_sum - F_D - Fx_rollres;    
     
     a_x = Fx_sum / Car.Mass.Total;
     
@@ -189,12 +192,18 @@ for i = length(dist):-1:2
     else
         Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal);
     end
+    Fx_real = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
     
-    Fx_real = [Fx_FLreal;Fx_FRreal;Fx_RLreal;Fx_RRreal];
+    Brake_Fx = Brake_Model(v_x3(i),Car.Brakes) ./ ...
+                        [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
+                        Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius]; 
+    
+    Fx_real = max(Brake_Fx,Fx_real);
     
     Fx_sum = sum(Fx_real);
-    % Account for drag
-    Fx_sum = Fx_sum - F_D;
+    % Account for drag and rolling resistance
+    Fx_rollres = -Fz_sum(i)*Car.Tyres.Coefficients.RollingResistance; % Assume all wheels (including driven wheels) contribute
+    Fx_sum = Fx_sum - F_D - Fx_rollres;
         
     a_x = Fx_sum / Car.Mass.Total;
     
@@ -203,5 +212,4 @@ end
 v_x3(1) = min(v_x3(1),v_x2(1));
 
 %% Output
-
 velocity_d = v_x3;
