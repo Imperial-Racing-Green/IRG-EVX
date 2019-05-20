@@ -1,4 +1,4 @@
-function [T] = Brake_Model(velocity,Brake_Info)
+function [T] = Brake_Model(Brake_Info)
 
 % Convert force at pedal to force on the master cylinder pushrod (N)
 Front.FPushrod = Brake_Info.BrakeBias * (Brake_Info.FPedalMax * Brake_Info.PedalMotionRatio);
