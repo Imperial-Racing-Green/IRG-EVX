@@ -74,30 +74,42 @@ for iSweep = 1:nSweeps
     end
 
     for i = 1:length(vCar)
-        T = Motor_Torque(vCar(i),0.175,3,240,80000)' ./ [Car.Dimension.WheelFL.Radius Car.Dimension.WheelFR.Radius Car.Dimension.WheelRL.Radius Car.Dimension.WheelRR.Radius];
-        Force.Engine.Thrust.FL(i,1) = T(1);
-        Force.Engine.Thrust.FR(i,1) = T(2);
-        Force.Engine.Thrust.RL(i,1) = T(3);
-        Force.Engine.Thrust.RR(i,1) = T(4);
+        Motor_Fx = Motor_Torque(vCar(i),Car.Dimension.WheelRL.Radius,Car.Powertrain) ./ ...
+                        [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
+                        Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+        Force.Engine.Thrust.FL(i,1) = Motor_Fx(1);
+        Force.Engine.Thrust.FR(i,1) = Motor_Fx(2);
+        Force.Engine.Thrust.RL(i,1) = Motor_Fx(3);
+        Force.Engine.Thrust.RR(i,1) = Motor_Fx(4);
+        Brake_Fx = Brake_Model(vCar(i),Car.Brakes) ./ ...
+                        [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
+                        Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+        Force.Brakes.FL(i,1) = Brake_Fx(1);
+        Force.Brakes.FR(i,1) = Brake_Fx(2);
+        Force.Brakes.RL(i,1) = Brake_Fx(3);
+        Force.Brakes.RR(i,1) = Brake_Fx(4);
         [Force.Aero.Downforce(i,1), Force.Aero.Drag(i,1)] = Aero_Forces(vCar(i),Environment,Car);
     end
     Force.Engine.Thrust.Total = Force.Engine.Thrust.FL + Force.Engine.Thrust.FR + Force.Engine.Thrust.RL + Force.Engine.Thrust.RR;
+    Force.Brakes.Total = -(Force.Brakes.FL + Force.Brakes.FR + Force.Brakes.RL + Force.Brakes.RR);
     a_x_temp = diff(vCar)./tLap;
     a_x = interp1([1:(length(vCar)-1)]',a_x_temp,[1:length(vCar)]');
     Fx_real = Car.Mass.Total * a_x;
-    Fx_mechanical = Fx_real + Force.Aero.Drag;
+    Fz.FL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (1 - Car.Balance.CoG)) /2) - (Force.Aero.Downforce * (1 - Car.Balance.Aerobalance))/2;
+    Fz.FR = Fz.FL;
+    Fz.RL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (Car.Balance.CoG)) /2) - (Force.Aero.Downforce * (Car.Balance.Aerobalance))/2;
+    Fz.RR = Fz.RL;
+    Fx_rollres = -(Fz.FL+ Fz.FR + Fz.RL + Fz.RR) * Car.Tyres.Coefficients.RollingResistance;
+    Fx_mechanical = Fx_real + Force.Aero.Drag + Fx_rollres;
     fwd_T = Fx_mechanical;
     fwd_T(fwd_T <= 0) = 0;
     bkd_T = -Fx_mechanical;
     bkd_T(bkd_T <= 0) = 0;
     rThrottle = fwd_T ./ Force.Engine.Thrust.Total;
-    rBrake = bkd_T/max(bkd_T); % Shouild really divide by maximum Fx of tyres for breaking potential
+%     rBrake = bkd_T ./ Force.Brakes.Total;
+    rBrake = bkd_T ./ max(bkd_T); % A hacky-hack because ^^^ doesn't cap at 1
     % Tyre forces
-    % Fz
-    Fz.FL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (1 - Car.Balance.CoG)) /2) - (Force.Aero.Downforce * (1 - Car.Balance.Aerobalance))/2;
-    Fz.FR = Fz.FL;
-    Fz.RL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (Car.Balance.CoG)) /2) - (Force.Aero.Downforce * (Car.Balance.Aerobalance))/2;
-    Fz.RR = Fz.RL;
+    % Fx, Fy
     for i = 1:length(vCar)
         [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
             F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz.FL(i),20);
@@ -134,15 +146,14 @@ for iSweep = 1:nSweeps
     aSteeringWheel = curve_d;
     gLat = a_y / abs(Environment.Gravity);
     gLong = a_x / abs(Environment.Gravity);
-    tLap = cumsum(tLap);
-    tLap = [0; tLap];
+    tLap = [0; cumsum(tLap)];
     Laptime = tLap(end);
     % Save results to desired location
     yourFolder = [SaveLocation '\' FolderName];
     if ~exist(yourFolder, 'dir')
        mkdir(yourFolder)
     end
-    sim_output_vars = {'vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle','rBrake'};
+    sim_output_vars = {'Car','Environment','vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle','rBrake'};
     save([SaveLocation '\' FolderName '\' SimName{iSweep} '.mat'],sim_output_vars{:})
     
     disp(['Sims completed:  ' num2str(iSweep) '/' num2str(nSweeps) '       Laptime: ' num2str(Laptime) 's'])

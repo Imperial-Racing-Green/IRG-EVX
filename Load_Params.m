@@ -37,16 +37,41 @@ Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Ma
 
 Car.Stiffness.Chassis = 50000;
 
-% Percentage of car length from most frontwards point 
+% Percentage of axle separation length from front axles 
 Car.Balance.CoG = 0.55; 
 Car.Balance.Aerobalance = 0.55;
 
-% Environment condtions
-Environment.Gravity = -9.81;                    % (m/s^2)
-Environment.Density = 1.19;                     % (kg/m^3)
-Environment.Temperature.Air = 18 + 273.15;      % (K)
-Environment.Temperature.Track = 30 + 273.15;    % (K)
-Environment.Pressure = 101325;                  % (Pa)
+% Tyre info
+Car.Tyres.Coefficients.RollingResistance = 0.018; % Need updated number for Hoosier tyres
+
+% Powertrain info
+Car.Powertrain.MaxPower = 80000;    % (W)
+Car.Powertrain.MaxTorque = 240;     % (Nm)
+Car.Powertrain.TransmissionRatio = 3;
+Car.Powertrain.Config = 'rwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
+
+% Brakes info
+Car.Brakes.FPedalMax = 120*4.44822162825;                                           % (N)
+Car.Brakes.BrakeBias = 0.66;                                                        % > 0.5 is biased towards front
+Car.Brakes.PedalMotionRatio = 6;
+Car.Brakes.Front.wPad = 25.4e-3;                                                    % Pad width (m) 
+Car.Brakes.Rear.wPad = 25.4e-3;
+Car.Brakes.Front.PadFrictionCoefficent = 0.42;
+Car.Brakes.Rear.PadFrictionCoefficent = 0.42;
+Car.Brakes.Front.nPistons = 2;                                                      % Per caliper
+Car.Brakes.Rear.nPistons = 2; 
+Car.Brakes.Front.dPiston = 25.4e-3;                                                 % Piston diameter (m)
+Car.Brakes.Rear.dPiston = 25.4e-3;
+Car.Brakes.Front.aPiston = pi*(Car.Brakes.Front.dPiston/2)^2;                       % Piston area (m^2)
+Car.Brakes.Rear.aPiston = pi*(Car.Brakes.Rear.dPiston/2)^2;
+Car.Brakes.Front.dDisk = 0.22;                                                      % Disk diameter (m)
+Car.Brakes.Rear.dDisk = 0.18; 
+Car.Brakes.Front.rActing =  (Car.Brakes.Front.dDisk/2) - (Car.Brakes.Front.wPad/2); % Acting radius (m)
+Car.Brakes.Rear.rActing =  (Car.Brakes.Rear.dDisk/2) - (Car.Brakes.Rear.wPad/2);
+Car.Brakes.Front.dMasterCylinder = (5/8)*25.4e-3;                                   % Master cylinder diameter (m)
+Car.Brakes.Rear.dMasterCylinder = (3/4)*25.4e-3;
+Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2;       % Master cylinder area (m^2)
+Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 
 % Car dimensions
 Car.Dimension.WheelFL.Radius = 0.175;
@@ -58,6 +83,13 @@ Car.Dimension.FrontalArea = 1.2*1.4;
 % Car aero performance
 Car.AeroPerformance.C_L = 2.57;
 Car.AeroPerformance.C_D = 1.33;
+
+% Environment condtions
+Environment.Gravity = -9.81;                    % (m/s^2)
+Environment.Density = 1.19;                     % (kg/m^3)
+Environment.Temperature.Air = 18 + 273.15;      % (K)
+Environment.Temperature.Track = 30 + 273.15;    % (K)
+Environment.Pressure = 101325;                  % (Pa)
 
 load([pwd,'\kinematics\geometries\EV3 Front Hardpoints 13.01.19.mat']);
 Car.Sus.Front.Hardpoints = hardpoints_front;

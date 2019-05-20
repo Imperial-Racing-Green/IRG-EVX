@@ -6,6 +6,7 @@ clc
 %% Save results location
 
 SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
+
 FolderName = 'Test';
 SimName = {'Test'};
 
@@ -24,13 +25,13 @@ BoundaryConditions.vCar_end = 35;
 % BoundaryConditions.vCar_start = 0;
 % BoundaryConditions.vCar_end = [];
 % SkidPad_Track 
-% BoundaryConditions.vCar_start = 12;
-% BoundaryConditions.vCar_end = 12;
+% BoundaryConditions.vCar_start = 12.8;
+% BoundaryConditions.vCar_end = 12.8;
 
 %% Sweep inputs
-Sweep.Choose = 1;                                      % Choose whether to sweep or not
-Sweep.Param = {'Car.AeroPerformance.C_L'};             % Variable within car structure to be swept
-Sweep.Values = [1 1.5 2];
+Sweep.Choose = 0;                                      % Choose whether to sweep or not
+Sweep.Param = {'Car.Mass.Total'};             % Variable within car structure to be swept
+Sweep.Values = 250:10:300;
 
 
 %% Solver
