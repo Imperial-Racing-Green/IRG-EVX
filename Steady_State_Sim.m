@@ -1,11 +1,17 @@
 function Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep)
 
-if Sweep.Choose == 1
-    nSweeps = length(Sweep.Values);
+if Sweep.Choose_Param == 1
+    if Sweep.Choose_Param == 1
+        nSweeps = length(Sweep.Values);
+    elseif Sweep.Choose_Carfile == 1
+        nSweeps = length(Sweep.Carfile);
+    elseif Sweep.Choose_Weatherfile == 1
+        nSweeps = length(Sweep.Weatherfile);
+    end
     if length(SimName) == length(Sweep.Values)
         SimName = SimName;
     else
-        for i = 1:length(Sweep.Values)
+        for i = 1:nSweeps
             SimName{i} = ['Sim' num2str(i)];
         end
     end
@@ -18,12 +24,20 @@ for iSweep = 1:nSweeps
     %% Loading Car and Stuff like weather
     [Car,Environment] = Load_Params();
 
-    % Override car params for sweep
-    if Sweep.Choose == 1
+    % Check which variables (if any) to change
+    if Sweep.Choose_Param == 1
+        % Override car param
         eval([Sweep.Param{1},'=',num2str(Sweep.Values(iSweep)),';']);
+    elseif Sweep.Choose_Carfile == 1
+        % Load in a new carfile
+        clear Car
+        load(Sweep.Carfile{iSweep});
+    elseif Sweep.Choose_Weatherfile == 1
+        clear Environment
+        load(Sweep.Weatherfile{iSweep});
     end
-
-
+    
+    
     %% Running Kinematics
     % Front_kine = run_kine_sim('Kinematics_Model',Car.Sus.Front.Hardpoints);
     % Rear_kine = run_kine_sim('Kinematics_Model',Car.Sus.Rear.Hardpoints);
@@ -74,14 +88,18 @@ for iSweep = 1:nSweeps
     end
 
     for i = 1:length(vCar)
-        Motor_Fx = Motor_Torque(vCar(i),Car.Dimension.WheelRL.Radius,Car.Powertrain) ./ ...
+        Engine_Fx = Engine_Torque(vCar(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Engine) ./ ...
                         [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
                         Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
-        Force.Engine.Thrust.FL(i,1) = Motor_Fx(1);
-        Force.Engine.Thrust.FR(i,1) = Motor_Fx(2);
-        Force.Engine.Thrust.RL(i,1) = Motor_Fx(3);
-        Force.Engine.Thrust.RR(i,1) = Motor_Fx(4);
-        Brake_Fx = Brake_Model(vCar(i),Car.Brakes) ./ ...
+        Motor_Fx = Motor_Torque(vCar(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Motor) ./ ...
+                        [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
+                        Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+        Powertrain_Fx = Engine_Fx + Motor_Fx;
+        Force.Powertrain.Thrust.FL(i,1) = Powertrain_Fx(1);
+        Force.Powertrain.Thrust.FR(i,1) = Powertrain_Fx(2);
+        Force.Powertrain.Thrust.RL(i,1) = Powertrain_Fx(3);
+        Force.Powertrain.Thrust.RR(i,1) = Powertrain_Fx(4);
+        Brake_Fx = Brake_Model(Car.Brakes) ./ ...
                         [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
                         Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
         Force.Brakes.FL(i,1) = Brake_Fx(1);
@@ -90,7 +108,7 @@ for iSweep = 1:nSweeps
         Force.Brakes.RR(i,1) = Brake_Fx(4);
         [Force.Aero.Downforce(i,1), Force.Aero.Drag(i,1)] = Aero_Forces(vCar(i),Environment,Car);
     end
-    Force.Engine.Thrust.Total = Force.Engine.Thrust.FL + Force.Engine.Thrust.FR + Force.Engine.Thrust.RL + Force.Engine.Thrust.RR;
+    Force.Powertrain.Thrust.Total = Force.Powertrain.Thrust.FL + Force.Powertrain.Thrust.FR + Force.Powertrain.Thrust.RL + Force.Powertrain.Thrust.RR;
     Force.Brakes.Total = -(Force.Brakes.FL + Force.Brakes.FR + Force.Brakes.RL + Force.Brakes.RR);
     a_x_temp = diff(vCar)./tLap;
     a_x = interp1([1:(length(vCar)-1)]',a_x_temp,[1:length(vCar)]');
@@ -105,7 +123,7 @@ for iSweep = 1:nSweeps
     fwd_T(fwd_T <= 0) = 0;
     bkd_T = -Fx_mechanical;
     bkd_T(bkd_T <= 0) = 0;
-    rThrottle = fwd_T ./ Force.Engine.Thrust.Total;
+    rThrottle = fwd_T ./ Force.Powertrain.Thrust.Total;
 %     rBrake = bkd_T ./ Force.Brakes.Total;
     rBrake = bkd_T ./ max(bkd_T); % A hacky-hack because ^^^ doesn't cap at 1
     % Tyre forces

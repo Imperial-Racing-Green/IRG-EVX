@@ -127,13 +127,16 @@ for i = 1:length(dist)-1
     else
         Fx_RRreal = interp1(F_xRRmax(:,2,i),F_xRRmax(:,1,i),Fy_RRreal);
     end
-    
-    Motor_Fx = Motor_Torque(v_x2(i),Car.Dimension.WheelRL.Radius,Car.Powertrain) ./ ...
+    Engine_Fx = Engine_Torque(v_x2(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Engine) ./ ...
                         [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
                         Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+    Motor_Fx = Motor_Torque(v_x2(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Motor) ./ ...
+                        [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
+                        Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+    Powertrain_Fx = Engine_Fx + Motor_Fx;
     Fx_real = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
     
-    Fx_real = min(Motor_Fx,Fx_real);
+    Fx_real = min(Powertrain_Fx,Fx_real);
     
     Fx_sum = sum(Fx_real);
     % Account for drag and rolling resistance
@@ -197,7 +200,7 @@ for i = length(dist):-1:2
     end
     Fx_real = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
     
-    Brake_Fx = Brake_Model(v_x3(i),Car.Brakes) ./ ...
+    Brake_Fx = Brake_Model(Car.Brakes) ./ ...
                         [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
                         Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius]; 
     

@@ -29,10 +29,15 @@ BoundaryConditions.vCar_end = 35;
 % BoundaryConditions.vCar_start = 12.8;
 % BoundaryConditions.vCar_end = 12.8;
 
-%% Sweep inputs
-Sweep.Choose = 0;                                      % Choose whether to sweep or not
-Sweep.Param = {'Car.Powertrain.MaxPower'};             % Variable within car structure to be swept
-Sweep.Values = [80000 120000 140000];
+
+%% Sweep inputs (can only sweep car params OR car files OR weatherfile)
+Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
+Sweep.Param = {'Car.AeroPerformance.C_D'};             % Variable within car structure to be swept
+Sweep.Values = [0.5 1 1.5];
+Sweep.Choose_Carfile = 0;
+Sweep.Carfile = {'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\Baseline_Carfile.mat'};
+Sweep.Choose_Weatherfile = 0;
+Sweep.Weatherfile = {'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\Baseline_Weatherfile.mat'};
 
 
 %% Solver
@@ -60,8 +65,8 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         trackmap = 'SkidPad_Track.mat';
         FolderSection = [FolderName '\SkidPad_Test'];
         SimName = {'SkidPad_Test'};
-        BoundaryConditions.vCar_start = 12;
-        BoundaryConditions.vCar_end = 12;
+        BoundaryConditions.vCar_start = 12.8;
+        BoundaryConditions.vCar_end = 12.8;
         Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)
         % Full lap (stationary start)
         disp('Simulating first lap of Endurance Test...')
@@ -76,8 +81,8 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         trackmap = 'Racing_Line_ClosedLoop.mat';
         FolderSection = [FolderName '\Endurance_Test\Steady_State'];
         SimName = {'Endurance_Test_Steady_State'};
-        BoundaryConditions.vCar_start = 28;
-        BoundaryConditions.vCar_end = 28;
+        BoundaryConditions.vCar_start = 35;
+        BoundaryConditions.vCar_end = 35;
         Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)        
     else
         % Dynamic solve for full FS weekend
