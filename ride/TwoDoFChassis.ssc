@@ -6,8 +6,19 @@ component TwoDoFChassis
     end
     
     variables
-        x = { value = { 0, 'm' }, priority = priority.high };   % Position
-        theta = { value = { 0, 'deg' }, priority = priority.high };   % Pitch
+%         x = { value = { 0, 'm' }, priority = priority.high };   % Position
+%         theta = { value = { 0, 'deg' }, priority = priority.high };   % Pitch
+        M = {0, 'N*m'}; %Pitching Moment
+        F = {0, 'N'}; %Total Vertical Force
+        F_f = {0, 'N'}; %Force on Front Axle
+        F_r = {0, 'N'}; %Force on Rear Axle
+    end
+    
+    branches
+        M : Rotational.t -> *;
+        F : Vertical.f -> *;
+        F_f : Front.f -> *;
+        F_r : Rear.f -> *;
     end
     
     nodes
@@ -19,9 +30,11 @@ component TwoDoFChassis
     
     equations
         Vertical.v == (b/(a+b))*Front.v + (a/(a+b))*Rear.v;
-        Rotational.w == acosd((Rear.v - Front.v)/(a+b));
-        Vertical.f == Front.f + Rear.f;
-        Rotational.t == b*Rear.f - a*Front.f;
+        Rotational.w == ((Rear.v - Front.v)/(a+b)); %Assume small angle
+        F == -F_f - F_r;
+        M == -b*F_r + a*F_f;
+%         x == integ(Vertical.v);
+%         theta == integ(Rotational.w);
     end
     
 end
