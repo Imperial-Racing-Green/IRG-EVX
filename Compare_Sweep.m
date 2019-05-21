@@ -3,8 +3,8 @@ close all
 clear
 clc
 
-FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Test';
-full_weekend = 0;  % If selected point to folder of encolsing all weekend results
+FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\CoG_Sweep';
+full_weekend = 1;  % If selected point to folder of encolsing all weekend results
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%
 
@@ -24,6 +24,7 @@ for iTest = 1:length(FolderName)
     
     listing = dir(FolderName{iTest});
     listing = struct2table(listing);
+    listing = sortrows(listing,'date')
     listing(listing.isdir == 1,:) = [];
 
     filenames = {};
