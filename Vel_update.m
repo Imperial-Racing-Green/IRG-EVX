@@ -10,6 +10,7 @@ Fz_RR_t = Fz_log.Data(:,4);
 % time_d = interp1(dist_log.Data .* (max(dist)/max(dist_log.Data)),dist_log.Time,dist);
 time_d = dist_log.Time;
 
+
 Fz_FL_d = interp1(Fz_log.Time,Fz_FL_t,time_d);
 Fz_FR_d = interp1(Fz_log.Time,Fz_FR_t,time_d);
 Fz_RL_d = interp1(Fz_log.Time,Fz_RL_t,time_d);

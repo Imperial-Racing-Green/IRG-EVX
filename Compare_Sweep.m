@@ -3,11 +3,10 @@ close all
 clear
 clc
 
-FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Test';
+FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Max_Power_Test';
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%
 
->>>>>>> origin/Aero_GDP
 listing = dir(FolderName);
 listing = struct2table(listing);
 listing(listing.isdir == 1,:) = [];

@@ -7,12 +7,13 @@ clc
 
 SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
 
-FolderName = 'Test';
+FolderName = 'Test3';
 SimName = {'Test'};
 
 %% Trackmap
 % trackmap = 'Racing_Line.mat';
-trackmap = 'Racing_Line_ClosedLoop.mat';
+%trackmap = 'Racing_Line_ClosedLoop.mat';
+trackmap = 'Racing_Line_ClosedLoop_2.mat';
 % trackmap = 'Acceleration_Track.mat';
 % trackmap = 'SkidPad_Track.mat';
 % trackmap = 'Full_FS_Weekend';
@@ -30,8 +31,8 @@ BoundaryConditions.vCar_end = 35;
 
 %% Sweep inputs
 Sweep.Choose = 0;                                      % Choose whether to sweep or not
-Sweep.Param = {'Car.Mass.Total'};             % Variable within car structure to be swept
-Sweep.Values = 250:10:300;
+Sweep.Param = {'Car.Powertrain.MaxPower'};             % Variable within car structure to be swept
+Sweep.Values = [80000 120000 140000];
 
 
 %% Solver
