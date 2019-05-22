@@ -2,10 +2,10 @@ function [Car,Environment] = Load_Params()
 
 % Car component masses (kg)
 % Wheels (tyre + rim)
-Car.Mass.WheelFL = 2.5 + 1.75;
-Car.Mass.WheelFR = 2.5 + 1.75;
-Car.Mass.WheelRL = 2.5 + 1.75;
-Car.Mass.WheelRR = 2.5 + 1.75;
+Car.Mass.WheelFL = 2.68 + 4;
+Car.Mass.WheelFR = 2.68 + 4;
+Car.Mass.WheelRL = 2.68 + 4;
+Car.Mass.WheelRR = 2.68 + 4;
 % Driver
 Car.Mass.Driver = 68;
 % Suspension
@@ -16,50 +16,54 @@ Car.Mass.Chassis = 22.5 + 7.5;
 Car.Mass.Battery = 43;
 % Engine
 Car.Mass.Engine = 70;
-% Motors
-Car.Mass.Motors = 6.9*2;
+% Motors (plus controller)
+Car.Mass.Motors = 6.9*2 + 7;
 % Steering 
-Car.Mass.Steering = 5;
+Car.Mass.Steering = 3.5;
 % Pedals
 Car.Mass.Pedals = 2.5;
+% Seat
+Car.Mass.Seat = 5;
 % Firewall
-Car.Mass.Seat_Firewall = 5;
+Car.Mass.FireWall = 4.4;
 % Cooling 
 Car.Mass.Cooling = 5;
 % Electrics
 Car.Mass.Electrics = 10;
 % Aero
 Car.Mass.FrontWing = 7; 
-Car.Mass.RearWing = 10;
+Car.Mass.RearWing = 6;
 % Brakes
 Car.Mass.Brakes = 4*2.3518;
+% Fuel tank (plus some fuel)
+Car.Mass.Fueltank = 5;
 % Total
 Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
                  Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
-                 Car.Mass.Engine + Car.Mass.Motors + Car.Mass.Steering + Car.Mass.Pedals +...
-                 Car.Mass.Seat_Firewall + Car.Mass.Cooling + Car.Mass.Electrics + Car.Mass.FrontWing +...
-                 Car.Mass.RearWing + Car.Mass.Brakes;
+                 Car.Mass.Engine + Car.Mass.Motors + Car.Mass.Steering + Car.Mass.Pedals + ...
+                 Car.Mass.Seat + Car.Mass.FireWall + Car.Mass.Cooling + Car.Mass.Electrics + ...
+                 Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Brakes + Car.Mass.Fueltank;
              
 Car.Stiffness.Chassis = 50000;
 
 % Car dimensions (m)
-Car.Dimension.WheelFL.Radius = 0.2159; % Rim radius + tyre thickness
-Car.Dimension.WheelFR.Radius = 0.2159; % (10" tyres = 0.1778m total radius, 13" tyres = 0.2159m total radius)
-Car.Dimension.WheelRL.Radius = 0.2159;
-Car.Dimension.WheelRR.Radius = 0.2159;
+Car.Dimension.WheelFL.Radius = 0.2413; % Rim radius + tyre thickness
+Car.Dimension.WheelFR.Radius = 0.2413; % (10" tyres = 0.2032m total radius, 13" tyres = 0.2413m total radius)
+Car.Dimension.WheelRL.Radius = 0.2413;
+Car.Dimension.WheelRR.Radius = 0.2413;
 Car.Dimension.Width = 1.417;
 Car.Dimension.Height = 1.4;
-Car.Dimension.FrontalArea = Car.Dimension.Width*Car.Dimension.Height;
+Car.Dimension.FrontalArea = 1.2;
 Car.Dimension.lWheelbase = 1.55;
 Car.Dimension.xCoG = 0.8029; % Behind front axle
 Car.Dimension.zCoG = 0.3; % Above ground
 Car.Dimension.xCoP = 0.8525; % Behind front axle
-Car.Dimension.zCoP = 0.5; % Above ground
+Car.Dimension.zCoP = 0.37; % Above ground
 
 % Percentage of axle separation length from front axles 
-Car.Balance.xCoG = Car.Dimension.xCoG/Car.Dimension.lWheelbase; 
+Car.Balance.xCoG = 0.5; %Car.Dimension.xCoG/Car.Dimension.lWheelbase; 
 Car.Balance.zCoG = Car.Dimension.zCoG/Car.Dimension.Height; 
-Car.Balance.xCoP = Car.Dimension.xCoP/Car.Dimension.lWheelbase;
+Car.Balance.xCoP = 0.5; %Car.Dimension.xCoP/Car.Dimension.lWheelbase;
 Car.Balance.zCoP = Car.Dimension.zCoP/Car.Dimension.Height; 
 
 % Tyre info
@@ -71,10 +75,10 @@ Car.Powertrain.Engine.MaxPower = 79000;    % (W) (80000
 Car.Powertrain.Engine.MaxTorque = 69;     % (Nm) (240)
 Car.Powertrain.Engine.TransmissionRatio = 3.6;
 Car.Powertrain.Engine.Config = 'rwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
-% Battery/motor
-Car.Powertrain.Motor.MaxPower = 46000;    % (W)
-Car.Powertrain.Motor.MaxTorque = 220;     % (Nm)
-Car.Powertrain.Motor.TransmissionRatio = 3;
+% Battery/motor (total between 2 motors)
+Car.Powertrain.Motor.MaxPower = 60000;    % (W)
+Car.Powertrain.Motor.MaxTorque = 180;     % (Nm)
+Car.Powertrain.Motor.TransmissionRatio = 2;
 Car.Powertrain.Motor.Config = 'fwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 
 % Brakes info

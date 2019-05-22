@@ -5,31 +5,31 @@ clc
 
 %% Save results location
 SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP';
-FolderName = 'Test';
+FolderName = 'CoG_Sweep';
 SimName = {'Test'};
 
 %% Trackmap
-% trackmap = 'Trackmap_ClosedLoop.mat';
+trackmap = 'Trackmap_ClosedLoop.mat';
 % trackmap = 'Racing_Line_ClosedLoop.mat';
-trackmap = 'Acceleration_Track.mat';
+% trackmap = 'Acceleration_Track.mat';
 % trackmap = 'SkidPad_Track.mat';
 % trackmap = 'Full_FS_Weekend';
 
 %% vCar boundary conditions
 % Racing_Line_ClosedLoop 
-% BoundaryConditions.vCar_start = 33;
-% BoundaryConditions.vCar_end = 33;
+BoundaryConditions.vCar_start = 35;
+BoundaryConditions.vCar_end = 35;
 % Acceleration_Track 
-BoundaryConditions.vCar_start = 0;
-BoundaryConditions.vCar_end = [];
+% BoundaryConditions.vCar_start = 0;
+% BoundaryConditions.vCar_end = [];
 % SkidPad_Track 
 % BoundaryConditions.vCar_start = 12.8;
 % BoundaryConditions.vCar_end = 12.8;
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
-Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
+Sweep.Choose_Param = 1;                                % Choose whether to sweep anything or not
 Sweep.Param = {'Car.Balance.xCoG'};             % Variable within car structure to be swept
-Sweep.Values = 0.4:0.05:0.65;
+Sweep.Values = 0.3:0.1:0.7;
 Sweep.Choose_Carfile = 0;
 Sweep.Carfile = {'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\Baseline_Carfile.mat'};
 Sweep.Choose_Weatherfile = 0;

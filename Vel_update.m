@@ -187,7 +187,7 @@ end
 for i = length(dist):-1:2
     v_x3(i) = min(v_x3(i),v_x2(i));
     
-    [F_L,F_D] = Aero_Forces(v_x2(i),Environment,Car);
+    [F_L,F_D] = Aero_Forces(v_x3(i),Environment,Car);
     % Recalculate downforce
     Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.xCoP))/2);
     Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.xCoP))/2);
@@ -195,49 +195,77 @@ for i = length(dist):-1:2
     Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.xCoP))/2);
     Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
     
-    Fy_real = (Car.Mass.Total * v_x2(i)^2)/radius_d(i-1);
-    Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
-    
-    if Fz_FL_d(i) == 0
-        Fx_FLreal = 0;
-    else
-        Fx_FLreal = interp1(F_xFLmin(:,2,i),F_xFLmin(:,1,i),Fy_FLreal);
-    end
-    
-    Fy_FRreal = (Fz_FR_d(i) / Fz_sum(i)) * Fy_real;
-    if Fz_FR_d(i) == 0
-        Fx_FRreal = 0;
-    else
-        Fx_FRreal = interp1(F_xFRmin(:,2,i),F_xFRmin(:,1,i),Fy_FRreal);
-    end
-    
-    Fy_RLreal = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
-    if Fz_RL_d(i) == 0
-        Fx_RLreal = 0;
-    else
-        Fx_RLreal = interp1(F_xRLmin(:,2,i),F_xRLmin(:,1,i),Fy_RLreal);
-    end
-    
-    Fy_RRreal = (Fz_RR_d(i) / Fz_sum(i)) * Fy_real;
-    if Fz_RR_d(i) == 0
-        Fx_RRreal = 0;
-    else
-        Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal);
-    end
-    Fx_real = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
+    Fy_real = (Car.Mass.Total * v_x3(i)^2)/radius_d(i-1);
     
     Brake_Fx = Brake_Model(Car.Brakes) ./ ...
-                        [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
-                        Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius]; 
+                    [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
+                    Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius]; 
     
-    Fx_real = max(Brake_Fx,Fx_real);
-    
-    Fx_sum = sum(Fx_real);
-    % Account for drag and rolling resistance
-    Fx_rollres = -Fz_sum(i)*Car.Tyres.Coefficients.RollingResistance; % Assume all wheels (including driven wheels) contribute
-    Fx_sum = Fx_sum - F_D - Fx_rollres;
+    eps = 2;
+    Fz_check = [0 0 0 0];
+    eps_lim = 1;
+    while eps > eps_lim
         
-    a_x = Fx_sum / Car.Mass.Total;
+        % Re-evaluate tyre potential
+        [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
+                F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),20);
+        [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),...
+            F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),20);
+        [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),...
+            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),20);
+        [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),...
+            F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),20);
+        
+        Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
+
+        if Fz_FL_d(i) == 0
+            Fx_FLreal = 0;
+        else
+            Fx_FLreal = interp1(F_xFLmin(:,2,i),F_xFLmin(:,1,i),Fy_FLreal);
+        end
+
+        Fy_FRreal = (Fz_FR_d(i) / Fz_sum(i)) * Fy_real;
+        if Fz_FR_d(i) == 0
+            Fx_FRreal = 0;
+        else
+            Fx_FRreal = interp1(F_xFRmin(:,2,i),F_xFRmin(:,1,i),Fy_FRreal);
+        end
+
+        Fy_RLreal = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
+        if Fz_RL_d(i) == 0
+            Fx_RLreal = 0;
+        else
+            Fx_RLreal = interp1(F_xRLmin(:,2,i),F_xRLmin(:,1,i),Fy_RLreal);
+        end
+
+        Fy_RRreal = (Fz_RR_d(i) / Fz_sum(i)) * Fy_real;
+        if Fz_RR_d(i) == 0
+            Fx_RRreal = 0;
+        else
+            Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal);
+        end
+        Fx_real = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
+
+        Fx_real = max(Brake_Fx,Fx_real);
+
+        Fx_sum = sum(Fx_real);
+        % Account for drag and rolling resistance
+        Fx_rollres = -Fz_sum(i)*Car.Tyres.Coefficients.RollingResistance; % Assume all wheels (including driven wheels) contribute
+        Fx_sum = Fx_sum - F_D - Fx_rollres;
+
+        a_x = Fx_sum / Car.Mass.Total;
+
+        % Carry out mass transfer checks
+        [Fz_F, Fz_R] = WeightTransfer(Car,a_x);
+        Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.xCoP))/2) + (Fz_F/2);
+        Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.xCoP))/2) + (Fz_F/2);
+        Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.xCoP))/2) + (Fz_R/2);
+        Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.xCoP))/2) + (Fz_R/2);
+        eps = max(abs((Fz_check - [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)])./Fz_check));
+        Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
+        % Find corresponsing ride height changes
+        
+    end
     
     v_x3(i-1) = (v_x3(i)^2 - (2*a_x*(dist(i) - dist(i-1))))^0.5;
 end
