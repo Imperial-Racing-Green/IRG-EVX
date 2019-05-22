@@ -1,23 +1,22 @@
 function Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep)
 
 
-    if Sweep.Choose_Param == 1
-        nSweeps = length(Sweep.Values);
-    elseif Sweep.Choose_Carfile == 1
-        nSweeps = length(Sweep.Carfile);
-    elseif Sweep.Choose_Weatherfile == 1
-        nSweeps = length(Sweep.Weatherfile);
-    else 
-        nSweeps=1;
+if Sweep.Choose_Param == 1
+    nSweeps = length(Sweep.Values);
+elseif Sweep.Choose_Carfile == 1
+    nSweeps = length(Sweep.Carfile);
+elseif Sweep.Choose_Weatherfile == 1
+    nSweeps = length(Sweep.Weatherfile);
+else
+    nSweeps = 1;
+end
+if length(SimName) == length(Sweep.Values)
+    SimName = SimName;
+else
+    for i = 1:nSweeps
+        SimName{i} = ['Sim' num2str(i)];
     end
-    
-    if length(SimName) == length(Sweep.Values)
-        SimName = SimName;
-    else
-        for i = 1:nSweeps
-            SimName{i} = ['Sim' num2str(i)];
-        end
-    end
+end
 
 
 for iSweep = 1:nSweeps
@@ -75,8 +74,8 @@ for iSweep = 1:nSweeps
     Fz_log = [];
     dist_log = [];
     Fz_log.Data = Car.Mass.Total .* Environment.Gravity .* ones(length(dist),4) ./ 2; % Total weight split evenly across each axis
-    Fz_log.Data(:,[1,2]) = Fz_log.Data(:,[1,2]) * (1 - Car.Balance.CoG);
-    Fz_log.Data(:,[3,4]) = Fz_log.Data(:,[3,4]) * (Car.Balance.CoG);
+    Fz_log.Data(:,[1,2]) = Fz_log.Data(:,[1,2]) * (1 - Car.Balance.xCoG);
+    Fz_log.Data(:,[3,4]) = Fz_log.Data(:,[3,4]) * (Car.Balance.xCoG);
     Fz_log.Time = linspace(0,120,length(dist))';
     dist_log.Data = dist;
     dist_log.Time = linspace(0,120,length(dist))';
@@ -114,9 +113,9 @@ for iSweep = 1:nSweeps
     a_x_temp = diff(vCar)./tLap;
     a_x = interp1([1:(length(vCar)-1)]',a_x_temp,[1:length(vCar)]');
     Fx_real = Car.Mass.Total * a_x;
-    Fz.FL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (1 - Car.Balance.CoG)) /2) - (Force.Aero.Downforce * (1 - Car.Balance.Aerobalance))/2;
+    Fz.FL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (1 - Car.Balance.xCoG)) /2) - (Force.Aero.Downforce * (1 - Car.Balance.xCoP))/2;
     Fz.FR = Fz.FL;
-    Fz.RL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (Car.Balance.CoG)) /2) - (Force.Aero.Downforce * (Car.Balance.Aerobalance))/2;
+    Fz.RL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (Car.Balance.xCoG)) /2) - (Force.Aero.Downforce * (Car.Balance.xCoP))/2;
     Fz.RR = Fz.RL;
     Fx_rollres = -(Fz.FL+ Fz.FR + Fz.RL + Fz.RR) * Car.Tyres.Coefficients.RollingResistance;
     Fx_mechanical = Fx_real + Force.Aero.Drag + Fx_rollres;

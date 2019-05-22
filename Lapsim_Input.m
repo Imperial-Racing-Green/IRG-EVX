@@ -11,6 +11,7 @@ FolderName = 'Test';
 SimName = {'Test'};
 
 %% Trackmap
+
 %trackmap = 'Racing_Line.mat';
 %trackmap = 'Racing_Line_ClosedLoop.mat';
 %trackmap = 'Racing_Line_ClosedLoop_2.mat';
@@ -21,11 +22,12 @@ trackmap = 'Trackmap_ClosedLoop.mat';
 
 %% vCar boundary conditions
 % Racing_Line_ClosedLoop 
-BoundaryConditions.vCar_start = 28;
-BoundaryConditions.vCar_end = 28;
+BoundaryConditions.vCar_start = 33;
+BoundaryConditions.vCar_end = 33;
+
 % Acceleration_Track 
-% BoundaryConditions.vCar_start = 0;
-% BoundaryConditions.vCar_end = [];
+BoundaryConditions.vCar_start = 0;
+BoundaryConditions.vCar_end = [];
 % SkidPad_Track 
 % BoundaryConditions.vCar_start = 12.8;
 % BoundaryConditions.vCar_end = 12.8;
@@ -33,8 +35,8 @@ BoundaryConditions.vCar_end = 28;
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
 Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
-Sweep.Param = {'Car.AeroPerformance.C_D'};             % Variable within car structure to be swept
-Sweep.Values = [0.5 1 1.5];
+Sweep.Param = {'Car.Balance.xCoG'};             % Variable within car structure to be swept
+Sweep.Values = 0.4:0.05:0.65;
 Sweep.Choose_Carfile = 0;
 Sweep.Carfile = {'C:\Users\Ila\Documents\GDP\IRG-EVX\Baseline_Carfile_Master','C:\Users\Ila\Documents\GDP\IRG-EVX\Baseline_Carfile_Master_2'};
 Sweep.Choose_Weatherfile = 0;
@@ -82,8 +84,8 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         trackmap = 'Racing_Line_ClosedLoop.mat';
         FolderSection = [FolderName '\Endurance_Test\Steady_State'];
         SimName = {'Endurance_Test_Steady_State'};
-        BoundaryConditions.vCar_start = 35;
-        BoundaryConditions.vCar_end = 35;
+        BoundaryConditions.vCar_start = 33;
+        BoundaryConditions.vCar_end = 33;
         Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)        
     else
         % Dynamic solve for full FS weekend
