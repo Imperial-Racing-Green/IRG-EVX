@@ -62,7 +62,7 @@ scatter(car_path.Data(1:end-1,1),car_path.Data(1:end-1,2),1,velocity_log);
 figure
 iter = 1;
 Limit_d = 0;
-% Limit_Perc = sum(Limit_d)/length(Limit_d);
+Limit_Perc = sum(Limit_d)/length(Limit_d);
 while min(Limit_Perc) < 0.95
 Limit_Perc = sum(Limit_d)/length(Limit_d);
 Power_Lim = Limits.signals.values(:,1);
