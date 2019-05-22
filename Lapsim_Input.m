@@ -7,7 +7,7 @@ clc
 
 SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
 
-FolderName = 'Test';
+FolderName = '2_wheel_4_wheel';
 SimName = {'Test'};
 
 %% Trackmap
@@ -37,8 +37,8 @@ BoundaryConditions.vCar_end = [];
 Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
 Sweep.Param = {'Car.Balance.xCoG'};             % Variable within car structure to be swept
 Sweep.Values = 0.4:0.05:0.65;
-Sweep.Choose_Carfile = 0;
-Sweep.Carfile = {'C:\Users\Ila\Documents\GDP\IRG-EVX\Baseline_Carfile_Master','C:\Users\Ila\Documents\GDP\IRG-EVX\Baseline_Carfile_Master_2'};
+Sweep.Choose_Carfile = 1;
+Sweep.Carfile = {'C:\Users\Ila\Documents\GDP\IRG-EVX\Baseline_Carfile_Master','C:\Users\Ila\Documents\GDP\IRG-EVX\Baseline_Carfile_rwd'};
 Sweep.Choose_Weatherfile = 0;
 Sweep.Weatherfile = {'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\Baseline_Weatherfile.mat'};
 
