@@ -1,13 +1,15 @@
 component TwoDoFChassis
     
+    annotations
+        Icon = '2DoF_Icon.jpg';
+    end
+    
     parameters
         a = {1, 'm'}; %Distance from front wheel to CoG
         b = {1, 'm'}; %Distance from rear wheel to CoG
     end
     
     variables
-%         x = { value = { 0, 'm' }, priority = priority.high };   % Position
-%         theta = { value = { 0, 'deg' }, priority = priority.high };   % Pitch
         M = {0, 'N*m'}; %Pitching Moment
         F = {0, 'N'}; %Total Vertical Force
         F_f = {0, 'N'}; %Force on Front Axle
@@ -33,8 +35,6 @@ component TwoDoFChassis
         Rotational.w == ((Rear.v - Front.v)/(a+b)); %Assume small angle
         F == -F_f - F_r;
         M == -b*F_r + a*F_f;
-%         x == integ(Vertical.v);
-%         theta == integ(Rotational.w);
     end
     
 end
