@@ -4,7 +4,7 @@ clear
 clc
 
 
-FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Max_Power_Test';
+FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Test';
 full_weekend = 0;  % If selected point to folder of encolsing all weekend results
 
 

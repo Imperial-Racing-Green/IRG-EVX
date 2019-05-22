@@ -1,13 +1,16 @@
 function Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep)
 
-if Sweep.Choose_Param == 1
+
     if Sweep.Choose_Param == 1
         nSweeps = length(Sweep.Values);
     elseif Sweep.Choose_Carfile == 1
         nSweeps = length(Sweep.Carfile);
     elseif Sweep.Choose_Weatherfile == 1
         nSweeps = length(Sweep.Weatherfile);
+    else 
+        nSweeps=1;
     end
+    
     if length(SimName) == length(Sweep.Values)
         SimName = SimName;
     else
@@ -15,9 +18,7 @@ if Sweep.Choose_Param == 1
             SimName{i} = ['Sim' num2str(i)];
         end
     end
-else
-    nSweeps = 1;
-end
+
 
 for iSweep = 1:nSweeps
     
@@ -48,22 +49,22 @@ for iSweep = 1:nSweeps
 
     %% Loading Track
 
-    Track_Dist = 1200; %track distance in metres
-    Track_Width = 2.2; %track width in meteres
-    % Max_Track_Resolution = 1; %track points per metre
-    Steps = 1; %steps in optmisation smoothness
-    % Resolutions = linspace(0.5,Max_Track_Resolution,Steps);
-    Resolution = 0.5;
-    Iterations = 5000; %max iterations for optmisation
-
-    %[x,y,theta,curvature,radius,Distance] = Track_Gen(filename,Interpolation,Length,Smoothing,Line_Optim,Track_Width,Optim_Iterations)
-    [x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Endurance.csv',Track_Dist*Resolution,Track_Dist,'On','On',Track_Width,Iterations);
+%     Track_Dist = 1200; %track distance in metres
+%     Track_Width = 2.2; %track width in meteres
+%     % Max_Track_Resolution = 1; %track points per metre
+%     Steps = 1; %steps in optmisation smoothness
+%     % Resolutions = linspace(0.5,Max_Track_Resolution,Steps);
+%     Resolution = 0.5;
+%     Iterations = 5000; %max iterations for optmisation
+% % 
+% %     %[x,y,theta,curvature,radius,Distance] = Track_Gen(filename,Interpolation,Length,Smoothing,Line_Optim,Track_Width,Optim_Iterations)
+%   [x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Endurance.csv',Track_Dist*Resolution,Track_Dist,'On','Off',Track_Width,Iterations);
 
     % Load racing line to skip repeatedely optimising the same track everytime
-%     load(trackmap)
-% %      [x_new,y_new] = Path_Optim(x,y,x0,y0,theta_d,Track_Width,Iterations);
-%     radius_d = interp1([1:length(radius_d)],radius_d,[1:length(dist)]);
-%     radius_d(isnan(radius_d)) = 1e5; % Replace NaN's with straights
+    load(trackmap)
+%      [x_new,y_new] = Path_Optim(x,y,x0,y0,theta_d,Track_Width,Iterations);
+    radius_d = interp1([1:length(radius_d)],radius_d,[1:length(dist)]);
+    radius_d(isnan(radius_d)) = 1e5; % Replace NaN's with straights
 
     %% Running Sim
     ControlSystemDriverModel = Simulink.Variant('Driver_Model == 1');

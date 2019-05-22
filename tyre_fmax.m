@@ -16,8 +16,8 @@ SA = linspace(-30,30,points);
 F_x(isnan(F_x)) = 0;
 F_y(isnan(F_y)) = 0;
 
-% figure
-% surf(SA,SL,F_y)
+%figure
+%surf(SA,SL,F_y)
 % figure
 % hold on
 Force = zeros(length(F_x),length(F_x));

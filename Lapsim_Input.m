@@ -7,21 +7,22 @@ clc
 
 SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
 
-FolderName = 'Test3';
+FolderName = 'Test';
 SimName = {'Test'};
 
 %% Trackmap
-% trackmap = 'Racing_Line.mat';
+%trackmap = 'Racing_Line.mat';
 %trackmap = 'Racing_Line_ClosedLoop.mat';
-trackmap = 'Racing_Line_ClosedLoop_2.mat';
-% trackmap = 'Acceleration_Track.mat';
-% trackmap = 'SkidPad_Track.mat';
-% trackmap = 'Full_FS_Weekend';
+%trackmap = 'Racing_Line_ClosedLoop_2.mat';
+trackmap = 'Trackmap_ClosedLoop.mat';
+%trackmap = 'Acceleration_Track.mat';
+%trackmap = 'SkidPad_Track.mat';
+%trackmap = 'Full_FS_Weekend';
 
 %% vCar boundary conditions
 % Racing_Line_ClosedLoop 
-BoundaryConditions.vCar_start = 35;
-BoundaryConditions.vCar_end = 35;
+BoundaryConditions.vCar_start = 28;
+BoundaryConditions.vCar_end = 28;
 % Acceleration_Track 
 % BoundaryConditions.vCar_start = 0;
 % BoundaryConditions.vCar_end = [];
@@ -35,7 +36,7 @@ Sweep.Choose_Param = 0;                                % Choose whether to sweep
 Sweep.Param = {'Car.AeroPerformance.C_D'};             % Variable within car structure to be swept
 Sweep.Values = [0.5 1 1.5];
 Sweep.Choose_Carfile = 0;
-Sweep.Carfile = {'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\Baseline_Carfile.mat'};
+Sweep.Carfile = {'C:\Users\Ila\Documents\GDP\IRG-EVX\Baseline_Carfile_Master','C:\Users\Ila\Documents\GDP\IRG-EVX\Baseline_Carfile_Master_2'};
 Sweep.Choose_Weatherfile = 0;
 Sweep.Weatherfile = {'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\Baseline_Weatherfile.mat'};
 

@@ -22,20 +22,21 @@ Fz_FR_static = Fz_FR_d;
 Fz_RL_static = Fz_RL_d;
 Fz_RR_static = Fz_RR_d;
 
-eps = 101;
-eps_lim = 100;
+eps = 1501;
+eps_lim =1500;
 v_x_check = zeros(1,length(dist));
+tic
 while eps >= eps_lim
 
     for i = 1:length(dist)
         [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
-            F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),20);
+            F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),18);
         [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),...
-            F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),20);
+            F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),18);
         [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),...
-            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),20);
+            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),18);
         [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),...
-            F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),20);
+            F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),18);
     end
 
     for i = 1:length(radius_d)
@@ -80,7 +81,7 @@ while eps >= eps_lim
     v_x_check = v_x;
     
 end
-    
+toc    
 %% Applying power limit
 v_x2 = zeros(length(dist),1);
 if ~isempty(BoundaryConditions.vCar_start)
@@ -127,6 +128,9 @@ for i = 1:length(dist)-1
     else
         Fx_RRreal = interp1(F_xRRmax(:,2,i),F_xRRmax(:,1,i),Fy_RRreal);
     end
+    
+    Fy_tyres=[Fy_FLreal; Fy_FRreal; Fy_RLreal; Fy_RRreal];
+    
     Engine_Fx = Engine_Torque(v_x2(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Engine) ./ ...
                         [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
                         Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
