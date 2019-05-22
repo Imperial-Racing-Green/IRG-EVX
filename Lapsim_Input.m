@@ -4,6 +4,7 @@ close all
 clc
 
 %% Save results location
+<<<<<<< HEAD
 
 SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
 
@@ -24,17 +25,16 @@ trackmap = 'Trackmap_ClosedLoop.mat';
 % Racing_Line_ClosedLoop 
 BoundaryConditions.vCar_start = 33;
 BoundaryConditions.vCar_end = 33;
-
 % Acceleration_Track 
-BoundaryConditions.vCar_start = 0;
-BoundaryConditions.vCar_end = [];
+% BoundaryConditions.vCar_start = 0;
+% BoundaryConditions.vCar_end = [];
 % SkidPad_Track 
 % BoundaryConditions.vCar_start = 12.8;
 % BoundaryConditions.vCar_end = 12.8;
 
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
-Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
+Sweep.Choose_Param = 1;                                % Choose whether to sweep anything or not
 Sweep.Param = {'Car.Balance.xCoG'};             % Variable within car structure to be swept
 Sweep.Values = 0.4:0.05:0.65;
 Sweep.Choose_Carfile = 1;

@@ -14,7 +14,7 @@ torque_line = abs(Power / motorspeed);
 motor_torque = min(Torque,torque_line);
 
 if strcmp(Config,'fwd') == 1
-    T_FL = (motor_torque * Ratio) / 2;
+    T_FL = (motor_torque * Ratio)/ 2;
     T_FR = T_FL;
     T_RL = 0;
     T_RR = T_RL;    

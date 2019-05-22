@@ -14,19 +14,19 @@ torque_line = abs(Power / motorspeed);
 engine_torque = min(Torque,torque_line);
 
 if strcmp(Config,'fwd') == 1
-    T_FL = (engine_torque * Ratio) / 2;
+    T_FL = (engine_torque * Ratio);
     T_FR = T_FL;
     T_RL = 0;
     T_RR = T_RL;    
 elseif strcmp(Config,'rwd') == 1
     T_FL = 0;
     T_FR = T_FL;
-    T_RL = (engine_torque * Ratio) / 2;
+    T_RL = (engine_torque * Ratio);
     T_RR = T_RL;
 else % 4wd
-    T_FL = (engine_torque * Ratio) / 4;  % Need to find torque distribution across axles
+    T_FL = (engine_torque * Ratio) / 2;  % Need to find torque distribution across axles
     T_FR = T_FL;
-    T_RL = (engine_torque * Ratio) / 4;
+    T_RL = (engine_torque * Ratio) / 2;
     T_RR = T_RL;
 end
 
