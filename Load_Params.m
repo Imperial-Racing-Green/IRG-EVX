@@ -13,11 +13,11 @@ Car.Mass.Suspension = 24;
 % Chassis (front + rear)
 Car.Mass.Chassis = 22.5 + 7.5;
 % Battery
-Car.Mass.Battery = 30;
+Car.Mass.Battery = 27.8;
 % Engine
 Car.Mass.Engine = 70;
 % Motors (plus controller)
-Car.Mass.Motors = 10.92; %(6.9*2) + (7*2);
+Car.Mass.Motors = 12.6; %(6.9*2) + (7*2);
 % Steering 
 Car.Mass.Steering = 3.5;
 % Pedals
@@ -76,8 +76,8 @@ Car.Powertrain.Engine.MaxTorque = 69;     % (Nm) (240)
 Car.Powertrain.Engine.TransmissionRatio = 3.6;
 Car.Powertrain.Engine.Config = 'rwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 % Battery/motor (total between 2 motors)
-Car.Powertrain.Motor.MaxPower = 46000; %60000;    % (W)
-Car.Powertrain.Motor.MaxTorque = 110; %180;     % (Nm)
+Car.Powertrain.Motor.MaxPower = 60000; %60000;    % (W)
+Car.Powertrain.Motor.MaxTorque = 136.4185; %180;     % (Nm)
 Car.Powertrain.Motor.TransmissionRatio = 3;
 Car.Powertrain.Motor.Config = 'fwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 

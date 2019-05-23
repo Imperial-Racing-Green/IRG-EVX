@@ -5,7 +5,7 @@ clc
 
 %% Save results location
 SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP';
-FolderName = 'Weekend_Main_Test';
+FolderName = 'Weekend_Main_Test2';
 SimName = {'Test'};
 
 %% Trackmap
@@ -65,22 +65,22 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         BoundaryConditions.vCar_start = 0;
         BoundaryConditions.vCar_end = [];
         Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)
-        % Skid-pad test
-        disp('Simulating sweep of Skid-Pad Test...')
-        trackmap = 'SkidPad_Track.mat';
-        FolderSection = [FolderName '\SkidPad_Test'];
-        SimName = {'SkidPad_Test'};
-        BoundaryConditions.vCar_start = 12.8;
-        BoundaryConditions.vCar_end = 12.8;
-        Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)
-        % Full lap (stationary start)
-        disp('Simulating first lap of Endurance Test...')
-        trackmap = 'Trackmap_ClosedLoop.mat';
-        FolderSection = [FolderName '\Endurance_Test\First_Lap'];
-        SimName = {'Endurance_Test_First_Lap'};
-        BoundaryConditions.vCar_start = 0;
-        BoundaryConditions.vCar_end = [];
-        Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)
+%         % Skid-pad test
+%         disp('Simulating sweep of Skid-Pad Test...')
+%         trackmap = 'SkidPad_Track.mat';
+%         FolderSection = [FolderName '\SkidPad_Test'];
+%         SimName = {'SkidPad_Test'};
+%         BoundaryConditions.vCar_start = 12.8;
+%         BoundaryConditions.vCar_end = 12.8;
+%         Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)
+%         % Full lap (stationary start)
+%         disp('Simulating first lap of Endurance Test...')
+%         trackmap = 'Trackmap_ClosedLoop.mat';
+%         FolderSection = [FolderName '\Endurance_Test\First_Lap'];
+%         SimName = {'Endurance_Test_First_Lap'};
+%         BoundaryConditions.vCar_start = 0;
+%         BoundaryConditions.vCar_end = [];
+%         Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)
         % Full lap (steady state)
         disp('Simulating steady state lap of Endurance Test...')
         trackmap = 'Trackmap_ClosedLoop.mat';
