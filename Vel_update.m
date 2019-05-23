@@ -116,7 +116,7 @@ for i = 1:length(dist)-1
         
     eps = 2;
     Fz_check = [0 0 0 0];
-    eps_lim = 1;
+    eps_lim = 0.01;
     while eps > eps_lim
         
         % Re-evaluate tyre potential
@@ -156,7 +156,6 @@ for i = 1:length(dist)-1
         else
             Fx_RRreal = interp1(F_xRRmax(:,2,i),F_xRRmax(:,1,i),Fy_RRreal);
         end
-        Fx_real = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
         
 %         Fy_tyres=[Fy_FLreal; Fy_FRreal; Fy_RLreal; Fy_RLreal];
 %         
@@ -173,7 +172,10 @@ for i = 1:length(dist)-1
 %     
 %         Powertrain_Fx = Engine_Fx + Motor_Fx;
          
-        Fx_real = min(Powertrain_Fx,Fx_real);
+        Fx_traction = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
+
+        Fx_real = min(Powertrain_Fx,Fx_traction);
+
 
         Fx_sum = sum(Fx_real);
         % Account for drag and rolling resistance
@@ -225,7 +227,7 @@ for i = length(dist):-1:2
     
     eps = 2;
     Fz_check = [0 0 0 0];
-    eps_lim = 1;
+    eps_lim = 0.01;
     while eps > eps_lim
         
         % Re-evaluate tyre potential
@@ -266,9 +268,9 @@ for i = length(dist):-1:2
         else
             Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal);
         end
-        Fx_real = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
+        Fx_traction = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
 
-        Fx_real = max(Brake_Fx,Fx_real);
+        Fx_real = max(Brake_Fx,Fx_traction);
 
         Fx_sum = sum(Fx_real);
         % Account for drag and rolling resistance

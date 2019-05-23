@@ -354,7 +354,7 @@ if full_weekend == 1
     Points.Sim = [1:length(FuelEfficiencyFactors)]';
     Points.Acceleration = (71.5 * ((((Times.Autocross_Test.Best*1.5)./Times.Autocross_Test.Sims)-1)/0.5))' + 3.5;
     Points.Skidpad = (46.5 * (((((Times.SkidPad_Test.Best*1.25)./Times.SkidPad_Test.Sims).^2)-1)/0.5625))' + 3.5;
-    Points.Autocross = (95.5 * ((((Times.Autocross_Test.Best*1.25)./Times.Autocross_Test.Sims)-1)/0.25))' + 4.5;
+    Points.Autocross = (145.5 * ((((Times.Autocross_Test.Best*1.25)./Times.Autocross_Test.Sims)-1)/0.25))' + 4.5;
     Points.Endurance = (275 * ((((Times.Endurance_Test.Best*1.333)./Times.Endurance_Test.Sims)-1)/0.333))' + 25;
     Points.Efficiency = (100 * (((FuelEfficiency_Test.Worst./FuelEfficiencyFactors) - 1) / ((FuelEfficiency_Test.Worst/FuelEfficiency_Test.Best) - 1)))';
     Points.Total = Points.Acceleration + Points.Skidpad + Points.Autocross + Points.Endurance + Points.Efficiency;
@@ -363,48 +363,48 @@ if full_weekend == 1
     subplot(2,3,1)
     y = table2array(Points(:,2))';
     b = bar(y);
-    text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
-    box off
+%     text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
+%     box off
     title('Acceleration (75pts)')
     ylabel('Points')
     xlabel('Sim')
     subplot(2,3,2)
     y = table2array(Points(:,3))';
     b = bar(y);
-    text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
-    box off
+%     text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
+%     box off
     title('Skidpad (50pts)')
     ylabel('Points')
     xlabel('Sim')
     subplot(2,3,3)
     y = table2array(Points(:,4))';
     b = bar(y);
-    text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
-    box off
+%     text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
+%     box off
     title('Autocross (150pts)')
     ylabel('Points')
     xlabel('Sim')
     subplot(2,3,4)
     y = table2array(Points(:,5))';
     b = bar(y);
-    text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
-    box off
+%     text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
+%     box off
     title('Endurance (300pts)')
     ylabel('Points')
     xlabel('Sim')
     subplot(2,3,5)
     y = table2array(Points(:,6))';
     b = bar(y);
-    text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
-    box off
+%     text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
+%     box off
     title('Efficiency (100 pts)')
     ylabel('Points')
     xlabel('Sim')
     subplot(2,3,6)
     y = table2array(Points(:,7))';
     b = bar(y);
-    text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
-    box off
+%     text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
+%     box off
     title('Total (675pts)')
     ylabel('Points')
     xlabel('Sim')

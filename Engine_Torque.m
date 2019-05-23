@@ -7,7 +7,7 @@ Config = Engine_Info.Config;
 
 wheel_rad = velocity / radius;
 
-motorspeed = wheel_rad * Ratio;
+motorspeed = wheel_rad * Ratio; 
 
 torque_line = abs(Power / motorspeed);
 

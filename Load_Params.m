@@ -13,11 +13,11 @@ Car.Mass.Suspension = 24;
 % Chassis (front + rear)
 Car.Mass.Chassis = 22.5 + 7.5;
 % Battery
-Car.Mass.Battery = 43;
+Car.Mass.Battery = 30;
 % Engine
 Car.Mass.Engine = 70;
 % Motors (plus controller)
-Car.Mass.Motors = 6.9*2 + 7;
+Car.Mass.Motors = 10.92; %(6.9*2) + (7*2);
 % Steering 
 Car.Mass.Steering = 3.5;
 % Pedals
@@ -47,10 +47,10 @@ Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Ma
 Car.Stiffness.Chassis = 50000;
 
 % Car dimensions (m)
-Car.Dimension.WheelFL.Radius = 0.2413; % Rim radius + tyre thickness
-Car.Dimension.WheelFR.Radius = 0.2413; % (10" tyres = 0.2032m total radius, 13" tyres = 0.2413m total radius)
-Car.Dimension.WheelRL.Radius = 0.2413;
-Car.Dimension.WheelRR.Radius = 0.2413;
+Car.Dimension.WheelFL.Radius = 0.2032; % Rim radius + tyre thickness
+Car.Dimension.WheelFR.Radius = 0.2032; % (10" tyres = 0.2032m total radius, 13" tyres = 0.2413m total radius)
+Car.Dimension.WheelRL.Radius = 0.2032;
+Car.Dimension.WheelRR.Radius = 0.2032;
 Car.Dimension.Width = 1.417;
 Car.Dimension.Height = 1.4;
 Car.Dimension.FrontalArea = 1.2;
@@ -61,7 +61,7 @@ Car.Dimension.xCoP = 0.8525; % Behind front axle
 Car.Dimension.zCoP = 0.37; % Above ground
 
 % Percentage of axle separation length from front axles 
-Car.Balance.xCoG = 0.5; %Car.Dimension.xCoG/Car.Dimension.lWheelbase; 
+Car.Balance.xCoG = 0.52; %Car.Dimension.xCoG/Car.Dimension.lWheelbase; 
 Car.Balance.zCoG = Car.Dimension.zCoG/Car.Dimension.Height; 
 Car.Balance.xCoP = 0.5; %Car.Dimension.xCoP/Car.Dimension.lWheelbase;
 Car.Balance.zCoP = Car.Dimension.zCoP/Car.Dimension.Height; 
@@ -76,9 +76,9 @@ Car.Powertrain.Engine.MaxTorque = 69;     % (Nm) (240)
 Car.Powertrain.Engine.TransmissionRatio = 3.6;
 Car.Powertrain.Engine.Config = 'rwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 % Battery/motor (total between 2 motors)
-Car.Powertrain.Motor.MaxPower = 60000;    % (W)
-Car.Powertrain.Motor.MaxTorque = 180;     % (Nm)
-Car.Powertrain.Motor.TransmissionRatio = 2;
+Car.Powertrain.Motor.MaxPower = 46000; %60000;    % (W)
+Car.Powertrain.Motor.MaxTorque = 110; %180;     % (Nm)
+Car.Powertrain.Motor.TransmissionRatio = 3;
 Car.Powertrain.Motor.Config = 'fwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 
 % Brakes info
@@ -105,8 +105,8 @@ Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2;   
 Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 
 % Car aero performance
-Car.AeroPerformance.C_L = 4.0;
-Car.AeroPerformance.C_D = 1.5;
+Car.AeroPerformance.C_L = 3.997; %4.0;
+Car.AeroPerformance.C_D = 1.392; %1.5;
 Car.AeroPerformance.hRideF = 0.1; % (m)
 Car.AeroPerformance.hRideR = 0.3; % (m)
 Car.AeroPerformance.Initial_AoA = 5; % (deg)
