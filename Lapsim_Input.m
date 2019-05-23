@@ -4,11 +4,10 @@ close all
 clc
 
 %% Save results location
-<<<<<<< HEAD
 
 SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
 
-FolderName = '2_wheel_4_wheel';
+FolderName = '4_wheel_2_wheel';
 SimName = {'Test'};
 
 %% Trackmap
@@ -16,15 +15,15 @@ SimName = {'Test'};
 %trackmap = 'Racing_Line.mat';
 %trackmap = 'Racing_Line_ClosedLoop.mat';
 %trackmap = 'Racing_Line_ClosedLoop_2.mat';
-trackmap = 'Trackmap_ClosedLoop.mat';
+%trackmap = 'Trackmap_ClosedLoop.mat';
 %trackmap = 'Acceleration_Track.mat';
 %trackmap = 'SkidPad_Track.mat';
-%trackmap = 'Full_FS_Weekend';
+trackmap = 'Full_FS_Weekend';
 
 %% vCar boundary conditions
 % Racing_Line_ClosedLoop 
-BoundaryConditions.vCar_start = 33;
-BoundaryConditions.vCar_end = 33;
+BoundaryConditions.vCar_start = 28;
+BoundaryConditions.vCar_end = 28;
 % Acceleration_Track 
 % BoundaryConditions.vCar_start = 0;
 % BoundaryConditions.vCar_end = [];
@@ -34,7 +33,7 @@ BoundaryConditions.vCar_end = 33;
 
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
-Sweep.Choose_Param = 1;                                % Choose whether to sweep anything or not
+Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
 Sweep.Param = {'Car.Balance.xCoG'};             % Variable within car structure to be swept
 Sweep.Values = 0.4:0.05:0.65;
 Sweep.Choose_Carfile = 1;
@@ -69,7 +68,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         FolderSection = [FolderName '\SkidPad_Test'];
         SimName = {'SkidPad_Test'};
         BoundaryConditions.vCar_start = 12.8;
-        BoundaryConditions.vCar_end = 12.8;
+        BoundaryConditions.vCar_end = [];
         Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)
         % Full lap (stationary start)
         disp('Simulating first lap of Endurance Test...')

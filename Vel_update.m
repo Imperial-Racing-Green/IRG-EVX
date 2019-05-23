@@ -9,7 +9,7 @@ Fz_RR_t = Fz_log.Data(:,4);
 
 % time_d = interp1(dist_log.Data .* (max(dist)/max(dist_log.Data)),dist_log.Time,dist);
 time_d = dist_log.Time;
-
+delta_steer=atand(Car.Dimension.lWheelbase./radius_d);
 
 Fz_FL_d = interp1(Fz_log.Time,Fz_FL_t,time_d);
 Fz_FR_d = interp1(Fz_log.Time,Fz_FR_t,time_d);
@@ -30,13 +30,13 @@ while eps >= eps_lim
 
     for i = 1:length(dist)
         [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
-            F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),18);
+            F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),20);
         [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),...
-            F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),18);
+            F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),20);
         [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),...
-            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),18);
+            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),20);
         [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),...
-            F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),18);
+            F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),20);
     end
 
     for i = 1:length(radius_d)
@@ -99,14 +99,17 @@ for i = 1:length(dist)-1
     Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.xCoP))/2);
     Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.xCoP))/2);
     Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
-       
-    Fy_real = (Car.Mass.Total * v_x2(i)^2)/radius_d(i);
     
-
+    Fz_front = [Fz_FL_d Fz_FR_d];
+    Fz_rear  = [Fz_RL_d Fz_RR_d];
+    
+    Fy_real = (Car.Mass.Total * v_x2(i)^2)/radius_d(i);
+     
     Engine_Fx = Engine_Torque(v_x2(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Engine) ./ ...
                         [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
                         Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
-    Motor_Fx = Motor_Torque(v_x2(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Motor) ./ ...
+    Torque_from_Motor = Motor_Torque(v_x2(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Motor);
+    Motor_Fx= Torque_from_Motor ./ ...
                         [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
                         Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
     Powertrain_Fx = Engine_Fx + Motor_Fx;
@@ -154,7 +157,22 @@ for i = 1:length(dist)-1
             Fx_RRreal = interp1(F_xRRmax(:,2,i),F_xRRmax(:,1,i),Fy_RRreal);
         end
         Fx_real = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
-
+        
+%         Fy_tyres=[Fy_FLreal; Fy_FRreal; Fy_RLreal; Fy_RLreal];
+%         
+%         Delta_T(i)=(Torque_Vectoring(Car,Fy_tyres,delta_steer(i),v_x2(i),Fz_front(i),Fz_rear(i))/10);
+%         
+%         
+%         if delta_steer(i)>0
+%              Motor_Fx(1)=(Torque_from_Motor(1)-(Delta_T(i)*0.5))/Car.Dimension.WheelFL.Radius;
+%              Motor_Fx(2)=(Torque_from_Motor(2)+(Delta_T(i)*0.5))/Car.Dimension.WheelFR.Radius;
+%         else 
+%              Motor_Fx(1)=(Torque_from_Motor(1)+(Delta_T(i)*0.5))/Car.Dimension.WheelFL.Radius;
+%              Motor_Fx(2)=(Torque_from_Motor(2)-(Delta_T(i)*0.5))/Car.Dimension.WheelFR.Radius;
+%         end 
+%     
+%         Powertrain_Fx = Engine_Fx + Motor_Fx;
+         
         Fx_real = min(Powertrain_Fx,Fx_real);
 
         Fx_sum = sum(Fx_real);
