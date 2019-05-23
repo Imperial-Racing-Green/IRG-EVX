@@ -30,6 +30,11 @@ for iSweep = 1:nSweeps
         % Load in a new carfile
         clear Car
         load(Sweep.Carfile{iSweep});
+        Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
+                 Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
+                 Car.Mass.Engine + Car.Mass.Motors + Car.Mass.Steering + Car.Mass.Pedals + ...
+                 Car.Mass.Seat + Car.Mass.FireWall + Car.Mass.Cooling + Car.Mass.Electrics + ...
+                 Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Brakes + Car.Mass.Fueltank;
     elseif Sweep.Choose_Weatherfile == 1
         clear Environment
         load(Sweep.Weatherfile{iSweep});
@@ -84,7 +89,13 @@ for iSweep = 1:nSweeps
     for i = 1:(length(vCar)-1)
         tLap(i,1) = 2*(sLap(i+1)-sLap(i))/(vCar(i)+vCar(i+1));
     end
-
+    Brake_Fx = Brake_Model(Car.Brakes) ./ ...
+                    [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
+                    Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+    Force.Brakes.FL(i,1) = Brake_Fx(1);
+    Force.Brakes.FR(i,1) = Brake_Fx(2);
+    Force.Brakes.RL(i,1) = Brake_Fx(3);
+    Force.Brakes.RR(i,1) = Brake_Fx(4);
     for i = 1:length(vCar)
         Engine_Fx = Engine_Torque(vCar(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Engine) ./ ...
                         [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
@@ -97,23 +108,20 @@ for iSweep = 1:nSweeps
         Force.Powertrain.Thrust.FR(i,1) = Powertrain_Fx(2);
         Force.Powertrain.Thrust.RL(i,1) = Powertrain_Fx(3);
         Force.Powertrain.Thrust.RR(i,1) = Powertrain_Fx(4);
-        Brake_Fx = Brake_Model(Car.Brakes) ./ ...
-                        [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
-                        Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
-        Force.Brakes.FL(i,1) = Brake_Fx(1);
-        Force.Brakes.FR(i,1) = Brake_Fx(2);
-        Force.Brakes.RL(i,1) = Brake_Fx(3);
-        Force.Brakes.RR(i,1) = Brake_Fx(4);
         [Force.Aero.Downforce(i,1), Force.Aero.Drag(i,1)] = Aero_Forces(vCar(i),Environment,Car);
     end
     Force.Powertrain.Thrust.Total = Force.Powertrain.Thrust.FL + Force.Powertrain.Thrust.FR + Force.Powertrain.Thrust.RL + Force.Powertrain.Thrust.RR;
     Force.Brakes.Total = -(Force.Brakes.FL + Force.Brakes.FR + Force.Brakes.RL + Force.Brakes.RR);
-    a_x_temp = diff(vCar)./tLap;
-    a_x = interp1([1:(length(vCar)-1)]',a_x_temp,[1:length(vCar)]');
+    a_x = diff(vCar)./tLap;
+    a_x = [a_x; a_x(end-1)];
+%     a_x = interp1([1:(length(vCar)-1)]',a_x,[1:length(vCar)]');
     Fx_real = Car.Mass.Total * a_x;
-    Fz.FL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (1 - Car.Balance.xCoG)) /2) - (Force.Aero.Downforce * (1 - Car.Balance.xCoP))/2;
+    for i = 1:length(a_x)
+        [Fz_F(i,1), Fz_R(i,1)] = WeightTransfer(Car,a_x(i));
+    end
+    Fz.FL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (1 - Car.Balance.xCoG)) /2) - ((Force.Aero.Downforce * (1 - Car.Balance.xCoP))/2) + (Fz_F/2);
     Fz.FR = Fz.FL;
-    Fz.RL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (Car.Balance.xCoG)) /2) - (Force.Aero.Downforce * (Car.Balance.xCoP))/2;
+    Fz.RL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (Car.Balance.xCoG)) /2) - ((Force.Aero.Downforce * (Car.Balance.xCoP))/2) + (Fz_R/2);
     Fz.RR = Fz.RL;
     Fx_rollres = -(Fz.FL+ Fz.FR + Fz.RL + Fz.RR) * Car.Tyres.Coefficients.RollingResistance;
     Fx_mechanical = Fx_real + Force.Aero.Drag + Fx_rollres;
@@ -126,6 +134,15 @@ for iSweep = 1:nSweeps
     rBrake = bkd_T ./ max(bkd_T); % A hacky-hack because ^^^ doesn't cap at 1
     % Tyre forces
     % Fx, Fy
+    % Replace NaN Fz's
+    idx = find(isnan(Fz.FL));
+    Fz.FL(idx) = Fz.FL(idx-1);
+    idx = find(isnan(Fz.FR));
+    Fz.FR(idx) = Fz.FR(idx-1);
+    idx = find(isnan(Fz.RL));
+    Fz.RL(idx) = Fz.RL(idx-1);
+    idx = find(isnan(Fz.RR));
+    Fz.RR(idx) = Fz.RR(idx-1);
     for i = 1:length(vCar)
         [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
             F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz.FL(i),20);
@@ -141,9 +158,11 @@ for iSweep = 1:nSweeps
         Fx.RL(i) = interp1(F_xRLmax(:,2,i),F_xRLmax(:,1,i),Fy_RLreal);  
     end
     a_y = Fy_real / Car.Mass.Total;
-    Fy.FR = Fy.FL;
+    Fy.FR = Fy.FL';
+    Fy.RR = Fy.RL';
+    Fx.FL = min(Fx.FL',Force.Powertrain.Thrust.FL);
     Fx.FR = Fx.FL;
-    Fy.RR = Fy.RL;
+    Fx.RL = min(Fx.RL',Force.Powertrain.Thrust.RL);
     Fx.RR = Fx.RL;
     % Wheel forces
     Force.Wheel.Fx.FL = Fx.FL;
