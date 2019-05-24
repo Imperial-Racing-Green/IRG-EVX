@@ -13,11 +13,11 @@ Car.Mass.Suspension = 24;
 % Chassis (front + rear)
 Car.Mass.Chassis = 22.5 + 7.5;
 % Battery
-Car.Mass.Battery = 30;
+Car.Mass.Battery = 27.8;
 % Engine
 Car.Mass.Engine = 70;
 % Motors (plus controller)
-Car.Mass.Motors = 10.92; %(6.9*2) + (7*2);
+Car.Mass.Motors = 12.6; %(6.9*2) + (7*2);
 % Steering 
 Car.Mass.Steering = 3.5;
 % Pedals
@@ -61,7 +61,7 @@ Car.Dimension.xCoP = 0.8525; % Behind front axle
 Car.Dimension.zCoP = 0.37; % Above ground
 
 % Percentage of axle separation length from front axles 
-Car.Balance.xCoG = 0.52; %Car.Dimension.xCoG/Car.Dimension.lWheelbase; 
+Car.Balance.xCoG = 0.50; %Car.Dimension.xCoG/Car.Dimension.lWheelbase; 
 Car.Balance.zCoG = Car.Dimension.zCoG/Car.Dimension.Height; 
 Car.Balance.xCoP = 0.5; %Car.Dimension.xCoP/Car.Dimension.lWheelbase;
 Car.Balance.zCoP = Car.Dimension.zCoP/Car.Dimension.Height; 
@@ -76,13 +76,13 @@ Car.Powertrain.Engine.MaxTorque = 69;     % (Nm) (240)
 Car.Powertrain.Engine.TransmissionRatio = 3.6;
 Car.Powertrain.Engine.Config = 'rwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 % Battery/motor (total between 2 motors)
-Car.Powertrain.Motor.MaxPower = 46000; %60000;    % (W)
-Car.Powertrain.Motor.MaxTorque = 110; %180;     % (Nm)
+Car.Powertrain.Motor.MaxPower = 60000; %60000;    % (W)
+Car.Powertrain.Motor.MaxTorque = 136.4185; %180;     % (Nm)
 Car.Powertrain.Motor.TransmissionRatio = 3;
 Car.Powertrain.Motor.Config = 'fwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 
 % Brakes info
-Car.Brakes.FPedalMax = 120*4.44822162825;                                           % (N)
+Car.Brakes.FPedalMax = 120*4.44822162825;                                           % 
 Car.Brakes.BrakeBias = 0.66;                                                        % > 0.5 is biased towards front
 Car.Brakes.PedalMotionRatio = 6;
 Car.Brakes.Front.wPad = 0.040894; %25.4e-3                                          % Pad width (m) 
@@ -105,8 +105,8 @@ Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2;   
 Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 
 % Car aero performance
-Car.AeroPerformance.C_L = 3.997; %4.0;
-Car.AeroPerformance.C_D = 1.392; %1.5;
+Car.AeroPerformance.C_L = 3 ; %3.997;
+Car.AeroPerformance.C_D = 1.15; %1.5;
 Car.AeroPerformance.hRideF = 0.1; % (m)
 Car.AeroPerformance.hRideR = 0.3; % (m)
 Car.AeroPerformance.Initial_AoA = 5; % (deg)

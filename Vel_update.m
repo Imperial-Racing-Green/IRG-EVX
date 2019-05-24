@@ -156,28 +156,14 @@ for i = 1:length(dist)-1
         else
             Fx_RRreal = interp1(F_xRRmax(:,2,i),F_xRRmax(:,1,i),Fy_RRreal);
         end
-        
-%         Fy_tyres=[Fy_FLreal; Fy_FRreal; Fy_RLreal; Fy_RLreal];
-%         
-%         Delta_T(i)=(Torque_Vectoring(Car,Fy_tyres,delta_steer(i),v_x2(i),Fz_front(i),Fz_rear(i))/10);
-%         
-%         
-%         if delta_steer(i)>0
-%              Motor_Fx(1)=(Torque_from_Motor(1)-(Delta_T(i)*0.5))/Car.Dimension.WheelFL.Radius;
-%              Motor_Fx(2)=(Torque_from_Motor(2)+(Delta_T(i)*0.5))/Car.Dimension.WheelFR.Radius;
-%         else 
-%              Motor_Fx(1)=(Torque_from_Motor(1)+(Delta_T(i)*0.5))/Car.Dimension.WheelFL.Radius;
-%              Motor_Fx(2)=(Torque_from_Motor(2)-(Delta_T(i)*0.5))/Car.Dimension.WheelFR.Radius;
-%         end 
-%     
-%         Powertrain_Fx = Engine_Fx + Motor_Fx;
-         
+       
         Fx_traction = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
 
         Fx_real = min(Powertrain_Fx,Fx_traction);
-
-
+        
+        
         Fx_sum = sum(Fx_real);
+        
         % Account for drag and rolling resistance
         Fx_rollres = -Fz_sum(i)*Car.Tyres.Coefficients.RollingResistance; % Assume all wheels (including driven wheels) contribute
         Fx_sum = Fx_sum - F_D - Fx_rollres;    
@@ -195,10 +181,37 @@ for i = 1:length(dist)-1
         % Find corresponsing ride height changes
         
     end   
-    
-    v_x2(i+1) = (v_x2(i)^2 + (2*a_x*(dist(i+1) - dist(i))))^0.5;
-end
-
+%     
+%         Fy_tyres=[Fy_FLreal; Fy_FRreal; Fy_RLreal; Fy_RLreal];
+%         
+%         Delta_T(i)=(Torque_Vectoring(Car,Fy_tyres,delta_steer(i),v_x2(i),Fz_front(i),Fz_rear(i))/1000);
+%         
+%         
+%         if delta_steer(i)>0
+%              %Fx_real(1)=(Fx_real(1)-(Delta_T(i)*0.5))/Car.Dimension.WheelFL.Radius;
+%               Fx_real(2)=(Fx_real(2)+(Delta_T(i)*0.5))/Car.Dimension.WheelFR.Radius;
+%         else 
+%               Fx_real(1)=(Fx_real(1)+(Delta_T(i)*0.5))/Car.Dimension.WheelFL.Radius;
+%              %Fx_real(2)=(Fx_real(2)-(Delta_T(i)*0.5))/Car.Dimension.WheelFR.Radius;
+%         end 
+%         
+%         Fx_sum = sum(Fx_real);
+%         
+%         % Account for drag and rolling resistance
+%         Fx_rollres = -Fz_sum(i)*Car.Tyres.Coefficients.RollingResistance; % Assume all wheels (including driven wheels) contribute
+%         Fx_sum = Fx_sum - F_D - Fx_rollres;    
+% 
+%         a_x = Fx_sum / Car.Mass.Total;
+% 
+%     
+%        v_x2(i+1) = (v_x2(i)^2 + (2*a_x*(dist(i+1) - dist(i))))^0.5;
+%        
+     b=ceil(mod(i+1,length(dist)/10));  
+     
+     if b==0
+      disp(['Power limit: ' num2str((i+1)/(length(dist)/100)) ' % complete']);
+     end 
+end 
 %% Apply Braking Limit
 
 v_x3 = zeros(length(dist),1);
@@ -292,6 +305,13 @@ for i = length(dist):-1:2
     end
     
     v_x3(i-1) = (v_x3(i)^2 - (2*a_x*(dist(i) - dist(i-1))))^0.5;
+    
+%      b=ceil(mod(i-(length(dist)-1),length(dist)/10));  
+%      
+%      if b==0
+%       disp(['Braking limit: ' num2str(i-(length(dist)-1)/(length(dist)/100)) ' % complete']);
+%      end 
+     
 end
 v_x3(1) = min(v_x3(1),v_x2(1));
 

@@ -23,6 +23,7 @@ for iSweep = 1:nSweeps
     
     %% Loading Car and Stuff like weather
     [Car,Environment] = Load_Params();
+    
 
     % Check which variables (if any) to change
     if Sweep.Choose_Param == 1
