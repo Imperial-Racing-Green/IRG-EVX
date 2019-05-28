@@ -81,6 +81,7 @@ Car.Powertrain.Motor.MaxTorque = 8.8*2; %180;     % (Nm)
 Car.Powertrain.Motor.TransmissionRatio = 7;
 Car.Powertrain.Motor.RPM_Lim = 25000; 
 Car.Powertrain.Motor.T_Stall = 35.14;
+Car.Powertrain.Motor.T_Cap = 9;
 Car.Powertrain.Motor.Config = 'fwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 
 % Brakes info

@@ -71,7 +71,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         trackmap = 'SkidPad_Track_new.mat';
         FolderSection = [FolderName '\SkidPad_Test'];
         SimName = {'SkidPad_Test'};
-        BoundaryConditions.vCar_start = 12.8;
+        BoundaryConditions.vCar_start = 13.6;
         BoundaryConditions.vCar_end = [];
         Laptime = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);
 %         % Full lap (stationary start)
@@ -87,8 +87,8 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         trackmap = 'Trackmap_ClosedLoop.mat';
         FolderSection = [FolderName '\Endurance_Test\Steady_State'];
         SimName = {'Endurance_Test_Steady_State'};
-        BoundaryConditions.vCar_start = 33;
-        BoundaryConditions.vCar_end = 33;
+        BoundaryConditions.vCar_start = 26;
+        BoundaryConditions.vCar_end = 26;
         Laptime = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);        
     else
         % Dynamic solve for full FS weekend
