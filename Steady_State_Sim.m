@@ -65,7 +65,7 @@ for iSweep = 1:nSweeps
 %     Iterations = 5000; %max iterations for optmisation
 % % 
 % %     %[x,y,theta,curvature,radius,Distance] = Track_Gen(filename,Interpolation,Length,Smoothing,Line_Optim,Track_Width,Optim_Iterations)
-%   [x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Endurance.csv',Track_Dist*Resolution,Track_Dist,'On','Off',Track_Width,Iterations);
+ % [x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Endurance.csv',Track_Dist*Resolution,Track_Dist,'On','Off',Track_Width,Iterations);
 
     % Load racing line to skip repeatedely optimising the same track everytime
     load(trackmap)
@@ -151,14 +151,14 @@ for iSweep = 1:nSweeps
     Fz.RR(idx) = Fz.RR(idx-1);
     for i = 1:length(vCar)
         [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
-            F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz.FL(i),20);
+            F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz.FL(i),10);
         Fy.FL(i) = interp1(F_yFLmax(:,1,i),F_yFLmax(:,2,i),0,'spline');
         Fy_real(i) = (Car.Mass.Total * vCar(i)^2)/radius_d(i);
         Fy_FLreal = (Fz.FL(i) / sum(Fz.FL(i)+Fz.FR(i)+Fz.RL(i)+Fz.RR(i))) * Fy_real(i);
         Fx.FL(i) = interp1(F_xFLmax(:,2,i),F_xFLmax(:,1,i),Fy_FLreal);        
         
         [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),...
-            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz.RL(i),20);
+            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz.RL(i),10);
         Fy.RL(i) = interp1(F_yRLmax(:,1,i),F_yRLmax(:,2,i),0,'spline');
         Fy_RLreal = (Fz.RL(i) / sum(Fz.FL(i)+Fz.FR(i)+Fz.RL(i)+Fz.RR(i))) * Fy_real(i);
         Fx.RL(i) = interp1(F_xRLmax(:,2,i),F_xRLmax(:,1,i),Fy_RLreal);  

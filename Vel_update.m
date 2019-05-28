@@ -31,13 +31,13 @@ while eps >= eps_lim
 
     for i = 1:length(dist)
         [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
-            F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),20);
+            F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),10);
         [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),...
-            F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),20);
+            F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),10);
         [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),...
-            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),20);
+            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),10);
         [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),...
-            F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),20);
+            F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),10);
     end
 
     for i = 1:length(radius_d)
@@ -122,13 +122,13 @@ for i = 1:length(dist)-1
         
         % Re-evaluate tyre potential
         [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
-                F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),20);
+                F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),10);
         [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),...
-            F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),20);
+            F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),10);
         [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),...
-            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),20);
+            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),10);
         [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),...
-            F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),20);
+            F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),10);
     
         Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_FL_d(i) == 0
@@ -181,7 +181,6 @@ for i = 1:length(dist)-1
         eps = max(abs((Fz_check - [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)])./Fz_check));
         Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
         % Find corresponsing ride height changes
-        
     end   
 %     
 %         Fy_tyres=[Fy_FLreal; Fy_FRreal; Fy_RLreal; Fy_RLreal];
@@ -204,10 +203,10 @@ for i = 1:length(dist)-1
 %         Fx_sum = Fx_sum - F_D - Fx_rollres;    
 % 
 %         a_x = Fx_sum / Car.Mass.Total;
-% 
-%     
-%        v_x2(i+1) = (v_x2(i)^2 + (2*a_x*(dist(i+1) - dist(i))))^0.5;
-%        
+
+    
+       v_x2(i+1) = (v_x2(i)^2 + (2*a_x*(dist(i+1) - dist(i))))^0.5;
+       
      b=ceil(mod(i+1,length(dist)/10));  
      
      if b==0
@@ -247,13 +246,13 @@ for i = length(dist):-1:2
         
         % Re-evaluate tyre potential
         [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
-                F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),20);
+                F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),10);
         [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),...
-            F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),20);
+            F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),10);
         [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),...
-            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),20);
+            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),10);
         [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),...
-            F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),20);
+            F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),10);
         
         Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
 
