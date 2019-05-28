@@ -5,14 +5,14 @@ clc
 
 %% Save results location
 SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP';
-FolderName = 'Weekend_Main_Test2';
+FolderName = 'Test';
 SimName = {'Test'};
 
 %% Trackmap
 % trackmap = 'Trackmap_ClosedLoop.mat';
 % trackmap = 'Racing_Line_ClosedLoop.mat';
 % trackmap = 'Acceleration_Track.mat';
-% trackmap = 'SkidPad_Track.mat';
+% trackmap = 'SkidPad_Track_new.mat';
 trackmap = 'Full_FS_Weekend';
 
 %% vCar boundary conditions
@@ -28,9 +28,9 @@ BoundaryConditions.vCar_end = 33;
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
 Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
-Sweep.Param = {'Car.Balance.xCoG'};             % Variable within car structure to be swept
-Sweep.Values = 0.3:0.1:0.6;
-Sweep.Choose_Carfile = 1;
+Sweep.Param = {'Car.AeroPerformance.C_L'};             % Variable within car structure to be swept
+Sweep.Values = [3 3.5];
+Sweep.Choose_Carfile = 0;
 Sweep.Carfile = {'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Carfiles\MainCarfiles\APS100HEV.mat'...
     'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Carfiles\MainCarfiles\APS120_50kv_smallmotor.mat'...
     'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Carfiles\MainCarfiles\APS120_70kv_smallmotor.mat'...
@@ -57,6 +57,7 @@ Solver.Dynamic_state = 0;   % (Includes steady state-solver in pre-sim)
 if strcmp(trackmap,'Full_FS_Weekend') == 1
     if Solver.Steady_state == 1
     	% Steady state solve for full FS weekend
+        SaveResults = 1;
         % Acceleration test
         disp('Simulating sweep of Acceleration Test...')
         trackmap = 'Acceleration_Track.mat';
@@ -64,15 +65,15 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         SimName = {'Acceleration_Test'};
         BoundaryConditions.vCar_start = 0;
         BoundaryConditions.vCar_end = [];
-        Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)
-%         % Skid-pad test
-%         disp('Simulating sweep of Skid-Pad Test...')
-%         trackmap = 'SkidPad_Track.mat';
-%         FolderSection = [FolderName '\SkidPad_Test'];
-%         SimName = {'SkidPad_Test'};
-%         BoundaryConditions.vCar_start = 12.8;
-%         BoundaryConditions.vCar_end = 12.8;
-%         Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)
+        Laptime = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);
+        % Skid-pad test
+        disp('Simulating sweep of Skid-Pad Test...')
+        trackmap = 'SkidPad_Track_new.mat';
+        FolderSection = [FolderName '\SkidPad_Test'];
+        SimName = {'SkidPad_Test'};
+        BoundaryConditions.vCar_start = 12.8;
+        BoundaryConditions.vCar_end = [];
+        Laptime = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);
 %         % Full lap (stationary start)
 %         disp('Simulating first lap of Endurance Test...')
 %         trackmap = 'Trackmap_ClosedLoop.mat';
@@ -80,7 +81,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
 %         SimName = {'Endurance_Test_First_Lap'};
 %         BoundaryConditions.vCar_start = 0;
 %         BoundaryConditions.vCar_end = [];
-%         Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)
+%         Laptime = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);
         % Full lap (steady state)
         disp('Simulating steady state lap of Endurance Test...')
         trackmap = 'Trackmap_ClosedLoop.mat';
@@ -88,7 +89,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         SimName = {'Endurance_Test_Steady_State'};
         BoundaryConditions.vCar_start = 33;
         BoundaryConditions.vCar_end = 33;
-        Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)        
+        Laptime = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);        
     else
         % Dynamic solve for full FS weekend
         
@@ -96,7 +97,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
 else
     if Solver.Steady_state == 1
     	% Steady state solve for single track
-        Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep)
+        Laptime = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);
     else
         % Dynamic solve for single track
         

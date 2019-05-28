@@ -1,7 +1,7 @@
 clear
 clc
 
-R = 8.55;
+R = 9;
 x1 = 0:-(2*R/150):(-2*R);
 y1 = sqrt(R^(2) - ((x1 + R).^(2)));
 x2 = (-2*R):(2*R/150):0;
@@ -28,7 +28,7 @@ radius_d = [R*(ones(1,0.5*length(x))) -R*(ones(1,0.5*length(x)))]';
 curve_d = 1./radius_d;
 theta_d = [0 ; cumsum(diff(dist).*curve_d)];
 
-% save('SkidPad_Track','x','y','radius_d','curve_d','theta_d','dist')
+% save('SkidPad_Track_new','x','y','radius_d','curve_d','theta_d','dist')
 
 % theta_d = atan2(diff(y),diff(x));
 
