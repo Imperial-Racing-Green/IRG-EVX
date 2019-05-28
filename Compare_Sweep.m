@@ -3,8 +3,6 @@ close all
 clear
 clc
 
-
-
 FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Weekend_Main_Test2';
 
 full_weekend = 1;  % If selected point to folder of encolsing all weekend results
@@ -364,49 +362,37 @@ if full_weekend == 1
     figure()
     subplot(2,3,1)
     y = table2array(Points(:,2))';
-    b = bar(y);
-%     text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
-%     box off
+    plot(y,'b-o','LineWidth',1.2)
     title('Acceleration (75pts)')
     ylabel('Points')
     xlabel('Sim')
     subplot(2,3,2)
     y = table2array(Points(:,3))';
-    b = bar(y);
-%     text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
-%     box off
+    plot(y,'b-o','LineWidth',1.2)
     title('Skidpad (50pts)')
     ylabel('Points')
     xlabel('Sim')
     subplot(2,3,3)
     y = table2array(Points(:,4))';
-    b = bar(y);
-%     text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
-%     box off
+    plot(y,'b-o','LineWidth',1.2)
     title('Autocross (150pts)')
     ylabel('Points')
     xlabel('Sim')
     subplot(2,3,4)
     y = table2array(Points(:,5))';
-    b = bar(y);
-%     text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
-%     box off
+    plot(y,'b-o','LineWidth',1.2)
     title('Endurance (300pts)')
     ylabel('Points')
     xlabel('Sim')
     subplot(2,3,5)
     y = table2array(Points(:,6))';
-    b = bar(y);
-%     text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
-%     box off
+    plot(y,'b-o','LineWidth',1.2)
     title('Efficiency (100 pts)')
     ylabel('Points')
     xlabel('Sim')
     subplot(2,3,6)
     y = table2array(Points(:,7))';
-    b = bar(y);
-%     text(1:length(y),y,num2str(y'),'vert','bottom','horiz','center'); 
-%     box off
+    plot(y,'b-o','LineWidth',1.2)
     title('Total (675pts)')
     ylabel('Points')
     xlabel('Sim')

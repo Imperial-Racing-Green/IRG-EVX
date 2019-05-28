@@ -1,4 +1,4 @@
-function Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep)
+function Laptime = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation)
 
 
 if Sweep.Choose_Param == 1
@@ -33,11 +33,13 @@ for iSweep = 1:nSweeps
         % Load in a new carfile
         clear Car
         load(Sweep.Carfile{iSweep});
-        Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
-                 Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
-                 Car.Mass.Engine + Car.Mass.Motors + Car.Mass.Steering + Car.Mass.Pedals + ...
-                 Car.Mass.Seat + Car.Mass.FireWall + Car.Mass.Cooling + Car.Mass.Electrics + ...
-                 Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Brakes + Car.Mass.Fueltank;
+        if Validation ~= 1  % Only recheck mass for our own car (where we have component masses)
+            Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
+                     Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
+                     Car.Mass.Engine + Car.Mass.Motors + Car.Mass.Steering + Car.Mass.Pedals + ...
+                     Car.Mass.Seat + Car.Mass.FireWall + Car.Mass.Cooling + Car.Mass.Electrics + ...
+                     Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Brakes + Car.Mass.Fueltank;
+        end
     elseif Sweep.Choose_Weatherfile == 1
         clear Environment
         load(Sweep.Weatherfile{iSweep});
@@ -80,8 +82,8 @@ for iSweep = 1:nSweeps
     Fz_log = [];
     dist_log = [];
     Fz_log.Data = Car.Mass.Total .* Environment.Gravity .* ones(length(dist),4) ./ 2; % Total weight split evenly across each axis
-    Fz_log.Data(:,[1,2]) = Fz_log.Data(:,[1,2]) * (1 - Car.Balance.xCoG);
-    Fz_log.Data(:,[3,4]) = Fz_log.Data(:,[3,4]) * (Car.Balance.xCoG);
+    Fz_log.Data(:,[1,2]) = Fz_log.Data(:,[1,2]) * (1 - Car.Balance.CoG(1));
+    Fz_log.Data(:,[3,4]) = Fz_log.Data(:,[3,4]) * (Car.Balance.CoG(1));
     Fz_log.Time = linspace(0,120,length(dist))';
     dist_log.Data = dist;
     dist_log.Time = linspace(0,120,length(dist))';
@@ -119,13 +121,14 @@ for iSweep = 1:nSweeps
     a_x = [a_x; a_x(end-1)];
 %     a_x = interp1([1:(length(vCar)-1)]',a_x,[1:length(vCar)]');
     Fx_real = Car.Mass.Total * a_x;
+    a_y = (vCar.^2)./radius_d';
     for i = 1:length(a_x)
-        [Fz_F(i,1), Fz_R(i,1)] = WeightTransfer(Car,a_x(i));
+        [Fz_FL(i,1), Fz_FR(i,1), Fz_RL(i,1), Fz_RR(i,1)] = WeightTransfer(Car,a_x(i),a_y(i));
     end
-    Fz.FL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (1 - Car.Balance.xCoG)) /2) - ((Force.Aero.Downforce * (1 - Car.Balance.xCoP))/2) + (Fz_F/2);
-    Fz.FR = Fz.FL;
-    Fz.RL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (Car.Balance.xCoG)) /2) - ((Force.Aero.Downforce * (Car.Balance.xCoP))/2) + (Fz_R/2);
-    Fz.RR = Fz.RL;
+    Fz.FL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (1 - Car.Balance.CoG(1))) /2) - ((Force.Aero.Downforce * (1 - Car.Balance.CoP(1)))/2) + (Fz_FL);
+    Fz.FR = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (1 - Car.Balance.CoG(1))) /2) - ((Force.Aero.Downforce * (1 - Car.Balance.CoP(1)))/2) + (Fz_FR);
+    Fz.RL = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (Car.Balance.CoG(1))) /2) - ((Force.Aero.Downforce * (Car.Balance.CoP(1)))/2) + (Fz_RL);
+    Fz.RR = ((Car.Mass.Total*Environment.Gravity*ones(length(vCar),1) * (Car.Balance.CoG(1))) /2) - ((Force.Aero.Downforce * (Car.Balance.CoP(1)))/2) + (Fz_RR);
     Fx_rollres = -(Fz.FL+ Fz.FR + Fz.RL + Fz.RR) * Car.Tyres.Coefficients.RollingResistance;
     Fx_mechanical = Fx_real + Force.Aero.Drag + Fx_rollres;
     fwd_T = Fx_mechanical;
@@ -186,13 +189,16 @@ for iSweep = 1:nSweeps
     gLong = a_x / abs(Environment.Gravity);
     tLap = [0; cumsum(tLap)];
     Laptime = tLap(end);
-    % Save results to desired location
-    yourFolder = [SaveLocation '\' FolderName];
-    if ~exist(yourFolder, 'dir')
-       mkdir(yourFolder)
+    
+    if SaveResults == 1
+        % Save results to desired location
+        yourFolder = [SaveLocation '\' FolderName];
+        if ~exist(yourFolder, 'dir')
+           mkdir(yourFolder)
+        end
+        sim_output_vars = {'Car','Environment','vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle','rBrake'};
+        save([SaveLocation '\' FolderName '\' SimName{iSweep} '.mat'],sim_output_vars{:})
     end
-    sim_output_vars = {'Car','Environment','vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle','rBrake'};
-    save([SaveLocation '\' FolderName '\' SimName{iSweep} '.mat'],sim_output_vars{:})
     
     disp(['Sims completed:  ' num2str(iSweep) '/' num2str(nSweeps) '       Laptime: ' num2str(Laptime) 's'])
 end

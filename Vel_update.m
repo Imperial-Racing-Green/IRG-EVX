@@ -22,8 +22,9 @@ Fz_FR_static = Fz_FR_d;
 Fz_RL_static = Fz_RL_d;
 Fz_RR_static = Fz_RR_d;
 
-eps = 1501;
-eps_lim =1500;
+
+eps = 2001;
+eps_lim = 2000;
 v_x_check = zeros(1,length(dist));
 tic
 while eps >= eps_lim
@@ -69,10 +70,10 @@ while eps >= eps_lim
     % Add downforce
     for i = 1:length(v_x)
         [F_L,F_D] = Aero_Forces(v_x(i),Environment,Car);
-        Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.xCoP))/2);
-        Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.xCoP))/2);
-        Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.xCoP))/2);
-        Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.xCoP))/2);
+        Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2);
+        Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2);
+        Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.CoP(1)))/2);
+        Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.CoP(1)))/2);
     end
     
     % Check for convergence of velocities
@@ -94,10 +95,10 @@ for i = 1:length(dist)-1
     
     [F_L,F_D] = Aero_Forces(v_x2(i),Environment,Car);
     % Recalculate downforce
-    Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.xCoP))/2);
-    Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.xCoP))/2);
-    Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.xCoP))/2);
-    Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.xCoP))/2);
+    Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2);
+    Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2);
+    Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.CoP(1)))/2);
+    Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.CoP(1)))/2);
     Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
     
     Fz_front = [Fz_FL_d Fz_FR_d];
@@ -169,13 +170,14 @@ for i = 1:length(dist)-1
         Fx_sum = Fx_sum - F_D - Fx_rollres;    
 
         a_x = Fx_sum / Car.Mass.Total;
-
+        a_y = (v_x2(i)^2) / radius_d(i);
+        
         % Carry out mass transfer checks
-        [Fz_F, Fz_R] = WeightTransfer(Car,a_x);
-        Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.xCoP))/2) + (Fz_F/2);
-        Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.xCoP))/2) + (Fz_F/2);
-        Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.xCoP))/2) + (Fz_R/2);
-        Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.xCoP))/2) + (Fz_R/2);
+        [Fz_FL, Fz_FR, Fz_RL, Fz_RR] = WeightTransfer(Car,a_x,a_y);
+        Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2) + Fz_FL;
+        Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2) + Fz_FR;
+        Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.CoP(1)))/2) + Fz_RL;
+        Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.CoP(1)))/2) + Fz_RR;
         eps = max(abs((Fz_check - [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)])./Fz_check));
         Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
         % Find corresponsing ride height changes
@@ -226,10 +228,10 @@ for i = length(dist):-1:2
     
     [F_L,F_D] = Aero_Forces(v_x3(i),Environment,Car);
     % Recalculate downforce
-    Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.xCoP))/2);
-    Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.xCoP))/2);
-    Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.xCoP))/2);
-    Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.xCoP))/2);
+    Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2);
+    Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2);
+    Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.CoP(1)))/2);
+    Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.CoP(1)))/2);
     Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
     
     Fy_real = (Car.Mass.Total * v_x3(i)^2)/radius_d(i-1);
@@ -291,13 +293,14 @@ for i = length(dist):-1:2
         Fx_sum = Fx_sum - F_D - Fx_rollres;
 
         a_x = Fx_sum / Car.Mass.Total;
+        a_y = (v_x3(i)^2) / radius_d(i);
 
         % Carry out mass transfer checks
-        [Fz_F, Fz_R] = WeightTransfer(Car,a_x);
-        Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.xCoP))/2) + (Fz_F/2);
-        Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.xCoP))/2) + (Fz_F/2);
-        Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.xCoP))/2) + (Fz_R/2);
-        Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.xCoP))/2) + (Fz_R/2);
+        [Fz_FL, Fz_FR, Fz_RL, Fz_RR] = WeightTransfer(Car,a_x,a_y);
+        Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2) + Fz_FL;
+        Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2) + Fz_FR;
+        Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.CoP(1)))/2) + Fz_RL;
+        Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.CoP(1)))/2) + Fz_RR;
         eps = max(abs((Fz_check - [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)])./Fz_check));
         Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
         % Find corresponsing ride height changes
