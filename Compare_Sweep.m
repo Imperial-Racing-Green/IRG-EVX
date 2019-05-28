@@ -4,7 +4,9 @@ clear
 clc
 
 
+
 FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Weekend_Main_Test2';
+
 full_weekend = 1;  % If selected point to folder of encolsing all weekend results
 
 
@@ -352,7 +354,7 @@ if full_weekend == 1
     
     % Calculate other points
     Points.Sim = [1:length(FuelEfficiencyFactors)]';
-    Points.Acceleration = (71.5 * ((((Times.Autocross_Test.Best*1.5)./Times.Autocross_Test.Sims)-1)/0.5))' + 3.5;
+    Points.Acceleration = (71.5 * ((((Times.Acceleration_Test.Best*1.5)./Times.Acceleration_Test.Sims)-1)/0.5))' + 3.5;
     Points.Skidpad = (46.5 * (((((Times.SkidPad_Test.Best*1.25)./Times.SkidPad_Test.Sims).^2)-1)/0.5625))' + 3.5;
     Points.Autocross = (145.5 * ((((Times.Autocross_Test.Best*1.25)./Times.Autocross_Test.Sims)-1)/0.25))' + 4.5;
     Points.Endurance = (275 * ((((Times.Endurance_Test.Best*1.333)./Times.Endurance_Test.Sims)-1)/0.333))' + 25;

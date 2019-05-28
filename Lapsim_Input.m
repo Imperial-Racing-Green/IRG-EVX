@@ -6,7 +6,6 @@ clc
 %% Save results location
 
 SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
-
 FolderName = '2_carfile_points';
 SimName = {'Test'};
 
@@ -72,6 +71,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         BoundaryConditions.vCar_start = 0;
         BoundaryConditions.vCar_end = [];
         Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)
+<<<<<<< HEAD
         % Skid-pad test
         disp('Simulating sweep of Skid-Pad Test...')
         trackmap = 'SkidPad_Track.mat';
@@ -89,6 +89,25 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         BoundaryConditions.vCar_end = [];
         Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)
 %         % Full lap (steady state)
+=======
+%         % Skid-pad test
+%         disp('Simulating sweep of Skid-Pad Test...')
+%         trackmap = 'SkidPad_Track.mat';
+%         FolderSection = [FolderName '\SkidPad_Test'];
+%         SimName = {'SkidPad_Test'};
+%         BoundaryConditions.vCar_start = 12.8;
+%         BoundaryConditions.vCar_end = 12.8;
+%         Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)
+%         % Full lap (stationary start)
+%         disp('Simulating first lap of Endurance Test...')
+%         trackmap = 'Trackmap_ClosedLoop.mat';
+%         FolderSection = [FolderName '\Endurance_Test\First_Lap'];
+%         SimName = {'Endurance_Test_First_Lap'};
+%         BoundaryConditions.vCar_start = 0;
+%         BoundaryConditions.vCar_end = [];
+%         Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep)
+        % Full lap (steady state)
+>>>>>>> origin/Aero_GDP
         disp('Simulating steady state lap of Endurance Test...')
         trackmap = 'Trackmap_ClosedLoop.mat';
         FolderSection = [FolderName '\Endurance_Test\Steady_State'];
