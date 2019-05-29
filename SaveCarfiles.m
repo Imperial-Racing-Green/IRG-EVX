@@ -1,11 +1,14 @@
 % This script allows the saving and editing of other teams carfiles
+clear
+clc
 
 %% Car Parameters (CATALUNYA 2016)
 Car.Year = '2016';
+Car.Category = 'EV';        % ICE/EV/Hybrid
 Car.Points.Acceleration = 38.72;
 Car.Points.SkidPad = 18.28;
-Car.Points.Autocross = 58.13;
-Car.Points.Endurance = 132.0;
+Car.Points.Autocross = 84.90; %58.13;
+Car.Points.Endurance = 132.8; %132.0;
 Car.Points.FuelEfficiency = 100;
 Car.Points.Total = Car.Points.Acceleration + Car.Points.SkidPad + Car.Points.Autocross + Car.Points.Endurance + Car.Points.FuelEfficiency;
 Car.Mass.Total = 278;
@@ -26,7 +29,7 @@ Car.Powertrain.Motor.TransmissionRatio = 3.82;                               % G
 Car.Powertrain.Motor.RatedVoltage = 398;                        % Input rated voltage of motor [V]
 Car.Powertrain.Motor.RPM_Lim = 6000;                      % Max RPM  [R/Min]         
 Car.Powertrain.Motor.T_Stall = 240;                          % Max torque@max Current [Nm]
-Car.Powertrain.Motor.T_Cap = (2/3)*Car.Powertrain.Motor.T_Stall;
+Car.Powertrain.Motor.T_Cap = 0.75*Car.Powertrain.Motor.T_Stall;
 Car.Powertrain.Motor.T_const = 0.134;                    % Input Torque constant of Motor [Nm/A]
 Car.Powertrain.Motor.P_Max = 100000;                       % Max power (W)
 Car.Powertrain.Engine.Config = 'fwd';                        % For miscellaneous (please specify)
@@ -66,10 +69,11 @@ clear
 
 %% Car Parameters (Aachen 2015)
 Car.Year = '2015';
+Car.Category = 'EV';        % ICE/EV/Hybrid
 Car.Points.Acceleration = 0; % Didn't enter
-Car.Points.SkidPad = 27.18;
-Car.Points.Autocross = 19.31;
-Car.Points.Endurance = 161.2;
+Car.Points.SkidPad = 32.94; %27.18;
+Car.Points.Autocross = 89.02; %19.31;
+Car.Points.Endurance = 178.0; %161.2;
 Car.Points.FuelEfficiency = 95.2;
 Car.Points.Total = Car.Points.Acceleration + Car.Points.SkidPad + Car.Points.Autocross + Car.Points.Endurance + Car.Points.FuelEfficiency;
 Car.Mass.Total = 272;
@@ -90,7 +94,7 @@ Car.Powertrain.Motor.TransmissionRatio = 6.39;                              % 6.
 Car.Powertrain.Motor.RatedVoltage = 403;                     % Input rated voltage of motor [V]
 Car.Powertrain.Motor.RPM_Lim = 10000;                  % Max RPM  [R/Min]         
 Car.Powertrain.Motor.T_Stall = 90;                        % Max torque@max Current [Nm]
-Car.Powertrain.Motor.T_Cap = (2/3)*Car.Powertrain.Motor.T_Stall;
+Car.Powertrain.Motor.T_Cap = 0.75*Car.Powertrain.Motor.T_Stall;
 Car.Powertrain.Motor.T_const = 0.134;                 % Input Torque constant of Motor [Nm/A]
 Car.Powertrain.Motor.P_Max = 42000;                       % Max power (W)
 Car.Powertrain.Engine.Config = 'fwd';
@@ -131,10 +135,11 @@ clear
 %% Car Parameters (West Bohemia 2016)
 %need to clarify 'torque constant', 'voltages' %West Bohemia, RWD Combustion
 Car.Year = '2016';
+Car.Category = 'EV';        % ICE/EV/Hybrid
 Car.Points.Acceleration = 51.6;
 Car.Points.SkidPad = 10.2;
 Car.Points.Autocross = 63.7;
-Car.Points.Endurance = 118.3;
+Car.Points.Endurance = 123.7; %118.3;
 Car.Points.FuelEfficiency = 51.9;
 Car.Points.Total = Car.Points.Acceleration + Car.Points.SkidPad + Car.Points.Autocross + Car.Points.Endurance + Car.Points.FuelEfficiency;
 Car.Mass.Total = 313;
@@ -155,7 +160,7 @@ Car.Powertrain.Motor.TransmissionRatio = 0;                              % 18.7;
 Car.Powertrain.Motor.RatedVoltage = 0;                     % Input rated voltage of motor [V]
 Car.Powertrain.Motor.RPM_Lim = 0;                  % Max RPM  [R/Min]         
 Car.Powertrain.Motor.T_Stall = 0;                        % Max torque@max Current [Nm]
-Car.Powertrain.Motor.T_Cap = (2/3)*Car.Powertrain.Motor.T_Stall;
+Car.Powertrain.Motor.T_Cap = 0.75*Car.Powertrain.Motor.T_Stall;
 Car.Powertrain.Motor.T_const = 0;                   % Input Torque constant of Motor [Nm/A]
 Car.Powertrain.Motor.P_Max = 0;                       % Max power (W)
 Car.Powertrain.Engine.Config = 'rwd';
@@ -196,10 +201,11 @@ clear
 %% Car Parameters (Paderborn 2016)
 %need to clarify 'torque constant', 'voltages' %Paderborn, RWD Combustion
 Car.Year = '2016';
+Car.Category = 'ICE';        % ICE/EV/Hybrid
 Car.Points.Acceleration = 3.5;
 Car.Points.SkidPad = 14.5;
 Car.Points.Autocross = 78.7;
-Car.Points.Endurance = 184.7;
+Car.Points.Endurance = 188.4; %184.7;
 Car.Points.FuelEfficiency = 42.6;
 Car.Points.Total = Car.Points.Acceleration + Car.Points.SkidPad + Car.Points.Autocross + Car.Points.Endurance + Car.Points.FuelEfficiency;
 Car.Mass.Total = 267;
@@ -220,7 +226,7 @@ Car.Powertrain.Motor.TransmissionRatio = 0;                              % 18.7;
 Car.Powertrain.Motor.RatedVoltage = 0;                     % Input rated voltage of motor [V]
 Car.Powertrain.Motor.RPM_Lim = 0;                  % Max RPM  [R/Min]         
 Car.Powertrain.Motor.T_Stall = 0;                        % Max torque@max Current [Nm]
-Car.Powertrain.Motor.T_Cap = (2/3)*Car.Powertrain.Motor.T_Stall;
+Car.Powertrain.Motor.T_Cap = 0.75*Car.Powertrain.Motor.T_Stall;
 Car.Powertrain.Motor.T_const = 0;                   % Input Torque constant of Motor [Nm/A]
 Car.Powertrain.Motor.P_Max = 0;                       % Max power (W)
 Car.Powertrain.Engine.Config = 'rwd';
@@ -261,10 +267,11 @@ clear
 %% Car Parameters (Bath 2016)
 %need to clarify 'torque constant', 'voltages' %Bath, RDW Combustion
 Car.Year = '2016';
+Car.Category = 'ICE';        % ICE/EV/Hybrid
 Car.Points.Acceleration = 44.9;
 Car.Points.SkidPad = 28.7;
 Car.Points.Autocross = 90.0;
-Car.Points.Endurance = 203.9;
+Car.Points.Endurance = 205.8; % 203.9;
 Car.Points.FuelEfficiency = 59.6;
 Car.Points.Total = Car.Points.Acceleration + Car.Points.SkidPad + Car.Points.Autocross + Car.Points.Endurance + Car.Points.FuelEfficiency;
 Car.Mass.Total = 238;
@@ -285,7 +292,7 @@ Car.Powertrain.Motor.TransmissionRatio = 0;                              % 18.7;
 Car.Powertrain.Motor.RatedVoltage = 0;                     % Input rated voltage of motor [V]
 Car.Powertrain.Motor.RPM_Lim = 0;                  % Max RPM  [R/Min]         
 Car.Powertrain.Motor.T_Stall = 0;                        % Max torque@max Current [Nm]
-Car.Powertrain.Motor.T_Cap = (2/3)*Car.Powertrain.Motor.T_Stall;
+Car.Powertrain.Motor.T_Cap = 0.75*Car.Powertrain.Motor.T_Stall;
 Car.Powertrain.Motor.T_const = 0;                   % Input Torque constant of Motor [Nm/A]
 Car.Powertrain.Motor.P_Max = 0;                       % Max power (W)
 Car.Powertrain.Engine.Config = 'rwd';
@@ -326,10 +333,11 @@ clear
 %% Car Parameters (Delft 2015)
 %need to clarify 'torque constant', 'voltages' %Delft, 4WD Electric
 Car.Year = '2015';
+Car.Category = 'EV';        % ICE/EV/Hybrid
 Car.Points.Acceleration = 69.2;
 Car.Points.SkidPad = 33.3;
 Car.Points.Autocross = 141.9;
-Car.Points.Endurance = 292.4;
+Car.Points.Endurance = 293.5; %292.4;
 Car.Points.FuelEfficiency = 98.7;
 Car.Points.Total = Car.Points.Acceleration + Car.Points.SkidPad + Car.Points.Autocross + Car.Points.Endurance + Car.Points.FuelEfficiency;
 Car.Mass.Total = 228;
@@ -350,7 +358,7 @@ Car.Powertrain.Motor.TransmissionRatio = 10.8;                  %Gear Ratio
 Car.Powertrain.Motor.RatedVoltage = 400; % Guess                    % Input rated voltage of motor [V]
 Car.Powertrain.Motor.RPM_Lim = 11000;                  % Max RPM  [R/Min]         
 Car.Powertrain.Motor.T_Stall = 28;                        % Max torque@max Current [Nm]
-Car.Powertrain.Motor.T_Cap = (2/3)*Car.Powertrain.Motor.T_Stall;
+Car.Powertrain.Motor.T_Cap = 0.75*Car.Powertrain.Motor.T_Stall;
 Car.Powertrain.Motor.T_const = 1.05; % Guess                   % Input Torque constant of Motor [Nm/A]
 Car.Powertrain.Motor.P_Max = 32500;                       % Max power (W)
 Car.Powertrain.Engine.Config = 'rwd';
@@ -391,6 +399,7 @@ clear
 %% Car Parameters (Stuttgart 2016)
 %need to clarify 'torque constant', 'voltages' %Stuttgart, RWD Combustion
 Car.Year = '2016';
+Car.Category = 'ICE';        % ICE/EV/Hybrid
 Car.Points.Acceleration = 51.5;
 Car.Points.SkidPad = 44.9;
 Car.Points.Autocross = 146.4;
@@ -415,7 +424,7 @@ Car.Powertrain.Motor.TransmissionRatio = 0;                              % 18.7;
 Car.Powertrain.Motor.RatedVoltage = 0;                     % Input rated voltage of motor [V]
 Car.Powertrain.Motor.RPM_Lim = 0;                  % Max RPM  [R/Min]         
 Car.Powertrain.Motor.T_Stall = 0;                        % Max torque@max Current [Nm]
-Car.Powertrain.Motor.T_Cap = (2/3)*Car.Powertrain.Motor.T_Stall;
+Car.Powertrain.Motor.T_Cap = 0.75*Car.Powertrain.Motor.T_Stall;
 Car.Powertrain.Motor.T_const = 0;                   % Input Torque constant of Motor [Nm/A]
 Car.Powertrain.Motor.P_Max = 0;                       % Max power (W)
 Car.Powertrain.Engine.Config = 'rwd';
@@ -455,6 +464,7 @@ clear
 
 %% Car Parameters (Bath 2015)
 Car.Year = '2015';
+Car.Category = 'ICE';        % ICE/EV/Hybrid
 Car.Points.Acceleration = 34.5;
 Car.Points.SkidPad = 24.2;
 Car.Points.Autocross = 94.7;
@@ -479,7 +489,7 @@ Car.Powertrain.Motor.TransmissionRatio = 0;                %Gear Ratio
 Car.Powertrain.Motor.RatedVoltage = 0;                     % Input rated voltage of motor [V]
 Car.Powertrain.Motor.RPM_Lim = 0;                  % Max RPM  [R/Min]         
 Car.Powertrain.Motor.T_Stall = 0;                        % Max torque@max Current [Nm]
-Car.Powertrain.Motor.T_Cap = (2/3)*Car.Powertrain.Motor.T_Stall;
+Car.Powertrain.Motor.T_Cap = 0.75*Car.Powertrain.Motor.T_Stall;
 Car.Powertrain.Motor.T_const = 0;                   % Input Torque constant of Motor [Nm/A]
 Car.Powertrain.Motor.P_Max = 0;                       % Max power (W)
 Car.Powertrain.Engine.Config = 'rwd';
@@ -519,10 +529,11 @@ clear
 
 %% Car Parameters (CTU Prague 2016)
 Car.Year = '2016';
+Car.Category = 'ICE';        % ICE/EV/Hybrid
 Car.Points.Acceleration = 45.6;
 Car.Points.SkidPad = 37.1;
 Car.Points.Autocross = 101.3;
-Car.Points.Endurance = 245.1;
+Car.Points.Endurance = 256.9; %245.1;
 Car.Points.FuelEfficiency = 50.4;
 Car.Points.Total = Car.Points.Acceleration + Car.Points.SkidPad + Car.Points.Autocross + Car.Points.Endurance + Car.Points.FuelEfficiency;
 Car.Mass.Total = 268;
@@ -543,7 +554,7 @@ Car.Powertrain.Motor.TransmissionRatio = 0;                              % 18.7;
 Car.Powertrain.Motor.RatedVoltage = 0;                     % Input rated voltage of motor [V]
 Car.Powertrain.Motor.RPM_Lim = 0;                  % Max RPM  [R/Min]         
 Car.Powertrain.Motor.T_Stall = 0;                        % Max torque@max Current [Nm]
-Car.Powertrain.Motor.T_Cap = (2/3)*Car.Powertrain.Motor.T_Stall;
+Car.Powertrain.Motor.T_Cap = 0.75*Car.Powertrain.Motor.T_Stall;
 Car.Powertrain.Motor.T_const = 0;                   % Input Torque constant of Motor [Nm/A]
 Car.Powertrain.Motor.P_Max = 0;                       % Max power (W)
 Car.Powertrain.Engine.Config = 'rwd';
@@ -583,10 +594,11 @@ clear
 
 %% Car Parameters (Karlsruhe 2016)
 Car.Year = '2016';
+Car.Category = 'ICE';        % ICE/EV/Hybrid
 Car.Points.Acceleration = 49.5;
 Car.Points.SkidPad = 37.4;
 Car.Points.Autocross = 115.8;
-Car.Points.Endurance = 215.8;
+Car.Points.Endurance = 227.3; % 215.8;
 Car.Points.FuelEfficiency = 69.3;
 Car.Points.Total = Car.Points.Acceleration + Car.Points.SkidPad + Car.Points.Autocross + Car.Points.Endurance + Car.Points.FuelEfficiency;
 Car.Mass.Total = 266;
@@ -607,7 +619,7 @@ Car.Powertrain.Motor.TransmissionRatio = 0;                %Gear Ratio
 Car.Powertrain.Motor.RatedVoltage = 0;                     % Input rated voltage of motor [V]
 Car.Powertrain.Motor.RPM_Lim = 0;                  % Max RPM  [R/Min]         
 Car.Powertrain.Motor.T_Stall = 0;                        % Max torque@max Current [Nm]
-Car.Powertrain.Motor.T_Cap = (2/3)*Car.Powertrain.Motor.T_Stall;
+Car.Powertrain.Motor.T_Cap = 0.75*Car.Powertrain.Motor.T_Stall;
 Car.Powertrain.Motor.T_const = 0;                   % Input Torque constant of Motor [Nm/A]
 Car.Powertrain.Motor.P_Max = 0;                       % Max power (W)
 Car.Powertrain.Engine.Config = 'rwd';
@@ -647,10 +659,11 @@ clear
 
 %% Car Parameters (Wroclaw 2016)
 Car.Year = '2016';
+Car.Category = 'ICE';        % ICE/EV/Hybrid
 Car.Points.Acceleration = 56.5;
 Car.Points.SkidPad = 34.1;
 Car.Points.Autocross = 98.6;
-Car.Points.Endurance = 221.3;
+Car.Points.Endurance = 235.0; % 221.3;
 Car.Points.FuelEfficiency = 49.6;
 Car.Points.Total = Car.Points.Acceleration + Car.Points.SkidPad + Car.Points.Autocross + Car.Points.Endurance + Car.Points.FuelEfficiency;
 Car.Mass.Total = 258;
@@ -671,7 +684,7 @@ Car.Powertrain.Motor.TransmissionRatio = 0;                %Gear Ratio
 Car.Powertrain.Motor.RatedVoltage = 0;                     % Input rated voltage of motor [V]
 Car.Powertrain.Motor.RPM_Lim = 0;                  % Max RPM  [R/Min]         
 Car.Powertrain.Motor.T_Stall = 0;                        % Max torque@max Current [Nm]
-Car.Powertrain.Motor.T_Cap = (2/3)*Car.Powertrain.Motor.T_Stall;
+Car.Powertrain.Motor.T_Cap = 0.75*Car.Powertrain.Motor.T_Stall;
 Car.Powertrain.Motor.T_const = 0;                   % Input Torque constant of Motor [Nm/A]
 Car.Powertrain.Motor.P_Max = 0;                       % Max power (W)
 Car.Powertrain.Engine.Config = 'rwd';

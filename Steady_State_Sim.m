@@ -1,4 +1,4 @@
-function Laptime = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation)
+function [Laptime, CO2_Usage] = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation)
 
 if Sweep.Choose_Param == 1
     nSweeps = length(Sweep.Values);
@@ -187,17 +187,68 @@ for iSweep = 1:nSweeps
     tLap = [0; cumsum(tLap)];
     Laptime = tLap(end);
     
+    % Use throttle to find fuel/energy consumption
+    if strcmp(Car.Category,'ICE') == 1
+        MassFlowRate = (rThrottle * 0.0023) + 5.2842e-5; % Linear relationship to include idle fuel flow
+        MassFlowRate(isnan(MassFlowRate)) = 5.2842e-5;
+        mFuelBurn = trapz(tLap,MassFlowRate); % (kg)
+        vFuelBurn = (mFuelBurn / 719.7) * 1000; % (litres)
+        CO2_Usage = 2.31 * vFuelBurn;
+    elseif strcmp(Car.Category,'EV') == 1
+        % Get thrust from motors
+        if strcmp(Car.Powertrain.Motor.Config,'fwd') == 1
+            CombinedMotorThrust = Force.Powertrain.Thrust.FL + Force.Powertrain.Thrust.FR;
+        elseif strcmp(Car.Powertrain.Motor.Config,'rwd') == 1
+            CombinedMotorThrust = Force.Powertrain.Thrust.RL + Force.Powertrain.Thrust.RR;
+        elseif strcmp(Car.Powertrain.Motor.Config,'4wd') == 1
+            CombinedMotorThrust = Force.Powertrain.Thrust.FL + Force.Powertrain.Thrust.FR + Force.Powertrain.Thrust.RL + Force.Powertrain.Thrust.RR;
+        else
+            error('Incorrect motor configuration! How has the sim got this far???')
+        end
+        CombinedMotorThrust = CombinedMotorThrust.*rThrottle; % Find when motors are being applied
+        MotorPower = CombinedMotorThrust .* vCar; % (W)
+        EPower_avg = (trapz(tLap,MotorPower)) / Laptime;
+        E_kwh = EPower_avg*(Laptime/3600)/1000;
+        CO2_Usage = (0.65*E_kwh);
+    elseif strcmp(Car.Category,'Hybrid') == 1% Assume half throttle for energy and fuel consumption each
+        MassFlowRate = ((0.5*rThrottle) * 0.0023) + 5.2842e-5; % Linear relationship to include idle fuel flow
+        MassFlowRate(isnan(MassFlowRate)) = 5.2842e-5;
+        mFuelBurn = trapz(tLap,MassFlowRate); % (kg)
+        vFuelBurn = (mFuelBurn / 719.7) * 1000; % (litres)
+        CO2_Usage = 2.31 * vFuelBurn;
+        % Get thrust from motors
+        if strcmp(Car.Powertrain.Motor.Config,'fwd') == 1
+            CombinedMotorThrust = Force.Powertrain.Thrust.FL + Force.Powertrain.Thrust.FR;
+        elseif strcmp(Car.Powertrain.Motor.Config,'rwd') == 1
+            CombinedMotorThrust = Force.Powertrain.Thrust.RL + Force.Powertrain.Thrust.RR;
+        elseif strcmp(Car.Powertrain.Motor.Config,'4wd') == 1
+            CombinedMotorThrust = Force.Powertrain.Thrust.FL + Force.Powertrain.Thrust.FR + Force.Powertrain.Thrust.RL + Force.Powertrain.Thrust.RR;
+        else
+            error('Incorrect motor configuration! How has the sim got this far???')
+        end
+        CombinedMotorThrust = CombinedMotorThrust*rThrottle; % Find when motors are being applied
+        MotorPower = CombinedMotorThrust .* vCar; % (W)
+        EPower_avg = (trapz(tLap,MotorPower)) / Laptime;
+        E_kwh = EPower_avg*(Laptime/3600)/1000;
+        CO2_Usage = CO2_Usage + (0.65*E_kwh);
+    end
+    
+    
     if SaveResults == 1
         % Save results to desired location
         yourFolder = [SaveLocation '\' FolderName];
         if ~exist(yourFolder, 'dir')
            mkdir(yourFolder)
         end
-        sim_output_vars = {'Car','Environment','vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle','rBrake'};
+        sim_output_vars = {'Car','Environment','vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle','rBrake','CO2_Usage'};
         save([SaveLocation '\' FolderName '\' SimName{iSweep} '.mat'],sim_output_vars{:})
     end
     
-    disp(['Sims completed:  ' num2str(iSweep) '/' num2str(nSweeps) '       Laptime: ' num2str(Laptime) 's'])
+    if strcmp(trackmap,'SkidPad_Track_new.mat') == 1
+        disp(['Sims completed:  ' num2str(iSweep) '/' num2str(nSweeps) '       Laptime: ' num2str(Laptime/2) 's'])
+    else
+        disp(['Sims completed:  ' num2str(iSweep) '/' num2str(nSweeps) '       Laptime: ' num2str(Laptime) 's'])
+    end
 end
     
 end

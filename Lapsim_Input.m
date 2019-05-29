@@ -11,17 +11,19 @@ SimName = {'Test'};
 %% Trackmap
 % trackmap = 'Trackmap_ClosedLoop.mat';
 % trackmap = 'Racing_Line_ClosedLoop.mat';
+trackmap = 'DragRace_Track.mat';
+% trackmap = 'Trackmap_ClosedLoop_with_slalom.mat';
 % trackmap = 'Acceleration_Track.mat';
 % trackmap = 'SkidPad_Track_new.mat';
-trackmap = 'Full_FS_Weekend';
+% trackmap = 'Full_FS_Weekend';
 
 %% vCar boundary conditions
 % Racing_Line_ClosedLoop 
-BoundaryConditions.vCar_start = 33;
-BoundaryConditions.vCar_end = 33;
+% BoundaryConditions.vCar_start = 26;
+% BoundaryConditions.vCar_end = 26;
 % Acceleration_Track 
-% BoundaryConditions.vCar_start = 0;
-% BoundaryConditions.vCar_end = [];
+BoundaryConditions.vCar_start = 0;
+BoundaryConditions.vCar_end = [];
 % SkidPad_Track 
 % BoundaryConditions.vCar_start = 12.8;
 % BoundaryConditions.vCar_end = [];
@@ -76,7 +78,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         Laptime = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);
 %         % Full lap (stationary start)
 %         disp('Simulating first lap of Endurance Test...')
-%         trackmap = 'Trackmap_ClosedLoop.mat';
+%         trackmap = 'Trackmap_ClosedLoop_with_slalom.mat';
 %         FolderSection = [FolderName '\Endurance_Test\First_Lap'];
 %         SimName = {'Endurance_Test_First_Lap'};
 %         BoundaryConditions.vCar_start = 0;
@@ -84,7 +86,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
 %         Laptime = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);
         % Full lap (steady state)
         disp('Simulating steady state lap of Endurance Test...')
-        trackmap = 'Trackmap_ClosedLoop.mat';
+        trackmap = 'Trackmap_ClosedLoop_with_slalom.mat';
         FolderSection = [FolderName '\Endurance_Test\Steady_State'];
         SimName = {'Endurance_Test_Steady_State'};
         BoundaryConditions.vCar_start = 26;
@@ -96,6 +98,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
     end
 else
     if Solver.Steady_state == 1
+        SaveResults = 1;
     	% Steady state solve for single track
         Laptime = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);
     else

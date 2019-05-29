@@ -5,6 +5,8 @@ close all
 clear
 clc
 
+SaveCarfiles();
+
 %% Save Results
 SaveLocation = 'C:\Users\gregj\OneDrive\Documents\GitHub\GDP_2017_Lapsim';
 FolderName = 'Validation';
@@ -19,8 +21,8 @@ FolderName = 'Validation';
 % carfiles = {'Bath_16.mat','aachen.mat'};
 % teams = {'Bath_16','Aachen_15'};
 
-carfiles = {'cata.mat'};
-teams = {'cata'};
+carfiles = {'Delft_15.mat'};
+teams = {'Delft_15'};
 
 events = {'Acceleration', 'SkidPad', 'Autocross', 'Endurance', 'FuelEfficiency'};
 
@@ -43,7 +45,7 @@ for iCar = 1:length(carfiles)
     SimName = {'Acceleration_Test'};
     BoundaryConditions.vCar_start = 0;
     BoundaryConditions.vCar_end = [];
-    Laptimes.Acceleration = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
+    [Laptimes.Acceleration, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
     % Skid-pad test
     disp('Simulating sweep of Skid-Pad Test...')
     trackmap = 'SkidPad_Track_new.mat';
@@ -51,26 +53,27 @@ for iCar = 1:length(carfiles)
     SimName = {'SkidPad_Test'};
     BoundaryConditions.vCar_start = 12.8;
     BoundaryConditions.vCar_end = [];
-    Laptimes.SkidPad = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation) / 2;
+    [Laptimes.SkidPad, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
+    Laptimes.SkidPad = Laptimes.SkidPad / 2;    
     % Full lap (stationary start)
     disp('Simulating first lap of Endurance Test...')
-    trackmap = 'Trackmap_ClosedLoop.mat';
+    trackmap = 'Autocross_Track_2.mat';
     FolderSection = [FolderName '\Endurance_Test\First_Lap'];
     SimName = {'Endurance_Test_First_Lap'};
     BoundaryConditions.vCar_start = 0;
     BoundaryConditions.vCar_end = [];
-    Laptimes.Autocross = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
+    [Laptimes.Autocross, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
     % Full lap (steady state)
     disp('Simulating steady state lap of Endurance Test...')
-    trackmap = 'Trackmap_ClosedLoop.mat';
+    trackmap = 'Endurance_Track.mat';
     FolderSection = [FolderName '\Endurance_Test\Steady_State'];
     SimName = {'Endurance_Test_Steady_State'};
-    BoundaryConditions.vCar_start = 33;
-    BoundaryConditions.vCar_end = 33;
-    Laptimes.FullLap = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation); 
-    Laptimes.Endurance = Laptimes.Autocross + (21*Laptimes.FullLap)  + 180;
+    BoundaryConditions.vCar_start = 26;
+    BoundaryConditions.vCar_end = 26;
+    [Laptimes.FullLap, CO2_Usage.FullLap] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation); 
+    Laptimes.Endurance = (22*Laptimes.FullLap) + 180 + 1.5; % Pitstop + stationary start
 
-    Points.Sims.(teams{iCar}) = PointsCalculator(Laptimes,carfiles{iCar});
+    Points.Sims.(teams{iCar}) = PointsCalculator(Laptimes,carfiles{iCar},CO2_Usage);
     
     load(carfiles{iCar});
     Points.Real.(teams{iCar}).Acceleration = Car.Points.Acceleration;
@@ -109,10 +112,10 @@ for iTeam = 1:length(teams)
     scatter(Points.Sims.(teams{iTeam}).SkidPad,Points.Real.(teams{iTeam}).SkidPad,60,'filled')
     hold on
 end
-plot([0 50],[0 50],'k--','LineWidth',1.2)
+plot([0 75],[0 75],'k--','LineWidth',1.2)
 legend([teams 'Trendline'],'interpreter','none','location','northwest')
-xlim([0 50])
-ylim([0 50])
+xlim([0 75])
+ylim([0 75])
 grid on 
 xlabel('Lapsim points predicted')
 ylabel('Real points attained')
@@ -135,10 +138,10 @@ for iTeam = 1:length(teams)
     scatter(Points.Sims.(teams{iTeam}).Endurance,Points.Real.(teams{iTeam}).Endurance,60,'filled')
     hold on
 end
-plot([0 300],[0 300],'k--','LineWidth',1.2)
+plot([0 325],[0 325],'k--','LineWidth',1.2)
 legend([teams 'Trendline'],'interpreter','none','location','northwest')
-xlim([0 300])
-ylim([0 300])
+xlim([0 325])
+ylim([0 325])
 grid on 
 xlabel('Lapsim points predicted')
 ylabel('Real points attained')
