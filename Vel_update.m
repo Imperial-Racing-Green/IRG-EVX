@@ -1,6 +1,7 @@
 function velocity_d = Vel_update(Fz_log,dist,dist_log,radius_d,Environment,Car,BoundaryConditions)
 
 %% Finding max velocity at each curvature
+radius_d(radius_d == 0) = 1e5;
 
 Fz_FL_t = Fz_log.Data(:,1);
 Fz_FR_t = Fz_log.Data(:,2);

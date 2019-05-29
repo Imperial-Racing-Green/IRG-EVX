@@ -1,5 +1,7 @@
 function [Car,Environment] = Load_Params()
 
+Car.Category = 'Hybrid';        % ICE/EV/Hybrid
+
 % Car component masses (kg)
 % Wheels (tyre + rim)
 Car.Mass.WheelFL = 2.68 + 4;
@@ -73,7 +75,7 @@ Car.Powertrain.Engine.MaxPower = 79000;    % (W) (80000
 Car.Powertrain.Engine.MaxTorque = 69;     % (Nm) (240)
 Car.Powertrain.Engine.TransmissionRatio = 3.6;
 Car.Powertrain.Engine.T_Max = 68;                      % Max torque possible [Nm]
-Car.Powertrain.Engine.RPM_Limit = 1300;                   % Max RPM  [R/Min] 
+Car.Powertrain.Engine.RPM_Limit = 13000;                   % Max RPM  [R/Min] 
 Car.Powertrain.Engine.RPM_Max_T = 9200;                      % RPM corresponding to max torque
 Car.Powertrain.Engine.Config = 'rwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 % Battery/motor (values for single motor)
@@ -82,6 +84,7 @@ Car.Powertrain.Motor.MaxTorque = 8.8*2; %180;     % (Nm)
 Car.Powertrain.Motor.TransmissionRatio = 7;
 Car.Powertrain.Motor.RPM_Lim = 25000; 
 Car.Powertrain.Motor.T_Stall = 35.14;
+Car.Powertrain.Motor.T_Cap = 27; %9;
 Car.Powertrain.Motor.Config = 'fwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 
 % Brakes info

@@ -6,6 +6,7 @@ Ratio = Motor_Info.TransmissionRatio;
 Config = Motor_Info.Config;
 RPM_Lim = Motor_Info.RPM_Lim;
 T_Stall = Motor_Info.T_Stall;
+T_Cap = Motor_Info.T_Cap;
 
 % wheel_rad = (velocity / radius)
 wheel_rad = (velocity / radius) * (30/pi); % wheel speed in RPM
@@ -20,7 +21,7 @@ RPM_motor = min(motorspeed,RPM_Lim);
 
 % Find torque of motor from RPM of motor based on linear graph:
 T_motor =  T_Stall - ((RPM_motor/RPM_Lim)*T_Stall);
-T_motor = min(T_motor,15);
+T_motor = min(T_motor,T_Cap);
 
 if isnan(T_motor)
     T_motor = 0;
