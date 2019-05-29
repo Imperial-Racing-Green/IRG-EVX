@@ -1,5 +1,5 @@
-clear
-close all
+% clear
+% close all
 
 target_folder = [pwd '/ride/Damper Data/Ohlins TTX25 Mk2/R11 C11'];
 
@@ -18,7 +18,7 @@ end
 
 v = linspace(-250,250,500);
 for i = 1:length(fits)
-    [F, fits(i).Loopup_Values] = DamperCurve(fits(i).coef,v,1);
+    [F, fits(i).Lookup_Values] = DamperCurve(fits(i).coef,v,1);
     h = figure;
     hold on
     plot(v,F)
@@ -30,3 +30,5 @@ for i = 1:length(fits)
 %     pause(2)
     savefig([target_folder '/Figures/' fits(i).name '.fig'])
 end
+
+save([target_folder '/Fits.mat'],'fits')

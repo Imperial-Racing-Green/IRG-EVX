@@ -94,7 +94,8 @@ classdef EVX_tyre
             coef = zeros(length(FZ),length(obj.longitudinal_model));
             for j = 1:length(FZ)
                 for i = 1:length(obj.longitudinal_model)
-                    coef(j,i) = obj.longitudinal_model{i}(P(j),IA(j),FZ(j));
+                    %abs(IA) so effect of camber is symmetrical
+                    coef(j,i) = obj.longitudinal_model{i}(P(j),abs(IA(j)),FZ(j));
                 end
             end
         end
@@ -103,7 +104,20 @@ classdef EVX_tyre
             coef = zeros(length(FZ),length(obj.lateral_model));
             for j = 1:length(FZ)
                 for i = 1:length(obj.lateral_model)
-                    coef(j,i) = obj.lateral_model{i}(P(j),IA(j),FZ(j));
+                    if IA(j) >= 0 %Need to treat Negative camber differently
+                        %I'm assuming that the effect of positive camber
+                        %Is the same as negative, but acting in the
+                        %opposite direction, so swap SA and F axes to put
+                        %what was the +ve SA characteristic on the -ve side
+                        %and vice versa
+                        coef(j,i) = obj.lateral_model{i}(P(j),IA(j),FZ(j));
+                    else
+                        coef(j,i) = obj.lateral_model{i}(P(j),-IA(j),FZ(j));
+                        if i == 3 %Invert the D coefficient for negative IA
+                            %This only works if the SA is also inverted
+                            coef(j,3) = -coef(j,3);
+                        end
+                    end
                 end
             end
         end
@@ -125,8 +139,13 @@ classdef EVX_tyre
             coef_y = obj.get_coefficients_lat(P,IA,FZ);
             
             for i = 1:size(coef_x,1)
-                FX = G_x*obj.pacejka4(coef_x(i,:),SR);
-                FY = G_y*obj.pacejka4(coef_y(i,:),SA);
+                %Try adding the rolling resistancec(Sv) on afterwards
+                FX = G_x*(obj.pacejka4(coef_x(i,:),SR)-obj.pacejka4(coef_x(i,:),0)) + obj.pacejka4(coef_x(i,:),0);
+                if coef_y(i,3) < 0 %Negative D coef if IA > 0; need to invert SA
+                    FY = G_y*(obj.pacejka4(coef_y(i,:),-SA) - obj.pacejka4(coef_y(i,:),0)) + obj.pacejka4(coef_y(i,:),0);
+                else
+                    FY = G_y*(obj.pacejka4(coef_y(i,:),SA) - obj.pacejka4(coef_y(i,:),0)) + obj.pacejka4(coef_y(i,:),0);
+                end
             end
             MZ = zeros(length(SR),1);
         end
