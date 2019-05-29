@@ -26,7 +26,7 @@ Fz_RR_static = Fz_RR_d;
 eps = 2001;
 eps_lim = 2000;
 v_x_check = zeros(1,length(dist));
-tic
+
 while eps >= eps_lim
 
     for i = 1:length(dist)
@@ -82,7 +82,7 @@ while eps >= eps_lim
     v_x_check = v_x;
     
 end
-toc    
+   
 %% Applying power limit
 v_x2 = zeros(length(dist),1);
 if ~isempty(BoundaryConditions.vCar_start)

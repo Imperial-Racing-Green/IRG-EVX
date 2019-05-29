@@ -47,26 +47,26 @@ for iCar = 1:length(carfiles)
 %     BoundaryConditions.vCar_end = [];
 %     Laptime.SkidPad = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation) / 2;
     % Full lap (stationary start)
-    disp('Simulating first lap of Endurance Test...')
-    trackmap = 'Trackmap_ClosedLoop_with_slalom.mat';
-    FolderSection = [FolderName '\Endurance_Test\First_Lap'];
-    SimName = {'Endurance_Test_First_Lap'};
-    BoundaryConditions.vCar_start = 0;
-    BoundaryConditions.vCar_end = [];
-    Laptime.Autocross = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
+%     disp('Simulating first lap of Autocross Test...')
+%     trackmap = 'Autocross_Track_2.mat';
+%     FolderSection = [FolderName '\Endurance_Test\First_Lap'];
+%     SimName = {'Endurance_Test_First_Lap'};
+%     BoundaryConditions.vCar_start = 0;
+%     BoundaryConditions.vCar_end = [];
+%     Laptime.Autocross = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
 %     % Full lap (steady state)
-%     disp('Simulating steady state lap of Endurance Test...')
-%     trackmap = 'Trackmap_ClosedLoop.mat';
-%     FolderSection = [FolderName '\Endurance_Test\Steady_State'];
-%     SimName = {'Endurance_Test_Steady_State'};
-%     BoundaryConditions.vCar_start = 33;
-%     BoundaryConditions.vCar_end = 33;
-%     Laptime.FullLap = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation); 
-%     Laptime.Endurance = Laptime.Autocross + (21*Laptime.FullLap)  + 180;   
+    disp('Simulating steady state lap of Endurance Test...')
+    trackmap = 'Endurance_Track.mat';
+    FolderSection = [FolderName '\Endurance_Test\Steady_State'];
+    SimName = {'Endurance_Test_Steady_State'};
+    BoundaryConditions.vCar_start = 20.2;
+    BoundaryConditions.vCar_end = 20.2;
+    Laptime.FullLap = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation); 
+%    Laptime.Endurance = Laptime.Autocross + (21*Laptime.FullLap)  + 180;   
 %         PointsCalculator();
     for iEvent = 1:length(events)
         % Discard sim results in tests the car didn't run
-        if Car.points.(events{iEvent}) == 0
+        if Car.Points.(events{iEvent}) == 0
             Score.Sims.(teams{iCar}).(events{iEvent}) = 0;
         else
             Score.Sims.(teams{iCar}).(events{iEvent}) = Points.(events{iEvent});

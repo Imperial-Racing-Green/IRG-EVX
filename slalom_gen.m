@@ -14,7 +14,7 @@ slalom_length = (cone_number+1)*cone_dist;
 k1 = find(abs(x-x1) < 0.01);
 init_dist = dist(k1);
 final_dist = init_dist + slalom_length;
-k2 = find(abs(dist-final_dist) < 0.5);
+k2 = find((abs(dist-final_dist))<0.5);
 
 %Final coordinates of slalom
 x2=x(k2);
@@ -29,8 +29,8 @@ lx=abs(x2-x1);
 ly=abs(y2-y1);
 
 theta_rot= atand(ly/lx);
-%theta_rot= 180-theta_rot;
-theta_rot = 360-theta_rot; 
+theta_rot= 180-theta_rot;
+%theta_rot = 360-theta_rot; 
 
 R = [cosd(theta_rot) -sind(theta_rot); 
      sind(theta_rot) cosd(theta_rot)];
