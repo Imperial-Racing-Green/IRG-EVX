@@ -809,7 +809,7 @@ Car.Dimension.CoG = [0, 0.5147*Car.Dimension.lWheelbase, 300/1000];   % height u
 Car.Dimension.CoP = [0, 0.55*Car.Dimension.lWheelbase, 300/1000];
 Car.Balance.CoG = [0.5147, 0, 0.25];
 Car.Balance.CoP = [0.55, 0, 0.30];
-Car.Tyres.Coefficients.RollingResistance = 0.018;
+Car.Tyres.Coefficients.RollingResistance = 0.020;
 % Powertrain parameters
 Car.Powertrain.Motor.Config = 'rwd';
 Car.Powertrain.Motor.TransmissionRatio = 0;                              % 18.7;                %Gear Ratio
@@ -823,7 +823,7 @@ Car.Powertrain.Engine.Config = 'rwd';
 Car.Powertrain.Engine.TransmissionRatio = 3;                               % Gear ratio
 Car.Powertrain.Engine.RPM_Limit = 8500;                   % Max RPM  [R/Min]         
 Car.Powertrain.Engine.T_Max = 63;                      % Max torque possible [Nm]
-Car.Powertrain.Engine.RPM_Max_T = 5500;                      % RPM corresponding to max torque
+Car.Powertrain.Engine.RPM_Max_T = 7000; %5500;                      % RPM corresponding to max torque
 Car.Powertrain.Engine.P_Max = 56000;                       % Max power (W)
 Car.Dimension.WheelFL.Radius = 0.230;                          % Tyre radius          [m]   18"
 Car.Dimension.WheelFR.Radius = 0.230;

@@ -10,7 +10,6 @@ FolderName = 'Carfiles_for_Jen';
 SimName = {'Test'};
 
 %% Trackmap
-
 %trackmap = 'Endurance_Track.mat.mat';
 %trackmap = 'Autocross_Track_2018.mat';
 %trackmap = 'Acceleration_Track.mat';
