@@ -17,8 +17,8 @@ FolderName = 'Validation';
 % teams = {'Catalunya_16', 'Aachen_15','West_Bohemia_16','Paderborn_16','Bath_16','Delft_15',...
 %     'Stuttgart_16','Bath_15','CTU_Prague_16','Karlsruhe_16','Wroclaw_16'};
 
-carfiles = {'aachen.mat'};
-teams = {'Aachen_15'};
+carfiles = {'Bath_18.mat'};
+teams = {'Bath_18'};
 
 % Cars we know work!
 % carfiles = {'Delft_15.mat','Bath_15.mat','aachen.mat','Stuttgart_16.mat','cata.mat','Bath_16.mat',...
@@ -58,6 +58,7 @@ for iCar = 1:length(carfiles)
     [Laptimes.SkidPad, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
     Laptimes.SkidPad = Laptimes.SkidPad;    
     % Full lap (stationary start)
+    load(carfiles{iCar});
     disp('Simulating Autocross Test...')
     if strcmp(Car.Year,'2015') == 1 || strcmp(Car.Year,'2016') == 1 || strcmp(Car.Year,'2017') == 1
         trackmap = 'Autocross_Track_2.mat';

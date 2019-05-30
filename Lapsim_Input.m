@@ -5,7 +5,7 @@ clc
 
 %% Save results location
 SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP';
-FolderName = 'CoG_Test';
+FolderName = 'Skid_Test';
 SimName = {'Test'};
 
 %% Trackmap
@@ -18,22 +18,22 @@ SimName = {'Test'};
 % trackmap = 'Autocross_Track_2018.mat';
 % trackmap = 'Endurance_Track.mat';
 % trackmap = 'Acceleration_Track.mat';
-% trackmap = 'SkidPad_Track_new.mat';
-trackmap = 'Full_FS_Weekend';
+trackmap = 'SkidPad_Track_new.mat';
+% trackmap = 'Full_FS_Weekend';
 
 %% vCar boundary conditions
 % Racing_Line_ClosedLoop 
 % BoundaryConditions.vCar_start = 26;
 % BoundaryConditions.vCar_end = 26;
 % Acceleration_Track 
-BoundaryConditions.vCar_start = 0;
-BoundaryConditions.vCar_end = [];
-% SkidPad_Track 
-% BoundaryConditions.vCar_start = 12.8;
+% BoundaryConditions.vCar_start = 0;
 % BoundaryConditions.vCar_end = [];
+% SkidPad_Track 
+BoundaryConditions.vCar_start = 12.8;
+BoundaryConditions.vCar_end = [];
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
-Sweep.Choose_Param = 1;                                % Choose whether to sweep anything or not
+Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
 Sweep.Param = {'Car.Balance.CoG(1)'};             % Variable within car structure to be swept
 Sweep.Values = 0.05:0.05:0.5;
 Sweep.Choose_Carfile = 0;
@@ -73,7 +73,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         SimName = {'Acceleration_Test'};
         BoundaryConditions.vCar_start = 0;
         BoundaryConditions.vCar_end = [];
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
         % Skid-pad test
         disp('Simulating sweep of Skid-Pad Test...')
         trackmap = 'SkidPad_Track_new.mat';
@@ -81,7 +81,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         SimName = {'SkidPad_Test'};
         BoundaryConditions.vCar_start = 13.6;
         BoundaryConditions.vCar_end = [];
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
         % Full lap (stationary start)
         disp('Simulating sweep of Autocross Test...')
         trackmap = 'Autocross_Track_2018.mat';
@@ -89,7 +89,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         SimName = {'Autocross_Test'};
         BoundaryConditions.vCar_start = 0;
         BoundaryConditions.vCar_end = [];
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
         % Full lap (steady state)
         disp('Simulating steady state lap of Endurance Test...')
         trackmap = 'Endurance_Track.mat';
@@ -97,7 +97,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         SimName = {'Endurance_Test'};
         BoundaryConditions.vCar_start = 26;
         BoundaryConditions.vCar_end = 26;
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);        
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);        
     else
         % Dynamic solve for full FS weekend
         
@@ -106,7 +106,7 @@ else
     if Solver.Steady_state == 1
         SaveResults = 1;
     	% Steady state solve for single track
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
     else
         % Dynamic solve for single track
         
