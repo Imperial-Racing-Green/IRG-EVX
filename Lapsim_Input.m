@@ -7,7 +7,7 @@ clc
 
 
 SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
-FolderName = 'Mass_sensitivity';
+FolderName = 'Carfiles_for_Jen';
 SimName = {'Test'};
 
 %% Trackmap
@@ -15,8 +15,8 @@ SimName = {'Test'};
 %trackmap = 'Endurance_Track.mat.mat';
 %trackmap = 'Autocross_Track_2018.mat';
 %trackmap = 'Acceleration_Track.mat';
-trackmap = 'SkidPad_Track_new.mat';
-%trackmap = 'Full_FS_Weekend';
+%trackmap = 'SkidPad_Track_new.mat';
+trackmap = 'Full_FS_Weekend';
 
 %% vCar boundary conditions
 % Racing_Line_ClosedLoop 
@@ -34,8 +34,8 @@ trackmap = 'SkidPad_Track_new.mat';
 Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
 Sweep.Param = {'Car.Mass.Total'};             % Variable within car structure to be swept
 Sweep.Values = 238:5:258;
-Sweep.Choose_Carfile = 0;
-Sweep.Carfile = {'N/A'};
+Sweep.Choose_Carfile = 1;
+Sweep.Carfile = {''};
 Sweep.Choose_Weatherfile = 0;
 Sweep.Weatherfile = {'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\Baseline_Weatherfile.mat'};
 
@@ -71,7 +71,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         SimName = {'SkidPad_Test'};
         BoundaryConditions.vCar_start = 13.6;
         BoundaryConditions.vCar_end = [];
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
         % Full lap (stationary start)
         disp('Simulating sweep of Autocross Test...')
         trackmap = 'Autocross_Track_2018.mat';
@@ -79,7 +79,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         SimName = {'Autocross_Test'};
         BoundaryConditions.vCar_start = 0;
         BoundaryConditions.vCar_end = [];
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
         % Full lap (steady state)
         disp('Simulating steady state lap of Endurance Test...')
         trackmap = 'Endurance_Track.mat';
@@ -87,7 +87,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         SimName = {'Endurance_Test'};
         BoundaryConditions.vCar_start = 26;
         BoundaryConditions.vCar_end = 26;
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);        
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);        
     else
         % Dynamic solve for full FS weekend
         
