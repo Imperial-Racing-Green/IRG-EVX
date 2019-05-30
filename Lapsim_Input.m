@@ -18,8 +18,8 @@ SimName = {'Test'};
 % trackmap = 'Autocross_Track_2018.mat';
 % trackmap = 'Endurance_Track.mat';
 % trackmap = 'Acceleration_Track.mat';
-trackmap = 'SkidPad_Track_new.mat';
-% trackmap = 'Full_FS_Weekend';
+% trackmap = 'SkidPad_Track_new.mat';
+trackmap = 'Full_FS_Weekend';
 
 %% vCar boundary conditions
 % Racing_Line_ClosedLoop 

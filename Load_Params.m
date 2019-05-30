@@ -18,8 +18,8 @@ Car.Mass.Chassis = 22.5 + 7.5;
 Car.Mass.Battery = 27.5;
 % Engine
 Car.Mass.Engine = 70;
-% Motors (plus controller)
-Car.Mass.Motors = 12.6; %(6.9*2) + (7*2);
+% Motors (plus controllers)
+Car.Mass.Motors = 13.94;
 % Steering 
 Car.Mass.Steering = 3.5;
 % Pedals
@@ -66,7 +66,7 @@ Car.Balance.CoG = [0.50, 0, Car.Dimension.CoG(3)/Car.Dimension.Height]; %[Car.Di
 Car.Balance.CoP = [0.55, 0, Car.Dimension.CoP(3)/Car.Dimension.Height]; %[Car.Dimension.xCoP/Car.Dimension.lWheelbase, 0, Car.Dimension.zCoP/Car.Dimension.Height];
 
 % Tyre info
-Car.Tyres.Coefficients.RollingResistance = 0.018; % Need updated number for Hoosier tyres
+Car.Tyres.Coefficients.RollingResistance = 0.020; % Need updated number for Hoosier tyres
 
 % Powertrain info
 % Engine
@@ -81,9 +81,9 @@ Car.Powertrain.Engine.Config = 'rwd';      % (fwd/rwd/4wd   front/rear/4 wheel d
 Car.Powertrain.Motor.MaxPower = 23000; %60000;    % (W)
 Car.Powertrain.Motor.MaxTorque = 8.8*2; %180;     % (Nm)
 Car.Powertrain.Motor.TransmissionRatio = 7;
-Car.Powertrain.Motor.RPM_Lim = 25000; 
-Car.Powertrain.Motor.T_Stall = 35.14;
-Car.Powertrain.Motor.T_Cap = 27; %9;
+Car.Powertrain.Motor.RPM_Lim = 25500; 
+Car.Powertrain.Motor.T_Stall = 34.4524;
+Car.Powertrain.Motor.T_Cap = 25.8393; %9;
 Car.Powertrain.Motor.Config = 'fwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 
 % Brakes info

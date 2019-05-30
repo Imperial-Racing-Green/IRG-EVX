@@ -49,13 +49,13 @@ T_team = Laptimes.SkidPad;
 if T_team > T_max_s
     score_s = 0;
 else
-    if strcmp(Car.Year,'2015') == 1 || strcmp(Car.Year,'2016') == 1 || strcmp(Car.Year,'2017') == 1
+    if strcmp(Car.Year,'2015') == 1 || strcmp(Car.Year,'2016') == 1 || strcmp(Car.Year,'2017') == 1 || strcmp(Car.Year,'2018') == 1
         score_s = (47.5*((((T_max_s/T_team)^2)-1)/(((T_max_s/T_min_s)^2)-1))) + 2.5;
         if score_s > 50
             score_s = 50;
         end
         disp(['Skidpad Time: ',num2str(T_team) 's         Score: ',num2str(score_s),' /50'])
-    elseif strcmp(Car.Year,'2018') == 1
+    elseif strcmp(Car.Year,'2019') == 1
         score_s = (71.5 * ((((T_max_s/T_team)^2)-1)/0.5625)) + 3.5;
         if score_s > 75
             score_s = 75;
@@ -83,13 +83,13 @@ T_team = Laptimes.Autocross;
 if T_team > T_max_auto
     score_auto = 0;
 else
-    if strcmp(Car.Year,'2015') == 1 || strcmp(Car.Year,'2016') == 1 || strcmp(Car.Year,'2017') == 1
+    if strcmp(Car.Year,'2015') == 1 || strcmp(Car.Year,'2016') == 1 || strcmp(Car.Year,'2017') == 1 || strcmp(Car.Year,'2018') == 1
         score_auto = (142.5*(((T_max_auto/T_team) - 1)/((T_max_auto/T_min_auto)-1))) + 7.5;
         if score_auto > 150
             score_auto = 150;
         end
         disp(['Autocross Time: ',num2str(T_team) 's         Score: ',num2str(score_auto),' /150'])
-    elseif strcmp(Car.Year,'2018') == 1
+    elseif strcmp(Car.Year,'2019') == 1
         score_auto = (95.5 * (((T_max_auto/T_team)-1)/0.25)) + 4.5;
         if score_auto > 100
             score_auto = 100;
@@ -117,13 +117,13 @@ time_total = Laptimes.Endurance;
 if time_total > T_max_end
     score_end = 0 ;
 else
-    if strcmp(Car.Year,'2015') == 1 || strcmp(Car.Year,'2016') == 1 || strcmp(Car.Year,'2017') == 1
+    if strcmp(Car.Year,'2015') == 1 || strcmp(Car.Year,'2016') == 1 || strcmp(Car.Year,'2017') == 1 || strcmp(Car.Year,'2019') == 1
         score_end = (250*(((T_max_end/time_total)-1)/((T_max_end/T_min_end)-1))) + 50;
         if score_end > 300
             score_end = 300;
         end
-        disp(['Endurance Time: ',num2str(time_total) 's         Score: ',num2str(score_end),' /300'])
-    elseif strcmp(Car.Year,'2018') == 1
+        disp(['Endurance Time: ',num2str(time_total) 's         Score: ',num2str(score_end),' /300']) 
+    elseif strcmp(Car.Year,'2019') == 1
         score_end = (300 * (((T_max_end/time_total)-1)/0.333)) + 25;
         if score_end > 325
             score_end = 325;
