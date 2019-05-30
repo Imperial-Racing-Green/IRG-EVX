@@ -5,7 +5,6 @@ clc
 
 %% Save results location
 
-
 SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
 FolderName = 'Carfiles_for_Jen';
 SimName = {'Test'};
@@ -23,6 +22,7 @@ trackmap = 'Full_FS_Weekend';
 % BoundaryConditions.vCar_start = 26;
 % BoundaryConditions.vCar_end = 26;
 % Acceleration_Track 
+
 %BoundaryConditions.vCar_start = 0;
 %BoundaryConditions.vCar_end = [];
 % SkidPad_Track 
@@ -63,7 +63,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         SimName = {'Acceleration_Test'};
         BoundaryConditions.vCar_start = 0;
         BoundaryConditions.vCar_end = [];
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
         % Skid-pad test
         disp('Simulating sweep of Skid-Pad Test...')
         trackmap = 'SkidPad_Track_new.mat';
@@ -96,7 +96,7 @@ else
     if Solver.Steady_state == 1
         SaveResults = 1;
     	% Steady state solve for single track
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep,SaveResults);
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
     else
         % Dynamic solve for single track
         

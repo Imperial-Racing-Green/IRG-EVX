@@ -1,8 +1,7 @@
 clear
 clc
 
-
-R = 10.5;
+R = 11.5;
 centre = [-R 0];
 th = 0:pi/300:2*pi;
 x = [R * cos(th) + centre(1)]';
