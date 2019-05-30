@@ -23,7 +23,8 @@ for iSweep = 1:nSweeps
     
     %% Loading Car and Stuff like weather
     [Car,Environment] = Load_Params();
-    
+  
+
 
     % Check which variables (if any) to change
     if Sweep.Choose_Param == 1
@@ -33,18 +34,18 @@ for iSweep = 1:nSweeps
         % Load in a new carfile
         clear Car
         load(Sweep.Carfile{iSweep});
-        if Validation ~= 1  % Only recheck mass for our own car (where we have component masses)
-            Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
-                     Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
-                     Car.Mass.Engine + Car.Mass.Motors + Car.Mass.Steering + Car.Mass.Pedals + ...
-                     Car.Mass.Seat + Car.Mass.FireWall + Car.Mass.Cooling + Car.Mass.Electrics + ...
-                     Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Brakes + Car.Mass.Fueltank;
-        end
+        %if Validation ~= 1  % Only recheck mass for our own car (where we have component masses)
+         %   Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
+%                      Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
+%                      Car.Mass.Engine + Car.Mass.Motors + Car.Mass.Steering + Car.Mass.Pedals + ...
+%                      Car.Mass.Seat + Car.Mass.FireWall + Car.Mass.Cooling + Car.Mass.Electrics + ...
+%                      Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Brakes + Car.Mass.Fueltank;
+        
     elseif Sweep.Choose_Weatherfile == 1
         clear Environment
         load(Sweep.Weatherfile{iSweep});
     end
-    
+
     
     %% Running Kinematics
     % Front_kine = run_kine_sim('Kinematics_Model',Car.Sus.Front.Hardpoints);
@@ -56,7 +57,7 @@ for iSweep = 1:nSweeps
 
     %% Loading Track
 
-%     Track_Dist = 1400; %track distance in metres
+%     Track_Dist = 1375; %track distance in metres
 %     Track_Width = 2.2; %track width in meteres
 %     % Max_Track_Resolution = 1; %track points per metre
 %     Steps = 1; %steps in optmisation smoothness
@@ -66,7 +67,7 @@ for iSweep = 1:nSweeps
 % % 
 % %     %[x,y,theta,curvature,radius,Distance] = Track_Gen(filename,Interpolation,Length,Smoothing,Line_Optim,Track_Width,Optim_Iterations)
 %  [x,y,theta_d,curve_d,radius_d,dist] = Track_Gen('FSUK Track Endurance.csv',Track_Dist*Resolution,Track_Dist,'On','Off',Track_Width,Iterations);
-% % 
+% 
     % Load racing line to skip repeatedely optimising the same track everytime
        load(trackmap)
 %      [x_new,y_new] = Path_Optim(x,y,x0,y0,theta_d,Track_Width,Iterations);
@@ -232,7 +233,7 @@ for iSweep = 1:nSweeps
         else
             error('Incorrect motor configuration! How has the sim got this far???')
         end
-        CombinedMotorThrust = CombinedMotorThrust*rThrottle; % Find when motors are being applied
+        CombinedMotorThrust = CombinedMotorThrust.*rThrottle; % Find when motors are being applied
         MotorPower = CombinedMotorThrust .* vCar; % (W)
         EPower_avg = (trapz(tLap,MotorPower)) / Laptime;
         E_kwh = EPower_avg*(Laptime/3600)/1000;

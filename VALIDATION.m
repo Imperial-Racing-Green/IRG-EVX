@@ -18,11 +18,11 @@ FolderName = 'Validation';
 %     'Stuttgart_16','Bath_15','CTU_Prague_16','Karlsruhe_16','Wroclaw_16'};
 
 % Cars we know work!
-% carfiles = {'Bath_16.mat','aachen.mat'};
-% teams = {'Bath_16','Aachen_15'};
+% carfiles = {'Bath_16.mat','cata.mat',Paderborn_16.mat','CTU_Prague_16.mat','Karlsruhe_16.mat','Wroclaw_16.mat'};
+% teams = {'Bath_16',Catalunya_16','Paderborn_16','Prague_16','Karlsruhe_16','Wroclaw_16'};
 
-carfiles = {'Delft_15.mat'};
-teams = {'Delft_15'};
+carfiles = {'Wroclaw_16.mat'};
+teams = {'Wroclaw_16'};
 
 events = {'Acceleration', 'SkidPad', 'Autocross', 'Endurance', 'FuelEfficiency'};
 
@@ -39,6 +39,7 @@ for iCar = 1:length(carfiles)
     SaveResults = 0;
     Validation = 1;
     % Acceleration test
+    tic
     disp('Simulating sweep of Acceleration Test...')
     trackmap = 'Acceleration_Track.mat';
     FolderSection = [FolderName '\Acceleration_Test'];
@@ -56,7 +57,7 @@ for iCar = 1:length(carfiles)
     [Laptimes.SkidPad, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
     Laptimes.SkidPad = Laptimes.SkidPad / 2;    
     % Full lap (stationary start)
-    disp('Simulating first lap of Endurance Test...')
+    disp('Simulating first lap of Autocross Test...')
     trackmap = 'Autocross_Track_2.mat';
     FolderSection = [FolderName '\Endurance_Test\First_Lap'];
     SimName = {'Endurance_Test_First_Lap'};
@@ -64,7 +65,6 @@ for iCar = 1:length(carfiles)
     BoundaryConditions.vCar_end = [];
     [Laptimes.Autocross, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
     % Full lap (steady state)
-
     disp('Simulating steady state lap of Endurance Test...')
     trackmap = 'Endurance_Track.mat';
     FolderSection = [FolderName '\Endurance_Test\Steady_State'];
@@ -92,7 +92,7 @@ for iCar = 1:length(carfiles)
     end
     Points.Sims.(teams{iCar}).Total = Points.Sims.(teams{iCar}).Acceleration + Points.Sims.(teams{iCar}).SkidPad +...
         Points.Sims.(teams{iCar}).Autocross + Points.Sims.(teams{iCar}).Endurance + Points.Sims.(teams{iCar}).FuelEfficiency;
-    
+    toc
 end
 % Output points for each event
 %% Acceleration

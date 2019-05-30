@@ -3,19 +3,17 @@ close all
 clear
 clc
 
-FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Weekend_Main_Test2';
-
+FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Mass_sensitivity';
 full_weekend = 1;  % If selected point to folder of encolsing all weekend results
-
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%
 
 if full_weekend == 1
     FolderName = {[FolderName '\Acceleration_Test'], [FolderName '\SkidPad_Test'],...
-        [FolderName '\Endurance_Test\First_Lap'], [FolderName '\Endurance_Test\Steady_State']};
+        [FolderName '\Autocross_Test'], [FolderName '\Endurance_Test']};
     Name = {'Sim Viewer: Acceleration Test', 'Sim Viewer: Skid-Pad Test',...
-        'Sim Viewer: Endurance Test First Lap', 'Sim Viewer: Endurance Test Steady State'};
-    Test = {'Acceleration_Test', 'SkidPad_Test', 'Endurance_Test_First_Lap', 'Endurance_Test_Steady_State'};
+        'Sim Viewer: Autocross Test', 'Sim Viewer: Endurance Test'};
+    Test = {'Acceleration_Test', 'SkidPad_Test', 'Autocross_Test', 'Endurance_Test'};
 else
     FolderName = {FolderName};
     Name = {'Sim Viewer'};
@@ -301,13 +299,7 @@ for iTest = 1:length(FolderName)
     ymin = min([yl1(1) yl2(1) yl3(1) yl4(1)]);
     ymax = max([yl1(2) yl2(2) yl3(2) yl4(2)]);
     ax1.YLim = [ymin ymax];    ax2.YLim = [ymin ymax];    ax3.YLim = [ymin ymax];    ax4.YLim = [ymin ymax];
-    % Fuel burn
-    for i = 1:length(filenames)
-        Results.(Test{iTest}).(['Sim' num2str(i)]).MassFlowRate = (Results.(Test{iTest}).(['Sim' num2str(i)]).rThrottle * 0.0023) + 5.2842e-5;
-        Results.(Test{iTest}).(['Sim' num2str(i)]).MassFlowRate(isnan(Results.(Test{iTest}).(['Sim' num2str(i)]).MassFlowRate)) = 5.2842e-5;
-        Results.(Test{iTest}).(['Sim' num2str(i)]).FuelBurn = trapz(Results.(Test{iTest}).(['Sim' num2str(i)]).tLap,Results.(Test{iTest}).(['Sim' num2str(i)]).MassFlowRate);
-    end
-    
+
 end
 
 % Calculate scores
@@ -315,48 +307,59 @@ if full_weekend == 1
     for iTest = 1:length(FolderName)
         Sims = fieldnames(Results.(Test{iTest}));
         t = [];
-        v = [];
+        Co2 = [];
         for iSim = 1:length(sims)
             t(iSim) = Results.(Test{iTest}).(Sims{iSim}).Laptime;
-            v(iSim) = Results.(Test{iTest}).(Sims{iSim}).FuelBurn;
+            Co2(iSim) = Results.(Test{iTest}).(Sims{iSim}).CO2_Usage;
         end
         Times.(Test{iTest}).Sims = t;
-        FuelBurn.(Test{iTest}).Sims = v;
+        CO2_Usage.(Test{iTest}).Sims = Co2;
     end
-    % Get best and worst results of 2018
+    % Get best and worst results of 2016 (not 2018)
     % Acceleration test
-    Times.Acceleration_Test.Best = 3.881;
-    Times.Acceleration_Test.Worst = 4.064;
+    Times.Acceleration_Test.Best = 3.780; % 3.881;
     % Skid-Pad test
-    Times.SkidPad_Test.Best = 4.729;
-    Times.SkidPad_Test.Worst =  5.911;
+    Times.SkidPad_Test.Best = 4.735; % 4.729;
     % Endurance test
-    Times.Endurance_Test.Best = 1439.58;
-    Times.Endurance_Test.Worst = 2087.39;
+    Times.Endurance_Test.Best = 1271.04; % 1439.58;
     % Autocross test
-    Times.Autocross_Test.Best = 52.161;
-    Times.Autocross_Test.Worst = 75.633;
+    Times.Autocross_Test.Best = 52.161; % 47.148;
     % Fuel Efficiency test
-    FuelEfficiency_Test.Best = 0.806;
-    FuelEfficiency_Test.Worst =  0.095;
+%     FuelEfficiency_Test.Best = 0.806;
+%     FuelEfficiency_Test.Worst =  0.095;
+    FuelEfficiency_Test.Worst = 0.139;
+    FuelEfficiency_Test.Best = 0.791;
+    lap_min = 57.775;
+    CO2_min = 0.1169*22;
     % Calculate sim times for specific tests
-    Times.SkidPad_Test.Sims = Times.SkidPad_Test.Sims / 2; 
-    Times.Endurance_Test.Sims = Times.Endurance_Test_First_Lap.Sims + (21*(Times.Endurance_Test_Steady_State.Sims)) + 180;
-    Times.Autocross_Test.Sims = Times.Endurance_Test_First_Lap.Sims;
-    % Calculate fuel efficiency
-    T_Team = Times.Endurance_Test_First_Lap.Sims + (21*(Times.Endurance_Test_Steady_State.Sims)) + 180;
-    V_Team = ((FuelBurn.Endurance_Test_First_Lap.Sims) + (21*FuelBurn.Endurance_Test_Steady_State.Sims) + 180*(5.2842e-5)) / 0.74;
-    T_min = 65.435*22;
-    V_min = (0.0792*22) / 0.74;
-    FuelEfficiencyFactors = (T_min*V_min)./(T_Team.*V_Team);
+    Times.SkidPad_Test.Sims = Times.SkidPad_Test.Sims; 
+    Times.Endurance_Test.Sims = (22*(Times.Endurance_Test.Sims)) + 180 + 1.5;
+    Times.Autocross_Test.Sims = Times.Autocross_Test.Sims;
+    % Calculate fuel efficiency    
+    mFuelPitstop = 180*5.2842e-5;
+    vFuelPitstop = (mFuelPitstop/719.7) * 1000; % (litres)
+    CO2_pitstop = 2.31*vFuelPitstop;
+    CO2_Usage_Total = (22*CO2_Usage.(Test{iTest}).Sims) + CO2_pitstop;
+    FuelEfficiencyFactors = (lap_min./( Times.Endurance_Test.Sims/22)).*(CO2_min./CO2_Usage_Total);
     
     % Calculate other points
     Points.Sim = [1:length(FuelEfficiencyFactors)]';
     Points.Acceleration = (71.5 * ((((Times.Acceleration_Test.Best*1.5)./Times.Acceleration_Test.Sims)-1)/0.5))' + 3.5;
-    Points.Skidpad = (46.5 * (((((Times.SkidPad_Test.Best*1.25)./Times.SkidPad_Test.Sims).^2)-1)/0.5625))' + 3.5;
-    Points.Autocross = (145.5 * ((((Times.Autocross_Test.Best*1.25)./Times.Autocross_Test.Sims)-1)/0.25))' + 4.5;
-    Points.Endurance = (275 * ((((Times.Endurance_Test.Best*1.333)./Times.Endurance_Test.Sims)-1)/0.333))' + 25;
+    Points.Acceleration(Points.Acceleration > 75) = 75;
+%     Points.Skidpad = (46.5 * (((((Times.SkidPad_Test.Best*1.25)./Times.SkidPad_Test.Sims).^2)-1)/0.5625))' + 3.5;
+    Points.Skidpad = (71.5 * (((((Times.SkidPad_Test.Best*1.25)./Times.SkidPad_Test.Sims).^2)-1)/0.5625))' + 3.5;
+%     Points.Skidpad(Points.Skidpad > 50) = 50;
+    Points.Skidpad(Points.Skidpad > 75) = 75;
+%     Points.Autocross = (145.5 * ((((Times.Autocross_Test.Best*1.25)./Times.Autocross_Test.Sims)-1)/0.25))' + 4.5;
+    Points.Autocross = (95.5 * ((((Times.Autocross_Test.Best*1.25)./Times.Autocross_Test.Sims)-1)/0.25))' + 4.5;
+%     Points.Autocross(Points.Autocross > 150) = 150;
+    Points.Autocross(Points.Autocross > 100) = 100;
+%     Points.Endurance = (275 * ((((Times.Endurance_Test.Best*1.333)./Times.Endurance_Test.Sims)-1)/0.333))' + 25;
+    Points.Endurance = (300 * ((((Times.Endurance_Test.Best*1.333)./Times.Endurance_Test.Sims)-1)/0.333))' + 25;
+%     Points.Endurance(Points.Endurance > 300) = 300;
+    Points.Endurance(Points.Endurance > 325) = 325;
     Points.Efficiency = (100 * (((FuelEfficiency_Test.Worst./FuelEfficiencyFactors) - 1) / ((FuelEfficiency_Test.Worst/FuelEfficiency_Test.Best) - 1)))';
+    Points.Efficiency(Points.Efficiency > 100) = 100;
     Points.Total = Points.Acceleration + Points.Skidpad + Points.Autocross + Points.Endurance + Points.Efficiency;
     Points = struct2table(Points);
     figure()
@@ -366,36 +369,45 @@ if full_weekend == 1
     title('Acceleration (75pts)')
     ylabel('Points')
     xlabel('Sim')
+    grid on
     subplot(2,3,2)
     y = table2array(Points(:,3))';
     plot(y,'b-o','LineWidth',1.2)
-    title('Skidpad (50pts)')
+%     title('Skidpad (50pts)')
+    title('Skidpad (75pts)')
     ylabel('Points')
     xlabel('Sim')
+    grid on
     subplot(2,3,3)
     y = table2array(Points(:,4))';
     plot(y,'b-o','LineWidth',1.2)
-    title('Autocross (150pts)')
+%     title('Autocross (150pts)')
+    title('Autocross (100pts)')
     ylabel('Points')
     xlabel('Sim')
+    grid on
     subplot(2,3,4)
     y = table2array(Points(:,5))';
     plot(y,'b-o','LineWidth',1.2)
-    title('Endurance (300pts)')
+%     title('Endurance (300pts)')
+    title('Endurance (325pts)')
     ylabel('Points')
     xlabel('Sim')
+    grid on
     subplot(2,3,5)
     y = table2array(Points(:,6))';
     plot(y,'b-o','LineWidth',1.2)
     title('Efficiency (100 pts)')
     ylabel('Points')
     xlabel('Sim')
+    grid on
     subplot(2,3,6)
     y = table2array(Points(:,7))';
     plot(y,'b-o','LineWidth',1.2)
     title('Total (675pts)')
     ylabel('Points')
     xlabel('Sim')
+    grid on
 
 end
 

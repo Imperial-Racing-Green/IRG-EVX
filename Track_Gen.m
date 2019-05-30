@@ -164,23 +164,23 @@ if strcmpi(Smoothing,'On') == 1
     radius = radius_filtered;
 end
 theta = [theta(1);theta];
-theta(1)=0;
-theta(2)=0;
-theta(end-1)=2*pi;
-theta(end)=2*pi;
-
-curvature(1)=0;
-curvature(2)=0;
-curvature(end-1)=0;
-curvature(end)=0;
-
-radius(1)=1e5;
-radius(2)=1e5;
-radius(end-1)=1e5;
-radius(end)=1e5;
-
-x(end)=0;
-y(end)=0;
-
-
+% theta(1)=0;
+% theta(2)=0;
+% theta(end-1)=2*pi;
+% theta(end)=2*pi;
+% 
+% curvature(1)=0;
+% curvature(2)=0;
+% curvature(end-1)=0;
+% curvature(end)=0;
+% 
+% radius(1)=1e5;
+% radius(2)=1e5;
+% radius(end-1)=1e5;
+% radius(end)=1e5;
+% 
+% x(end)=0;
+% y(end)=0;
+% 
+% 
 
