@@ -161,14 +161,14 @@ for i = 1:n_data %Calculate heave properties
     dydx = (FVIC(i,3)-simOut.channels.z_contact_patch(i))./(FVIC(i,2)-simOut.channels.y_contact_patch(i));
     RCH_heave(i) = FVIC(i,3) - dydx*FVIC(i,2); %RCH is just the y-intercept of the line between contact patch and IC
     
-    CG_loc = [-775, 0, 350]; %Guess of CoG location for anti-feature calculation
+    CG_loc = [-775, 0, 300]; %Guess of CoG location for anti-feature calculation
     h = CG_loc(3);
     l = CG_loc(1) - simOut.channels.x_wheel_centre(i);
     SVSA = SVIC(i,1:2:3) - [simOut.channels.x_wheel_centre(i), simOut.channels.z_wheel_centre(i)];
     SV_delta = SVIC(i,1:2:3) - [simOut.channels.x_contact_patch(i), simOut.channels.z_contact_patch(i)];
     
     AntiSquat(i) = 100 * (SVSA(2)./SVSA(1)) ./ (h/l);
-    AntiDive(i) = 50 * (SV_delta(2)./SV_delta(1)) ./ (h/l);
+    AntiDive(i) = 60 * (SV_delta(2)./SV_delta(1)) ./ (h/l);
 end
 
 simOut.channels.FVIC = FVIC;
@@ -212,21 +212,21 @@ metrics = struct();
 
 
 
-metrics.CamberGain_heave_coef = polyfit(simOut.channels.z_contact_patch(vert_test_start:end),simOut.channels.a_camber(vert_test_start:end),2);
+metrics.CamberGain_heave_coef = polyfit(simOut.channels.z_contact_patch(vert_test_start:end),simOut.channels.a_camber(vert_test_start:end),3);
 % metrics.CamberGain_roll_coef
-metrics.CamberGain_steer_coe = polyfit(simOut.channels.a_toe(1:steer_test_end),simOut.channels.a_camber(1:steer_test_end),2);
-metrics.BumpSteer_coef = polyfit(simOut.channels.z_contact_patch(vert_test_start:end),simOut.channels.a_toe(vert_test_start:end),2);
+metrics.CamberGain_steer_coef = polyfit(simOut.channels.a_toe(1:steer_test_end),simOut.channels.a_camber(1:steer_test_end),3);
+metrics.BumpSteer_coef = polyfit(simOut.channels.z_contact_patch(vert_test_start:end),simOut.channels.a_toe(vert_test_start:end),3);
 % metrics.Ackermann_coef
-metrics.MotionRatio_coef = polyfit(simOut.channels.z_contact_patch(vert_test_start:end),simOut.channels.l_damper(vert_test_start:end),2);
+metrics.MotionRatio_coef = polyfit(simOut.channels.z_contact_patch(vert_test_start:end),simOut.channels.l_damper(vert_test_start:end),3);
 metrics.BumpTravel = max(simOut.channels.z_contact_patch);
 metrics.DroopTravel = abs(min(simOut.channels.z_contact_patch));
 metrics.RCH_static = simOut.channels.l_RCH_heave(static_idx);
-metrics.RCH_heave_coef = polyfit(simOut.channels.z_contact_patch(vert_test_start:end),simOut.channels.l_RCH_heave(vert_test_start:end),2);
+metrics.RCH_heave_coef = polyfit(simOut.channels.z_contact_patch(vert_test_start:end),simOut.channels.l_RCH_heave(vert_test_start:end),3);
 % metrics.RCH_roll_vert_coef
 % metrics.RCH_roll_lat_coef
 metrics.AntiSquat_static = simOut.channels.r_antiSquat(static_idx);
-metrics.AntiDive_coef = polyfit(simOut.channels.r_antiDive(vert_test_start:end),simOut.channels.z_contact_patch(vert_test_start:end),2);
-metrics.SteerJacking_coef = polyfit(simOut.channels.a_toe(1:steer_test_end),simOut.channels.z_contact_patch(1:steer_test_end),2);
+metrics.AntiDive_coef = polyfit(simOut.channels.r_antiDive(vert_test_start:end),simOut.channels.z_contact_patch(vert_test_start:end),3);
+metrics.SteerJacking_coef = polyfit(simOut.channels.a_toe(1:steer_test_end),simOut.channels.z_contact_patch(1:steer_test_end),3);
 metrics.KPI_static = simOut.channels.a_KPI(static_idx);
 metrics.Caster_static = simOut.channels.a_caster(static_idx);
 metrics.ScrubRadius_static = simOut.channels.l_scrubRad(static_idx);
@@ -237,6 +237,7 @@ metrics.l_damper_static = simOut.channels.l_damper(static_idx);
 metrics.MaxSteer_inside = max(simOut.channels.a_toe); 
 metrics.MaxSteer_outside = min(simOut.channels.a_toe);
 metrics.static_idx = static_idx;
+metrics.steer_ratio_coef = polyfit(simOut.channels.y_trackrod(1:steer_test_end),simOut.channels.a_toe(1:steer_test_end),3);
 
 simOut.metrics = metrics;
 
