@@ -155,7 +155,7 @@ for i = length(dist)-1:-1:2
     
     v_x3(i-1) = (v_x3(i)^2 - (2*a_x*(dist(i) - dist(i-1))))^0.5;
 end
-
+v_x3(1)=0;
 %% Output
 
 velocity_d = v_x3;
