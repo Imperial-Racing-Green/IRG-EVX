@@ -17,12 +17,14 @@ FolderName = 'Validation';
 % teams = {'Catalunya_16', 'Aachen_15','West_Bohemia_16','Paderborn_16','Bath_16','Delft_15',...
 %     'Stuttgart_16','Bath_15','CTU_Prague_16','Karlsruhe_16','Wroclaw_16'};
 
-% Cars we know work!
-% carfiles = {'Bath_16.mat','aachen.mat'};
-% teams = {'Bath_16','Aachen_15'};
+carfiles = {'aachen.mat'};
+teams = {'Aachen_15'};
 
-carfiles = {'Delft_15.mat'};
-teams = {'Delft_15'};
+% Cars we know work!
+% carfiles = {'Delft_15.mat','Bath_15.mat','aachen.mat','Stuttgart_16.mat','cata.mat','Bath_16.mat',...
+%             'CTU_Prague_16.mat','Karlsruhe_16.mat','Wroclaw_16.mat','Paderborn_16.mat'};
+% teams = {'Delft_15','Bath_15','Aachen_15','Stuttgart_16','Catalunya_16','Bath_16',...
+%         'CTU_Prague_16','Karlsruhe_16','Wroclaw_16','Paderborn_16'};
 
 events = {'Acceleration', 'SkidPad', 'Autocross', 'Endurance', 'FuelEfficiency'};
 
@@ -39,7 +41,7 @@ for iCar = 1:length(carfiles)
     SaveResults = 0;
     Validation = 1;
     % Acceleration test
-    disp('Simulating sweep of Acceleration Test...')
+    disp('Simulating Acceleration Test...')
     trackmap = 'Acceleration_Track.mat';
     FolderSection = [FolderName '\Acceleration_Test'];
     SimName = {'Acceleration_Test'};
@@ -47,19 +49,23 @@ for iCar = 1:length(carfiles)
     BoundaryConditions.vCar_end = [];
     [Laptimes.Acceleration, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
     % Skid-pad test
-    disp('Simulating sweep of Skid-Pad Test...')
+    disp('Simulating Skid-Pad Test...')
     trackmap = 'SkidPad_Track_new.mat';
     FolderSection = [FolderName '\SkidPad_Test'];
     SimName = {'SkidPad_Test'};
     BoundaryConditions.vCar_start = 12.8;
     BoundaryConditions.vCar_end = [];
     [Laptimes.SkidPad, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
-    Laptimes.SkidPad = Laptimes.SkidPad / 2;    
+    Laptimes.SkidPad = Laptimes.SkidPad;    
     % Full lap (stationary start)
-    disp('Simulating first lap of Endurance Test...')
-    trackmap = 'Autocross_Track_2.mat';
-    FolderSection = [FolderName '\Endurance_Test\First_Lap'];
-    SimName = {'Endurance_Test_First_Lap'};
+    disp('Simulating Autocross Test...')
+    if strcmp(Car.Year,'2015') == 1 || strcmp(Car.Year,'2016') == 1 || strcmp(Car.Year,'2017') == 1
+        trackmap = 'Autocross_Track_2.mat';
+    else % 2018
+        trackmap = 'Autocross_Track_2018.mat';
+    end
+    FolderSection = [FolderName '\Autocross_Test'];
+    SimName = {'Autocross_Test'};
     BoundaryConditions.vCar_start = 0;
     BoundaryConditions.vCar_end = [];
     [Laptimes.Autocross, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);

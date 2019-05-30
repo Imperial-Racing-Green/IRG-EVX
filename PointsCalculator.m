@@ -125,8 +125,8 @@ else
         disp(['Endurance Time: ',num2str(time_total) 's         Score: ',num2str(score_end),' /300'])
     elseif strcmp(Car.Year,'2018') == 1
         score_end = (300 * (((T_max_end/time_total)-1)/0.333)) + 25;
-        if score_end > 100
-            score_end = 100;
+        if score_end > 325
+            score_end = 325;
         end
         disp(['Endurance Time: ',num2str(time_total) 's         Score: ',num2str(score_end),' /325'])
     else

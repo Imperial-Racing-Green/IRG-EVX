@@ -133,6 +133,8 @@ for iSweep = 1:nSweeps
     bkd_T = -Fx_mechanical;
     bkd_T(bkd_T <= 0) = 0;
     rThrottle = fwd_T ./ Force.Powertrain.Thrust.Total;
+    rThrottle(isnan(rThrottle)) = 1;
+    rThrottle(rThrottle > 1) = 1;
 %     rBrake = bkd_T ./ Force.Brakes.Total;
     rBrake = bkd_T ./ max(bkd_T); % A hacky-hack because ^^^ doesn't cap at 1
     % Tyre forces
@@ -194,6 +196,7 @@ for iSweep = 1:nSweeps
         mFuelBurn = trapz(tLap,MassFlowRate); % (kg)
         vFuelBurn = (mFuelBurn / 719.7) * 1000; % (litres)
         CO2_Usage = 2.31 * vFuelBurn;
+        MotorPower = zeros(1,length(vCar));
     elseif strcmp(Car.Category,'EV') == 1
         % Get thrust from motors
         if strcmp(Car.Powertrain.Motor.Config,'fwd') == 1
@@ -226,7 +229,7 @@ for iSweep = 1:nSweeps
         else
             error('Incorrect motor configuration! How has the sim got this far???')
         end
-        CombinedMotorThrust = CombinedMotorThrust*rThrottle; % Find when motors are being applied
+        CombinedMotorThrust = CombinedMotorThrust.*rThrottle; % Find when motors are being applied
         MotorPower = CombinedMotorThrust .* vCar; % (W)
         EPower_avg = (trapz(tLap,MotorPower)) / Laptime;
         E_kwh = EPower_avg*(Laptime/3600)/1000;
@@ -240,15 +243,11 @@ for iSweep = 1:nSweeps
         if ~exist(yourFolder, 'dir')
            mkdir(yourFolder)
         end
-        sim_output_vars = {'Car','Environment','vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle','rBrake','CO2_Usage'};
+        sim_output_vars = {'Car','Environment','vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle','rBrake','CO2_Usage','MotorPower'};
         save([SaveLocation '\' FolderName '\' SimName{iSweep} '.mat'],sim_output_vars{:})
     end
-    
-    if strcmp(trackmap,'SkidPad_Track_new.mat') == 1
-        disp(['Sims completed:  ' num2str(iSweep) '/' num2str(nSweeps) '       Laptime: ' num2str(Laptime/2) 's'])
-    else
-        disp(['Sims completed:  ' num2str(iSweep) '/' num2str(nSweeps) '       Laptime: ' num2str(Laptime) 's'])
-    end
+
+    disp(['Sims completed:  ' num2str(iSweep) '/' num2str(nSweeps) '       Laptime: ' num2str(Laptime) 's'])
 end
     
 end

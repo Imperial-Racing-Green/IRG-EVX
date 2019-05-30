@@ -1,30 +1,40 @@
 clear
 clc
 
-R = 9.75;
-x1 = 0:-(2*R/150):(-2*R);
-y1 = sqrt(R^(2) - ((x1 + R).^(2)));
-x2 = (-2*R):(2*R/150):0;
-y2 = -sqrt(R^(2) - ((x2 + R).^(2)));
-x3 = 0:(2*R/150):(2*R);
-y3 = sqrt(R^(2) - ((x3 - R).^(2)));
-x4 = (2*R):-(2*R/150):0;
-y4 = -sqrt(R^(2) - ((x4 - R).^(2)));
-
-figure()
-plot(x1,y1)
-hold on
-plot(x2,y2)
-plot(x3,y3)
-plot(x4,y4)
+R = 10.5;
+centre = [-R 0];
+th = 0:pi/300:2*pi;
+x = [R * cos(th) + centre(1)]';
+y = [R * sin(th) + centre(2)]';
+plot(x,y);
 axis equal
 
-x = [x1 x2 x3 x4]';
-y = [y1 y2 y3 y4]';
+% R = 10.5;
+% x1 = 0:-(2*R/150):(-2*R);
+% y1 = sqrt(R^(2) - ((x1 + R).^(2)));
+% x2 = (-2*R):(2*R/150):0;
+% y2 = -sqrt(R^(2) - ((x2 + R).^(2)));
+% % x3 = 0:(2*R/150):(2*R);
+% % y3 = sqrt(R^(2) - ((x3 - R).^(2)));
+% % x4 = (2*R):-(2*R/150):0;
+% % y4 = -sqrt(R^(2) - ((x4 - R).^(2)));
+
+% figure()
+% plot(x1,y1)
+% hold on
+% plot(x2,y2)
+% % plot(x3,y3)
+% % plot(x4,y4)
+% axis equal
+
+% x = [x1 x2 x3 x4]';
+% y = [y1 y2 y3 y4]';
+% x = [x1 x2]';
+% y = [y1 y2]';
 Spacing = ((diff(x)).^2 + (diff(y)).^2).^0.5;
 dist = cumsum(Spacing);  
-dist = [ 0 ; dist ; 4*pi*R];
-radius_d = [R*(ones(1,0.5*length(x))) -R*(ones(1,0.5*length(x)))]';
+dist = [ 0 ; dist ; 2*pi*R];
+radius_d = [R*(ones(1,length(x)))]';
 curve_d = 1./radius_d;
 theta_d = [0 ; cumsum(diff(dist).*curve_d)];
 
