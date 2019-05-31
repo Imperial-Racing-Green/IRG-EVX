@@ -117,7 +117,7 @@ time_total = Laptimes.Endurance;
 if time_total > T_max_end
     score_end = 0 ;
 else
-    if strcmp(Car.Year,'2015') == 1 || strcmp(Car.Year,'2016') == 1 || strcmp(Car.Year,'2017') == 1 || strcmp(Car.Year,'2019') == 1
+    if strcmp(Car.Year,'2015') == 1 || strcmp(Car.Year,'2016') == 1 || strcmp(Car.Year,'2017') == 1 || strcmp(Car.Year,'2018') == 1
         score_end = (250*(((T_max_end/time_total)-1)/((T_max_end/T_min_end)-1))) + 50;
         if score_end > 300
             score_end = 300;

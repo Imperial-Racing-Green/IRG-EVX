@@ -284,10 +284,14 @@ for i = length(dist):-1:2
             Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal);
         end
         Fx_traction = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
-
+        
+%         % Account for drag and rolling resistance
+%         Fx_rollres = - Car.Tyres.Coefficients.RollingResistance*[Fz_FL_d(i); Fz_FR_d(i); Fz_RL_d(i); Fz_RR_d(i)]; 
+%         Fx_decel = Brake_Fx - ((0.25*F_D)*ones(length(Brake_Fx),1)) - Fx_rollres;
+%         Fx_real = max(Fx_decel,Fx_traction);
         Fx_real = max(Brake_Fx,Fx_traction);
 
-        Fx_sum = sum(Fx_real);
+%         Fx_sum = sum(Fx_real);
         % Account for drag and rolling resistance
         Fx_rollres = -Fz_sum(i)*Car.Tyres.Coefficients.RollingResistance; % Assume all wheels (including driven wheels) contribute
         Fx_sum = Fx_sum - F_D - Fx_rollres;

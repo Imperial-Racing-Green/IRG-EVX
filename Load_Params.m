@@ -62,8 +62,7 @@ Car.Dimension.CoG = [0.8029, 0, 0.3]; % Behind front axle
 Car.Dimension.CoP = [0.8525, 0, 0.37]; % Behind front axle
 
 % Percentage of axle separation length from front axles 
-
-Car.Balance.CoG = [0.50, 0, Car.Dimension.CoG(3)/Car.Dimension.Height]; %[Car.Dimension.xCoG/Car.Dimension.lWheelbase, 0, Car.Dimension.zCoG/Car.Dimension.Height]; 
+Car.Balance.CoG = [0.473, 0, Car.Dimension.CoG(3)/Car.Dimension.Height]; %[Car.Dimension.xCoG/Car.Dimension.lWheelbase, 0, Car.Dimension.zCoG/Car.Dimension.Height]; 
 Car.Balance.CoP = [0.55, 0, Car.Dimension.CoP(3)/Car.Dimension.Height]; %[Car.Dimension.xCoP/Car.Dimension.lWheelbase, 0, Car.Dimension.zCoP/Car.Dimension.Height];
 
 % Tyre info
