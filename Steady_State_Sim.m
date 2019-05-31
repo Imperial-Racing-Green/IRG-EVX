@@ -40,11 +40,13 @@ for iSweep = 1:nSweeps
                      Car.Mass.Engine + Car.Mass.Motors + Car.Mass.Steering + Car.Mass.Pedals + ...
                      Car.Mass.Seat + Car.Mass.FireWall + Car.Mass.Cooling + Car.Mass.Electrics + ...
                      Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Brakes + Car.Mass.Fueltank;
-        
+        end
     elseif Sweep.Choose_Weatherfile == 1
         clear Environment
         load(Sweep.Weatherfile{iSweep});
     end
+
+
 
     
     %% Running Kinematics

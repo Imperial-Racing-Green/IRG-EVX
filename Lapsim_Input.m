@@ -6,7 +6,7 @@ clc
 %% Save results location
 
 SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
-FolderName = 'Carfiles_for_Jen';
+FolderName = 'CL_sensitivity_sweep';
 SimName = {'Test'};
 
 %% Trackmap
@@ -25,15 +25,15 @@ trackmap = 'Full_FS_Weekend';
 %BoundaryConditions.vCar_start = 0;
 %BoundaryConditions.vCar_end = [];
 % SkidPad_Track 
-  BoundaryConditions.vCar_start = 12.8;
+  BoundaryConditions.vCar_start = 13.6;
   BoundaryConditions.vCar_end = [];
 
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
-Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
-Sweep.Param = {'Car.Mass.Total'};             % Variable within car structure to be swept
-Sweep.Values = 238:5:258;
-Sweep.Choose_Carfile = 1;
+Sweep.Choose_Param = 1;                                % Choose whether to sweep anything or not
+Sweep.Param = {'Car.AeroPerformance.C_L'};             % Variable within car structure to be swept
+Sweep.Values = 0:0.5:4;
+Sweep.Choose_Carfile = 0;
 Sweep.Carfile = {''};
 Sweep.Choose_Weatherfile = 0;
 Sweep.Weatherfile = {'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\Baseline_Weatherfile.mat'};
@@ -95,7 +95,7 @@ else
     if Solver.Steady_state == 1
         SaveResults = 1;
     	% Steady state solve for single track
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
+        Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
     else
         % Dynamic solve for single track
         
