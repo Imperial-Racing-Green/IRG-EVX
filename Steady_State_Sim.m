@@ -236,14 +236,37 @@ for iSweep = 1:nSweeps
         CO2_Usage = CO2_Usage + (0.65*E_kwh);
     end
     
-    
+    %% Stability analasis checks
+    vCar_avg_corner = 20;   % Avergae cornering speed (m/s)
+    % Static stability
+    [K,SM,SI,UG,V_tangent,V_crit,V_char,K_Aero,SM_Aero,SI_Aero,UG_Aero,V_tangent_Aero,V_crit_Aero,V_char_Aero,delta_neutral] = s_stab(Car.Mass.Total,vCar_avg_corner,Car.Dimension.lWheelbase,Car.Balance.CoG(1),Car.Balance.CoP(1),-Car.AeroPerformance.C_L,Car.Dimension.FrontalArea);
+    Stability.Static.K = K;
+    Stability.Static.SM = SM;
+    Stability.Static.SI = SI;
+    Stability.Static.UG = UG;
+    Stability.Static.V_tangent = V_tangent;
+    Stability.Static.V_crit = V_crit;
+    Stability.Static.V_char = V_char;
+    Stability.Static.K_Aero = K_Aero;
+    Stability.Static.SM_Aero = SM_Aero;
+    Stability.Static.SI_Aero = SI_Aero;
+    Stability.Static.UG_Aero = UG_Aero;
+    Stability.Static.V_tangent_Aero = V_tangent_Aero;
+    Stability.Static.V_crit_Aero = V_crit_Aero;
+    Stability.Static.V_char_Aero = V_char_Aero;
+    Stability.Static.delta_neutral = delta_neutral;
+    % Dynamic Stability
+    [E_Values] = d_stab(Car.Mass.Total,vCar_avg_corner,Car.Dimension.lWheelbase,Car.Balance.CoG(1),Car.Balance.CoP(1),-Car.AeroPerformance.C_L,Car.Dimension.FrontalArea);
+    Stability.Dynamic.E_Values = E_Values;
+
     if SaveResults == 1
         % Save results to desired location
         yourFolder = [SaveLocation '\' FolderName];
         if ~exist(yourFolder, 'dir')
            mkdir(yourFolder)
         end
-        sim_output_vars = {'Car','Environment','vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle','rBrake','CO2_Usage','MotorPower'};
+        sim_output_vars = {'Car','Environment','vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle',...
+                           'rBrake','CO2_Usage','MotorPower','Stability'};
         save([SaveLocation '\' FolderName '\' SimName{iSweep} '.mat'],sim_output_vars{:})
     end
 
