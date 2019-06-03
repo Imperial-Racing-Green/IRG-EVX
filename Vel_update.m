@@ -247,7 +247,11 @@ else
     v_x3(end) = v_x2(end);
 end
 
+j=0;
+
 for i = length(dist):-1:2
+    j=j+1;
+    
     v_x3(i) = min(v_x3(i),v_x2(i));
     
     [F_L,F_D] = Aero_Forces(v_x3(i),Environment,Car);
@@ -384,11 +388,11 @@ for i = length(dist):-1:2
     
     v_x3(i-1) = (v_x3(i)^2 - (2*a_x*(dist(i) - dist(i-1))))^0.5;
     
-%      b=ceil(mod(i-(length(dist)-1),length(dist)/10));  
-%      
-%      if b==0
-%       disp(['Braking limit: ' num2str(i-(length(dist)-1)/(length(dist)/100)) ' % complete']);
-%      end 
+  b=ceil(mod(j+1,length(dist)/10));  
+     
+     if b==0
+      disp(['Brake limit: ' num2str((j+1)/(length(dist)/100)) ' % complete']);
+     end 
      
 end
 v_x3(1) = min(v_x3(1),v_x2(1));

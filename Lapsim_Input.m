@@ -6,15 +6,15 @@ clc
 %% Save results location
 
 SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
-FolderName = 'CL_sensitivity_sweep';
+FolderName = 'Is_hybrid_good_sweep_fwd_rwd';
 SimName = {'Test'};
 
 %% Trackmap
-trackmap = 'Endurance_Track.mat';
+%trackmap = 'Endurance_Track.mat';
 %trackmap = 'Autocross_Track_2018.mat';
 %trackmap = 'Acceleration_Track.mat';
 %trackmap = 'SkidPad_Track_new.mat';
-%trackmap = 'Full_FS_Weekend';
+trackmap = 'Full_FS_Weekend';
 
 %% vCar boundary conditions
 % Racing_Line_ClosedLoop 
@@ -32,8 +32,14 @@ BoundaryConditions.vCar_end = 26;
 Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
 Sweep.Param = {'Car.AeroPerformance.C_L'};             % Variable within car structure to be swept
 Sweep.Values = 0:0.5:4;
-Sweep.Choose_Carfile = 0;
-Sweep.Carfile = {''};
+Sweep.Choose_Carfile = 1;
+Sweep.Carfile = {'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Baseline_Carfile_Master'...
+                 'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Baseline_Carfile_electric_fwd'...
+                 'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Baseline_Carfile_electric_rwd'...
+                 'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Baseline_Carfile_engine_fwd'...
+                 'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Baseline_Carfile_engine_rwd'...
+                 'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Baseline_Carfile_Master_fwd'...
+                 'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Baseline_Carfile_Master_rwd'};
 Sweep.Choose_Weatherfile = 0;
 Sweep.Weatherfile = {'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\Baseline_Weatherfile.mat'};
 

@@ -3,7 +3,7 @@ close all
 clear
 clc
 
-FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Mass_sensitivity_sweep';
+FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Is_hybrid_good_sweep';
 full_weekend = 1;  % If selected point to folder of encolsing all weekend results
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%
