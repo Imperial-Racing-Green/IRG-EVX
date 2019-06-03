@@ -10,27 +10,26 @@ FolderName = 'CL_sensitivity_sweep';
 SimName = {'Test'};
 
 %% Trackmap
-%trackmap = 'Endurance_Track.mat.mat';
+trackmap = 'Endurance_Track.mat';
 %trackmap = 'Autocross_Track_2018.mat';
 %trackmap = 'Acceleration_Track.mat';
 %trackmap = 'SkidPad_Track_new.mat';
-trackmap = 'Full_FS_Weekend';
+%trackmap = 'Full_FS_Weekend';
 
 %% vCar boundary conditions
 % Racing_Line_ClosedLoop 
-% BoundaryConditions.vCar_start = 26;
-% BoundaryConditions.vCar_end = 26;
+BoundaryConditions.vCar_start = 26;
+BoundaryConditions.vCar_end = 26;
 % Acceleration_Track 
-
 %BoundaryConditions.vCar_start = 0;
 %BoundaryConditions.vCar_end = [];
 % SkidPad_Track 
-  BoundaryConditions.vCar_start = 13.6;
-  BoundaryConditions.vCar_end = [];
+%   BoundaryConditions.vCar_start = 13.6;
+%   BoundaryConditions.vCar_end = [];
 
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
-Sweep.Choose_Param = 1;                                % Choose whether to sweep anything or not
+Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
 Sweep.Param = {'Car.AeroPerformance.C_L'};             % Variable within car structure to be swept
 Sweep.Values = 0:0.5:4;
 Sweep.Choose_Carfile = 0;

@@ -17,7 +17,6 @@ Sh = 0; %Horizontal shift
 x = 0.0174533.*SM + Sh;
 y = D2*sin(C*atan(B*x - E*(B*x - atan(B*x))));
 F = y;
-
 theta = atand(SL./SA);
 Fx = abs(F.*sind(theta)).*sign(SL);
 Fy = abs(F.*cosd(theta)).*sign(SA);
