@@ -23,11 +23,11 @@ RPM_motor = min(motorspeed,RPM_Lim);
 T_motor =  T_Stall - ((RPM_motor/RPM_Lim)*T_Stall);
 T_motor = min(T_motor,T_Cap);
 
-% p_Motor = (T_motor * RPM_motor) / 9.5488;
-% if p_Motor > 30
-%     p_Motor = 30;
-%     T_motor = (9.5488 * p_Motor) / RPM_motor;
-% end
+p_Motor = (T_motor * RPM_motor) / 9.5488;
+if p_Motor > 30000
+    p_Motor = 30000;
+    T_motor = (9.5488 * p_Motor) / RPM_motor;
+end
 
 if isnan(T_motor)
     T_motor = 0;

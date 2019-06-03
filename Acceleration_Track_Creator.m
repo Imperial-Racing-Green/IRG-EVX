@@ -2,15 +2,15 @@ clear
 clc
 
 x = zeros(601,1);
-y = [0:(800/600):800]';
+y = [0:(75/600):75]';
 
 dist = y;  
 
-radius_d = 1e6*ones(601,1);
+radius_d = 1e20*ones(601,1);
 curve_d = 1./radius_d;
 theta_d = x;
 
-% save('DragRace_Track','x','y','radius_d','curve_d','theta_d','dist')
+% save('Acceleration_Track','x','y','radius_d','curve_d','theta_d','dist')
 
 % theta_d = atan2(diff(y),diff(x));
 

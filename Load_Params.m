@@ -35,6 +35,8 @@ Car.Mass.Electrics = 10;
 % Aero
 Car.Mass.FrontWing = 7; 
 Car.Mass.RearWing = 6;
+Car.Mass.Floor = 7; % Including diffuser
+Car.Mass.Bodywork = 10;
 % Brakes
 Car.Mass.Brakes = 4*2.3518;
 % Fuel tank (plus some fuel)
@@ -44,7 +46,8 @@ Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Ma
                  Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
                  Car.Mass.Engine + Car.Mass.Motors + Car.Mass.Steering + Car.Mass.Pedals + ...
                  Car.Mass.Seat + Car.Mass.FireWall + Car.Mass.Cooling + Car.Mass.Electrics + ...
-                 Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Brakes + Car.Mass.Fueltank;
+                 Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Floor + Car.Mass.Bodywork + ...
+                 Car.Mass.Brakes + Car.Mass.Fueltank;
              
 Car.Stiffness.Chassis = 50000;
 
@@ -56,7 +59,7 @@ Car.Dimension.WheelRR.Radius = 0.2032;
 Car.Dimension.Front_track = 1.417;
 Car.Dimension.Rear_track = 1.417;
 Car.Dimension.Height = 1.4;
-Car.Dimension.FrontalArea = 1.5;
+Car.Dimension.FrontalArea = 1.2;
 Car.Dimension.lWheelbase = 1.55;
 Car.Dimension.CoG = [0.8029, 0, 0.3]; % Behind front axle
 Car.Dimension.CoP = [0.8525, 0, 0.37]; % Behind front axle
@@ -80,7 +83,7 @@ Car.Powertrain.Engine.Config = 'rwd';      % (fwd/rwd/4wd   front/rear/4 wheel d
 % Battery/motor (values for single motor)
 Car.Powertrain.Motor.MaxPower = 23000; %60000;    % (W)
 Car.Powertrain.Motor.MaxTorque = 8.8*2; %180;     % (Nm)
-Car.Powertrain.Motor.TransmissionRatio = 7;
+Car.Powertrain.Motor.TransmissionRatio = 10;
 Car.Powertrain.Motor.RPM_Lim = 25500; 
 Car.Powertrain.Motor.T_Stall = 34.4524;
 Car.Powertrain.Motor.T_Cap = 25.8393; %9;

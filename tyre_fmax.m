@@ -1,4 +1,4 @@
-function [F_x,F_y,F_xmax,F_ymax,F_xmin,F_ymin] = tyre_fmax(Fz,points)
+function [F_x,F_y,F_xmax,F_ymax,F_xmin,F_ymin,SA_xmax,SA_xmin,SL_xmax,SL_xmin,SA_ymax,SA_ymin,SL_ymax,SL_ymin] = tyre_fmax(Fz,points)
 
 % Slip ratio
 SL = linspace(-1,1,points);
@@ -20,12 +20,17 @@ F_y(isnan(F_y)) = 0;
 % surf(SA,SL,F_y)
 % figure
 % hold on
-Force = zeros(length(F_x),length(F_x));
+% Force = zeros(length(F_x),length(F_x));
+Force = [];
+SlipAngle = [];
+SlipRatio = [];
 for i = 1:length(F_x)
     for j = 1:length(F_x)
 %         scatter(F_x(i,j),F_y(i,j))
-        Force(j + length(F_x) * (i-1),1) = F_x(i,j);
-        Force(j + length(F_x) * (i-1),2) = F_y(i,j);
+        Force(j + (length(F_x)*(i-1)),1) = F_x(i,j);
+        Force(j + (length(F_x)*(i-1)),2) = F_y(i,j);
+        SlipAngle(j + (length(F_x)*(i-1)),1) = SA(i,j);
+        SlipRatio(j + (length(F_x)*(i-1)),1) = SL(i,j);
     end
 end
 % xlabel('Fx')
@@ -80,12 +85,27 @@ if abs(Fz) == 0
     F_xmin = 0;
     F_ymax = 0;
     F_ymin = 0;
+    SA_xmax = 0;
+    SA_xmin = 0;
+    SL_xmax = 0;
+    SL_xmin = 0;
+    SA_ymax = 0;
+    SA_ymin = 0;
+    SL_ymax = 0;
+    SL_ymin = 0;
 else
     F_xmax = [Force(k_xmax,1),Force(k_xmax,2)];
     F_xmin = [Force(k_xmin,1),Force(k_xmin,2)];
-    
+    SA_xmax = SlipAngle(k_xmax);
+    SA_xmin = SlipAngle(k_xmin);
+    SL_xmax = SlipRatio(k_xmax);
+    SL_xmin = SlipRatio(k_xmin);
     F_ymax = [Force(k_ymax,1),Force(k_ymax,2)];
     F_ymin = [Force(k_ymin,1),Force(k_ymin,2)];
+    SA_ymax = SlipAngle(k_ymax);
+    SA_ymin = SlipAngle(k_ymin);
+    SL_ymax = SlipRatio(k_ymax);
+    SL_ymin = SlipRatio(k_ymin);
 end
 
 % for i = 1:length(F_x)

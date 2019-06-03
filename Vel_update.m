@@ -1,7 +1,7 @@
 function velocity_d = Vel_update(Fz_log,dist,dist_log,radius_d,Environment,Car,BoundaryConditions)
 
 %% Finding max velocity at each curvature
-radius_d(radius_d == 0) = 1e5;
+radius_d(radius_d == 0) = 1e-5;
 
 Fz_FL_t = Fz_log.Data(:,1);
 Fz_FR_t = Fz_log.Data(:,2);
@@ -28,14 +28,18 @@ v_x_check = zeros(1,length(dist));
 while eps >= eps_lim
 
     for i = 1:length(dist)
-        [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
-            F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),10);
-        [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),...
-            F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),10);
-        [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),...
-            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),10);
-        [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),...
-            F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),10);
+        [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),F_xFLmin(:,:,i),F_yFLmin(:,:,i),...
+            SA_FL_xmax(:,i),SA_FL_xmin(:,i),SL_FL_xmax(:,i),SL_FL_xmin(:,i),...
+            SA_FL_ymax(:,i),SA_FL_ymin(:,i),SL_FL_ymax(:,i),SL_FL_ymin(:,i)] = tyre_fmax(Fz_FL_d(i),10);
+        [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),F_xFRmin(:,:,i),F_yFRmin(:,:,i),...
+            SA_FR_xmax(:,i),SA_FR_xmin(:,i),SL_FR_xmax(:,i),SL_FR_xmin(:,i),...
+            SA_FR_ymax(:,i),SA_FR_ymin(:,i),SL_FR_ymax(:,i),SL_FR_ymin(:,i)] = tyre_fmax(Fz_FR_d(i),10);
+        [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),F_xRLmin(:,:,i),F_yRLmin(:,:,i),...
+            SA_RL_xmax(:,i),SA_RL_xmin(:,i),SL_RL_xmax(:,i),SL_RL_xmin(:,i),...
+            SA_RL_ymax(:,i),SA_RL_ymin(:,i),SL_RL_ymax(:,i),SL_RL_ymin(:,i)] = tyre_fmax(Fz_RL_d(i),10);
+        [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),F_xRRmin(:,:,i),F_yRRmin(:,:,i),...
+            SA_RR_xmax(:,i),SA_RR_xmin(:,i),SL_RR_xmax(:,i),SL_RR_xmin(:,i),...
+            SA_RR_ymax(:,i),SA_RR_ymin(:,i),SL_RR_ymax(:,i),SL_RR_ymin(:,i)] = tyre_fmax(Fz_RR_d(i),10);
     end
 
     for i = 1:length(radius_d)
@@ -67,7 +71,7 @@ while eps >= eps_lim
 
     % Add downforce
     for i = 1:length(v_x)
-        [F_L,F_D] = Aero_Forces(v_x(i),Environment,Car);
+        [F_L,~] = Aero_Forces(v_x(i),Environment,Car);
         Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2);
         Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2);
         Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.CoP(1)))/2);
@@ -114,41 +118,61 @@ for i = 1:length(dist)-1
     while eps > eps_lim
         
         % Re-evaluate tyre potential
-        [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
-                F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),10);
-        [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),...
-            F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),10);
-        [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),...
-            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),10);
-        [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),...
-            F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),10);
+        [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),F_xFLmin(:,:,i),F_yFLmin(:,:,i),...
+            SA_FL_xmax(:,i),SA_FL_xmin(:,i),SL_FL_xmax(:,i),SL_FL_xmin(:,i),...
+            SA_FL_ymax(:,i),SA_FL_ymin(:,i),SL_FL_ymax(:,i),SL_FL_ymin(:,i)] = tyre_fmax(Fz_FL_d(i),10);
+        [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),F_xFRmin(:,:,i),F_yFRmin(:,:,i),...
+            SA_FR_xmax(:,i),SA_FR_xmin(:,i),SL_FR_xmax(:,i),SL_FR_xmin(:,i),...
+            SA_FR_ymax(:,i),SA_FR_ymin(:,i),SL_FR_ymax(:,i),SL_FR_ymin(:,i)] = tyre_fmax(Fz_FR_d(i),10);
+        [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),F_xRLmin(:,:,i),F_yRLmin(:,:,i),...
+            SA_RL_xmax(:,i),SA_RL_xmin(:,i),SL_RL_xmax(:,i),SL_RL_xmin(:,i),...
+            SA_RL_ymax(:,i),SA_RL_ymin(:,i),SL_RL_ymax(:,i),SL_RL_ymin(:,i)] = tyre_fmax(Fz_RL_d(i),10);
+        [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),F_xRRmin(:,:,i),F_yRRmin(:,:,i),...
+            SA_RR_xmax(:,i),SA_RR_xmin(:,i),SL_RR_xmax(:,i),SL_RR_xmin(:,i),...
+            SA_RR_ymax(:,i),SA_RR_ymin(:,i),SL_RR_ymax(:,i),SL_RR_ymin(:,i)] = tyre_fmax(Fz_RR_d(i),10);
     
         Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_FL_d(i) == 0
             Fx_FLreal = 0;
+            SA.FL(i) = 0;
+            SL.FL(i) = 0;
         else
-            Fx_FLreal = interp1(F_xFLmax(:,2,i),F_xFLmax(:,1,i),Fy_FLreal);
+            Fx_FLreal = interp1(F_xFLmax(:,2,i),F_xFLmax(:,1,i),Fy_FLreal,'pchip');
+            SA.FL(i) = interp1(F_xFLmax(:,2,i),SA_FL_xmax(:,i),Fy_FLreal,'pchip');
+            SL.FL(i) = interp1(F_xFLmax(:,2,i),SL_FL_xmax(:,i),Fy_FLreal,'pchip');
         end
 
         Fy_FRreal = (Fz_FR_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_FR_d(i) == 0
             Fx_FRreal = 0;
+            SA.FR(i) = 0;
+            SL.FR(i) = 0;
         else
-            Fx_FRreal = interp1(F_xFRmax(:,2,i),F_xFRmax(:,1,i),Fy_FRreal);
+            Fx_FRreal = interp1(F_xFRmax(:,2,i),F_xFRmax(:,1,i),Fy_FRreal,'pchip');
+            SA.FR(i) = interp1(F_xFRmax(:,2,i),SA_FR_xmax(:,i),Fy_FRreal,'pchip');
+            SL.FR(i) = interp1(F_xFRmax(:,2,i),SL_FR_xmax(:,i),Fy_FRreal,'pchip');
         end
 
         Fy_RLreal = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_RL_d(i) == 0
             Fx_RLreal = 0;
+            SA.RL(i) = 0;
+            SL.RL(i) = 0;
         else
-            Fx_RLreal = interp1(F_xRLmax(:,2,i),F_xRLmax(:,1,i),Fy_RLreal);
+            Fx_RLreal = interp1(F_xRLmax(:,2,i),F_xRLmax(:,1,i),Fy_RLreal,'pchip');
+            SA.RL(i) = interp1(F_xRLmax(:,2,i),SA_RL_xmax(:,i),Fy_RLreal,'pchip');
+            SL.RL(i) = interp1(F_xRLmax(:,2,i),SL_RL_xmax(:,i),Fy_RLreal,'pchip');
         end
 
         Fy_RRreal = (Fz_RR_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_RR_d(i) == 0
             Fx_RRreal = 0;
+            SA.RR(i) = 0;
+            SL.RR(i) = 0;
         else
-            Fx_RRreal = interp1(F_xRRmax(:,2,i),F_xRRmax(:,1,i),Fy_RRreal);
+            Fx_RRreal = interp1(F_xRRmax(:,2,i),F_xRRmax(:,1,i),Fy_RRreal,'pchip');
+            SA.RR(i) = interp1(F_xRLmax(:,2,i),SA_RL_xmax(:,i),Fy_RLreal,'pchip');
+            SL.RR(i) = interp1(F_xRLmax(:,2,i),SL_RL_xmax(:,i),Fy_RLreal,'pchip');
         end
         Fx_traction = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
 
@@ -209,43 +233,90 @@ for i = length(dist):-1:2
     while eps > eps_lim
         
         % Re-evaluate tyre potential
-        [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
-                F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz_FL_d(i),10);
-        [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),...
-            F_xFRmin(:,:,i),F_yFRmin(:,:,i)] = tyre_fmax(Fz_FR_d(i),10);
-        [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),...
-            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz_RL_d(i),10);
-        [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),...
-            F_xRRmin(:,:,i),F_yRRmin(:,:,i)] = tyre_fmax(Fz_RR_d(i),10);
+        [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),F_xFLmin(:,:,i),F_yFLmin(:,:,i),...
+            SA_FL_xmax(:,i),SA_FL_xmin(:,i),SL_FL_xmax(:,i),SL_FL_xmin(:,i),...
+            SA_FL_ymax(:,i),SA_FL_ymin(:,i),SL_FL_ymax(:,i),SL_FL_ymin(:,i)] = tyre_fmax(Fz_FL_d(i),10);
+        [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),F_xFRmin(:,:,i),F_yFRmin(:,:,i),...
+            SA_FR_xmax(:,i),SA_FR_xmin(:,i),SL_FR_xmax(:,i),SL_FR_xmin(:,i),...
+            SA_FR_ymax(:,i),SA_FR_ymin(:,i),SL_FR_ymax(:,i),SL_FR_ymin(:,i)] = tyre_fmax(Fz_FR_d(i),10);
+        [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),F_xRLmin(:,:,i),F_yRLmin(:,:,i),...
+            SA_RL_xmax(:,i),SA_RL_xmin(:,i),SL_RL_xmax(:,i),SL_RL_xmin(:,i),...
+            SA_RL_ymax(:,i),SA_RL_ymin(:,i),SL_RL_ymax(:,i),SL_RL_ymin(:,i)] = tyre_fmax(Fz_RL_d(i),10);
+        [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),F_xRRmin(:,:,i),F_yRRmin(:,:,i),...
+            SA_RR_xmax(:,i),SA_RR_xmin(:,i),SL_RR_xmax(:,i),SL_RR_xmin(:,i),...
+            SA_RR_ymax(:,i),SA_RR_ymin(:,i),SL_RR_ymax(:,i),SL_RR_ymin(:,i)] = tyre_fmax(Fz_RR_d(i),10);
         
         Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
-
         if Fz_FL_d(i) == 0
             Fx_FLreal = 0;
+            SA.FL(i) = 0;
+            SL.FL(i) = 0;
         else
-            Fx_FLreal = interp1(F_xFLmin(:,2,i),F_xFLmin(:,1,i),Fy_FLreal);
+            Fx_FLreal = interp1(F_xFLmin(:,2,i),F_xFLmin(:,1,i),Fy_FLreal,'pchip');
+            SA.FL(i) = interp1(F_xFLmin(:,2,i),SA_FL_xmin(:,i),Fy_FLreal,'pchip');
+            SL.FL(i) = interp1(F_xFLmin(:,2,i),SL_FL_xmin(:,i),Fy_FLreal,'pchip');
         end
 
         Fy_FRreal = (Fz_FR_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_FR_d(i) == 0
             Fx_FRreal = 0;
+            SA.FR(i) = 0;
+            SL.FR(i) = 0;
         else
-            Fx_FRreal = interp1(F_xFRmin(:,2,i),F_xFRmin(:,1,i),Fy_FRreal);
+            Fx_FRreal = interp1(F_xFRmin(:,2,i),F_xFRmin(:,1,i),Fy_FRreal,'pchip');
+            SA.FR(i) = interp1(F_xFRmin(:,2,i),SA_FR_xmin(:,i),Fy_FRreal,'pchip');
+            SL.FR(i) = interp1(F_xFRmin(:,2,i),SL_FR_xmin(:,i),Fy_FRreal,'pchip');
         end
 
         Fy_RLreal = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_RL_d(i) == 0
             Fx_RLreal = 0;
+            SA.RL(i) = 0;
+            SL.RL(i) = 0;
         else
-            Fx_RLreal = interp1(F_xRLmin(:,2,i),F_xRLmin(:,1,i),Fy_RLreal);
+            Fx_RLreal = interp1(F_xRLmin(:,2,i),F_xRLmin(:,1,i),Fy_RLreal,'pchip');
+            SA.RL(i) = interp1(F_xRLmin(:,2,i),SA_RL_xmin(:,i),Fy_RLreal,'pchip');
+            SL.RL(i) = interp1(F_xRLmin(:,2,i),SL_RL_xmin(:,i),Fy_RLreal,'pchip');
         end
 
         Fy_RRreal = (Fz_RR_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_RR_d(i) == 0
             Fx_RRreal = 0;
+            SA.RR(i) = 0;
+            SL.RR(i) = 0;
         else
-            Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal);
+            Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal,'pchip');
+            SA.RR(i) = interp1(F_xRLmin(:,2,i),SA_RL_xmin(:,i),Fy_RLreal,'pchip');
+            SL.RR(i) = interp1(F_xRLmin(:,2,i),SL_RL_xmin(:,i),Fy_RLreal,'pchip');
         end
+        
+%         Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
+%         if Fz_FL_d(i) == 0
+%             Fx_FLreal = 0;
+%         else
+%             Fx_FLreal = interp1(F_xFLmin(:,2,i),F_xFLmin(:,1,i),Fy_FLreal);
+%         end
+% 
+%         Fy_FRreal = (Fz_FR_d(i) / Fz_sum(i)) * Fy_real;
+%         if Fz_FR_d(i) == 0
+%             Fx_FRreal = 0;
+%         else
+%             Fx_FRreal = interp1(F_xFRmin(:,2,i),F_xFRmin(:,1,i),Fy_FRreal);
+%         end
+% 
+%         Fy_RLreal = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
+%         if Fz_RL_d(i) == 0
+%             Fx_RLreal = 0;
+%         else
+%             Fx_RLreal = interp1(F_xRLmin(:,2,i),F_xRLmin(:,1,i),Fy_RLreal);
+%         end
+% 
+%         Fy_RRreal = (Fz_RR_d(i) / Fz_sum(i)) * Fy_real;
+%         if Fz_RR_d(i) == 0
+%             Fx_RRreal = 0;
+%         else
+%             Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal);
+%         end
         Fx_traction = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
         
 %         % Account for drag and rolling resistance
