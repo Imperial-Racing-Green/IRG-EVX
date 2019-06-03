@@ -28,18 +28,25 @@ for iSweep = 1:nSweeps
 
     % Check which variables (if any) to change
     if Sweep.Choose_Param == 1
-        % Override car param
-        eval([Sweep.Param{1},'=',num2str(Sweep.Values(iSweep)),';']);
+%         if ~exist(Sweep.Param{1})
+%             error('Parameter being swept does not exist. Check carfile for sweepable parameters')
+%         else
+            % Override car param
+            eval([Sweep.Param{1},'=',num2str(Sweep.Values(iSweep)),';']);
+%         end
     elseif Sweep.Choose_Carfile == 1
         % Load in a new carfile
         clear Car
         load(Sweep.Carfile{iSweep});
         if Validation ~= 1  % Only recheck mass for our own car (where we have component masses)
-           Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
-                     Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
-                     Car.Mass.Engine + Car.Mass.Motors + Car.Mass.Steering + Car.Mass.Pedals + ...
-                     Car.Mass.Seat + Car.Mass.FireWall + Car.Mass.Cooling + Car.Mass.Electrics + ...
-                     Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Brakes + Car.Mass.Fueltank;
+
+            Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
+                 Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
+                 Car.Mass.Engine + Car.Mass.Motors + Car.Mass.Steering + Car.Mass.Pedals + ...
+                 Car.Mass.Seat + Car.Mass.FireWall + Car.Mass.Cooling + Car.Mass.Electrics + ...
+                 Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Floor + Car.Mass.Bodywork + ...
+                 Car.Mass.Brakes + Car.Mass.Fueltank;
+
         end
     elseif Sweep.Choose_Weatherfile == 1
         clear Environment
@@ -158,18 +165,22 @@ for iSweep = 1:nSweeps
     idx = find(isnan(Fz.RR));
     Fz.RR(idx) = Fz.RR(idx-1);
     for i = 1:length(vCar)
-        [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),...
-            F_xFLmin(:,:,i),F_yFLmin(:,:,i)] = tyre_fmax(Fz.FL(i),10);
-        Fy.FL(i) = interp1(F_yFLmax(:,1,i),F_yFLmax(:,2,i),0,'spline');
+        [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),F_xFLmin(:,:,i),F_yFLmin(:,:,i),...
+            SA_FL_xmax(:,i),SA_FL_xmin(:,i),SL_FL_xmax(:,i),SL_FL_xmin(:,i),...
+            SA_FL_ymax(:,i),SA_FL_ymin(:,i),SL_FL_ymax(:,i),SL_FL_ymin(:,i)] = tyre_fmax(Fz.FL(i),10);
         Fy_real(i) = (Car.Mass.Total * vCar(i)^2)/radius_d(i);
-        Fy_FLreal = (Fz.FL(i) / sum(Fz.FL(i)+Fz.FR(i)+Fz.RL(i)+Fz.RR(i))) * Fy_real(i);
-        Fx.FL(i) = interp1(F_xFLmax(:,2,i),F_xFLmax(:,1,i),Fy_FLreal);        
+        Fy.FL(i) = (Fz.FL(i) / sum(Fz.FL(i)+Fz.FR(i)+Fz.RL(i)+Fz.RR(i))) * Fy_real(i);
+        Fx.FL(i) = interp1(F_xFLmax(:,2,i),F_xFLmax(:,1,i),Fy.FL(i),'pchip');
+        SA.FL(i) = interp1(F_xFLmax(:,2,i),SA_FL_xmax(:,i),Fy.FL(i),'pchip');
+        SL.FL(i) = interp1(F_xFLmax(:,2,i),SL_FL_xmax(:,i),Fy.FL(i),'pchip');
         
-        [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),...
-            F_xRLmin(:,:,i),F_yRLmin(:,:,i)] = tyre_fmax(Fz.RL(i),10);
-        Fy.RL(i) = interp1(F_yRLmax(:,1,i),F_yRLmax(:,2,i),0,'spline');
-        Fy_RLreal = (Fz.RL(i) / sum(Fz.FL(i)+Fz.FR(i)+Fz.RL(i)+Fz.RR(i))) * Fy_real(i);
-        Fx.RL(i) = interp1(F_xRLmax(:,2,i),F_xRLmax(:,1,i),Fy_RLreal);  
+        [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),F_xRLmin(:,:,i),F_yRLmin(:,:,i),...
+            SA_RL_xmax(:,i),SA_RL_xmin(:,i),SL_RL_xmax(:,i),SL_RL_xmin(:,i),...
+            SA_RL_ymax(:,i),SA_RL_ymin(:,i),SL_RL_ymax(:,i),SL_RL_ymin(:,i)] = tyre_fmax(Fz.RL(i),10);
+        Fy.RL(i) = (Fz.RL(i) / sum(Fz.FL(i)+Fz.FR(i)+Fz.RL(i)+Fz.RR(i))) * Fy_real(i);
+        Fx.RL(i) = interp1(F_xRLmax(:,2,i),F_xRLmax(:,1,i),Fy.RL(i),'pchip');  
+        SA.RL(i) = interp1(F_xRLmax(:,2,i),SA_RL_xmax(:,i),Fy.RL(i),'pchip');
+        SL.RL(i) = interp1(F_xRLmax(:,2,i),SL_RL_xmax(:,i),Fy.RL(i),'pchip');
     end
     a_y = Fy_real / Car.Mass.Total;
     Fy.FR = Fy.FL';
@@ -178,6 +189,10 @@ for iSweep = 1:nSweeps
     Fx.FR = Fx.FL;
     Fx.RL = min(Fx.RL',Force.Powertrain.Thrust.RL);
     Fx.RR = Fx.RL;
+    SA.FR = SA.FL;
+    SA.RR = SA.RL;
+    SL.FR = SL.FL;
+    SL.RR = SL.RL;
     % Wheel forces
     Force.Wheel.Fx.FL = Fx.FL;
     Force.Wheel.Fx.FR = Fx.FR;
@@ -192,7 +207,10 @@ for iSweep = 1:nSweeps
     Force.Wheel.Fz.RL = Fz.RL;
     Force.Wheel.Fz.RR = Fz.RR;
     
-    aSteeringWheel = curve_d;
+    SlipAngle.Front = 0.5*(SA.FL + SA.FR);
+    SlipAngle.Rear = 0.5*(SA.RL + SA.RR);
+    aSteeringWheel = (atan(Car.Dimension.lWheelbase ./ radius_d)) + (SlipAngle.Front - SlipAngle.Rear);
+    aUOSteer = SlipAngle.Front - SlipAngle.Rear;
     gLat = a_y / abs(Environment.Gravity);
     gLong = a_x / abs(Environment.Gravity);
     tLap = [0; cumsum(tLap)];
