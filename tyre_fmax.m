@@ -12,6 +12,7 @@ SA = linspace(-30,30,points);
 
 [F_x,F_y,~] = PacejkaTest(SA,SL,Fz);
 %[FY_new,FX_new]=PacejkaTest2(SA,SL,Fz,camber);
+
 % Columns of F_x are the the lateral loading capability of a tyre under a
 % set Fz. Each row is at a different slip ratio. Same format for F_y
 % F_x = rmmissing(F_x);

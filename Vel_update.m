@@ -90,6 +90,10 @@ end
    
 %% Applying power limit
 v_x2 = zeros(length(dist),1);
+
+
+v_x = zeros(length(dist),1)+200;
+
 if ~isempty(BoundaryConditions.vCar_start)
     v_x2(1) = BoundaryConditions.vCar_start;
 end
@@ -110,14 +114,19 @@ for i = 1:length(dist)-1
     Fz_rear  = [Fz_RL_d Fz_RR_d];
     
     Fy_real = (Car.Mass.Total * v_x2(i)^2)/radius_d(i);
+    
+%     Engine_nu=0.46;
+%     Motor_nu=0.87;
      
     Engine_Fx = Engine_Torque(v_x2(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Engine) ./ ...
                         [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
                         Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+    %Engine_Fx=Engine_nu*Engine_Fx;                
     Torque_from_Motor = Motor_Torque(v_x2(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Motor);
     Motor_Fx= Torque_from_Motor ./ ...
                         [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
                         Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+    %Motor_Fx=Motor_nu*Motor_Fx;           
     Powertrain_Fx = Engine_Fx + Motor_Fx;
         
     eps = 2;
@@ -145,9 +154,9 @@ for i = 1:length(dist)-1
             SA.FL(i) = 0;
             SL.FL(i) = 0;
         else
-            Fx_FLreal = interp1(F_xFLmax(:,2,i),F_xFLmax(:,1,i),Fy_FLreal,'pchip');
-            SA.FL(i) = interp1(F_xFLmax(:,2,i),SA_FL_xmax(:,i),Fy_FLreal,'pchip');
-            SL.FL(i) = interp1(F_xFLmax(:,2,i),SL_FL_xmax(:,i),Fy_FLreal,'pchip');
+            Fx_FLreal = interp1(F_xFLmax(:,2,i),F_xFLmax(:,1,i),Fy_FLreal,'spline');
+            SA.FL(i) = interp1(F_xFLmax(:,2,i),SA_FL_xmax(:,i),Fy_FLreal,'spline');
+            SL.FL(i) = interp1(F_xFLmax(:,2,i),SL_FL_xmax(:,i),Fy_FLreal,'spline');
         end
 
         Fy_FRreal = (Fz_FR_d(i) / Fz_sum(i)) * Fy_real;
@@ -156,9 +165,9 @@ for i = 1:length(dist)-1
             SA.FR(i) = 0;
             SL.FR(i) = 0;
         else
-            Fx_FRreal = interp1(F_xFRmax(:,2,i),F_xFRmax(:,1,i),Fy_FRreal,'pchip');
-            SA.FR(i) = interp1(F_xFRmax(:,2,i),SA_FR_xmax(:,i),Fy_FRreal,'pchip');
-            SL.FR(i) = interp1(F_xFRmax(:,2,i),SL_FR_xmax(:,i),Fy_FRreal,'pchip');
+            Fx_FRreal = interp1(F_xFRmax(:,2,i),F_xFRmax(:,1,i),Fy_FRreal,'spline');
+            SA.FR(i) = interp1(F_xFRmax(:,2,i),SA_FR_xmax(:,i),Fy_FRreal,'spline');
+            SL.FR(i) = interp1(F_xFRmax(:,2,i),SL_FR_xmax(:,i),Fy_FRreal,'spline');
         end
 
         Fy_RLreal = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
@@ -167,9 +176,9 @@ for i = 1:length(dist)-1
             SA.RL(i) = 0;
             SL.RL(i) = 0;
         else
-            Fx_RLreal = interp1(F_xRLmax(:,2,i),F_xRLmax(:,1,i),Fy_RLreal,'pchip');
-            SA.RL(i) = interp1(F_xRLmax(:,2,i),SA_RL_xmax(:,i),Fy_RLreal,'pchip');
-            SL.RL(i) = interp1(F_xRLmax(:,2,i),SL_RL_xmax(:,i),Fy_RLreal,'pchip');
+            Fx_RLreal = interp1(F_xRLmax(:,2,i),F_xRLmax(:,1,i),Fy_RLreal,'spline');
+            SA.RL(i) = interp1(F_xRLmax(:,2,i),SA_RL_xmax(:,i),Fy_RLreal,'spline');
+            SL.RL(i) = interp1(F_xRLmax(:,2,i),SL_RL_xmax(:,i),Fy_RLreal,'spline');
         end
 
         Fy_RRreal = (Fz_RR_d(i) / Fz_sum(i)) * Fy_real;
@@ -178,9 +187,9 @@ for i = 1:length(dist)-1
             SA.RR(i) = 0;
             SL.RR(i) = 0;
         else
-            Fx_RRreal = interp1(F_xRRmax(:,2,i),F_xRRmax(:,1,i),Fy_RRreal,'pchip');
-            SA.RR(i) = interp1(F_xRLmax(:,2,i),SA_RL_xmax(:,i),Fy_RLreal,'pchip');
-            SL.RR(i) = interp1(F_xRLmax(:,2,i),SL_RL_xmax(:,i),Fy_RLreal,'pchip');
+            Fx_RRreal = interp1(F_xRRmax(:,2,i),F_xRRmax(:,1,i),Fy_RRreal,'spline');
+            SA.RR(i) = interp1(F_xRLmax(:,2,i),SA_RL_xmax(:,i),Fy_RLreal,'spline');
+            SL.RR(i) = interp1(F_xRLmax(:,2,i),SL_RL_xmax(:,i),Fy_RLreal,'spline');
         end
        
         Fx_traction = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
@@ -232,9 +241,9 @@ for i = 1:length(dist)-1
     
        v_x2(i+1) = (v_x2(i)^2 + (2*a_x*(dist(i+1) - dist(i))))^0.5;
        
-     b=ceil(mod(i+1,length(dist)/10));  
+     b(i)=ceil(mod(i+1,length(dist)/10));  
      
-     if b==0
+     if b(i)==0
       disp(['Power limit: ' num2str((i+1)/(length(dist)/100)) ' % complete']);
      end 
 end 
@@ -293,9 +302,9 @@ for i = length(dist):-1:2
             SA.FL(i) = 0;
             SL.FL(i) = 0;
         else
-            Fx_FLreal = interp1(F_xFLmin(:,2,i),F_xFLmin(:,1,i),Fy_FLreal,'pchip');
-            SA.FL(i) = interp1(F_xFLmin(:,2,i),SA_FL_xmin(:,i),Fy_FLreal,'pchip');
-            SL.FL(i) = interp1(F_xFLmin(:,2,i),SL_FL_xmin(:,i),Fy_FLreal,'pchip');
+            Fx_FLreal = interp1(F_xFLmin(:,2,i),F_xFLmin(:,1,i),Fy_FLreal,'spline');
+            SA.FL(i) = interp1(F_xFLmin(:,2,i),SA_FL_xmin(:,i),Fy_FLreal,'spline');
+            SL.FL(i) = interp1(F_xFLmin(:,2,i),SL_FL_xmin(:,i),Fy_FLreal,'spline');
         end
 
         Fy_FRreal = (Fz_FR_d(i) / Fz_sum(i)) * Fy_real;
@@ -304,9 +313,9 @@ for i = length(dist):-1:2
             SA.FR(i) = 0;
             SL.FR(i) = 0;
         else
-            Fx_FRreal = interp1(F_xFRmin(:,2,i),F_xFRmin(:,1,i),Fy_FRreal,'pchip');
-            SA.FR(i) = interp1(F_xFRmin(:,2,i),SA_FR_xmin(:,i),Fy_FRreal,'pchip');
-            SL.FR(i) = interp1(F_xFRmin(:,2,i),SL_FR_xmin(:,i),Fy_FRreal,'pchip');
+            Fx_FRreal = interp1(F_xFRmin(:,2,i),F_xFRmin(:,1,i),Fy_FRreal,'spline');
+            SA.FR(i) = interp1(F_xFRmin(:,2,i),SA_FR_xmin(:,i),Fy_FRreal,'spline');
+            SL.FR(i) = interp1(F_xFRmin(:,2,i),SL_FR_xmin(:,i),Fy_FRreal,'spline');
         end
 
         Fy_RLreal = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
@@ -315,9 +324,9 @@ for i = length(dist):-1:2
             SA.RL(i) = 0;
             SL.RL(i) = 0;
         else
-            Fx_RLreal = interp1(F_xRLmin(:,2,i),F_xRLmin(:,1,i),Fy_RLreal,'pchip');
-            SA.RL(i) = interp1(F_xRLmin(:,2,i),SA_RL_xmin(:,i),Fy_RLreal,'pchip');
-            SL.RL(i) = interp1(F_xRLmin(:,2,i),SL_RL_xmin(:,i),Fy_RLreal,'pchip');
+            Fx_RLreal = interp1(F_xRLmin(:,2,i),F_xRLmin(:,1,i),Fy_RLreal,'spline');
+            SA.RL(i) = interp1(F_xRLmin(:,2,i),SA_RL_xmin(:,i),Fy_RLreal,'spline');
+            SL.RL(i) = interp1(F_xRLmin(:,2,i),SL_RL_xmin(:,i),Fy_RLreal,'spline');
         end
 
         Fy_RRreal = (Fz_RR_d(i) / Fz_sum(i)) * Fy_real;
@@ -326,9 +335,9 @@ for i = length(dist):-1:2
             SA.RR(i) = 0;
             SL.RR(i) = 0;
         else
-            Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal,'pchip');
-            SA.RR(i) = interp1(F_xRLmin(:,2,i),SA_RL_xmin(:,i),Fy_RLreal,'pchip');
-            SL.RR(i) = interp1(F_xRLmin(:,2,i),SL_RL_xmin(:,i),Fy_RLreal,'pchip');
+            Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal,'spline');
+            SA.RR(i) = interp1(F_xRLmin(:,2,i),SA_RL_xmin(:,i),Fy_RLreal,'spline');
+            SL.RR(i) = interp1(F_xRLmin(:,2,i),SL_RL_xmin(:,i),Fy_RLreal,'spline');
         end
         
 %         Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
@@ -366,7 +375,7 @@ for i = length(dist):-1:2
 %         Fx_real = max(Fx_decel,Fx_traction);
         Fx_real = max(Brake_Fx,Fx_traction);
 
-%         Fx_sum = sum(Fx_real);
+        Fx_sum = sum(Fx_real);
         % Account for drag and rolling resistance
         Fx_rollres = -Fz_sum(i)*Car.Tyres.Coefficients.RollingResistance; % Assume all wheels (including driven wheels) contribute
         Fx_sum = Fx_sum - F_D - Fx_rollres;
@@ -388,7 +397,7 @@ for i = length(dist):-1:2
     
     v_x3(i-1) = (v_x3(i)^2 - (2*a_x*(dist(i) - dist(i-1))))^0.5;
     
-  b=ceil(mod(j+1,length(dist)/10));  
+    b=ceil(mod(j+1,length(dist)/10));  
      
      if b==0
       disp(['Brake limit: ' num2str((j+1)/(length(dist)/100)) ' % complete']);

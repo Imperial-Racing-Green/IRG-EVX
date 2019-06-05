@@ -170,17 +170,17 @@ for iSweep = 1:nSweeps
             SA_FL_ymax(:,i),SA_FL_ymin(:,i),SL_FL_ymax(:,i),SL_FL_ymin(:,i)] = tyre_fmax(Fz.FL(i),10);
         Fy_real(i) = (Car.Mass.Total * vCar(i)^2)/radius_d(i);
         Fy.FL(i) = (Fz.FL(i) / sum(Fz.FL(i)+Fz.FR(i)+Fz.RL(i)+Fz.RR(i))) * Fy_real(i);
-        Fx.FL(i) = interp1(F_xFLmax(:,2,i),F_xFLmax(:,1,i),Fy.FL(i),'pchip');
-        SA.FL(i) = interp1(F_xFLmax(:,2,i),SA_FL_xmax(:,i),Fy.FL(i),'pchip');
-        SL.FL(i) = interp1(F_xFLmax(:,2,i),SL_FL_xmax(:,i),Fy.FL(i),'pchip');
+        Fx.FL(i) = interp1(F_xFLmax(:,2,i),F_xFLmax(:,1,i),Fy.FL(i),'spline');
+        SA.FL(i) = interp1(F_xFLmax(:,2,i),SA_FL_xmax(:,i),Fy.FL(i),'spline');
+        SL.FL(i) = interp1(F_xFLmax(:,2,i),SL_FL_xmax(:,i),Fy.FL(i),'spline');
         
         [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),F_xRLmin(:,:,i),F_yRLmin(:,:,i),...
             SA_RL_xmax(:,i),SA_RL_xmin(:,i),SL_RL_xmax(:,i),SL_RL_xmin(:,i),...
             SA_RL_ymax(:,i),SA_RL_ymin(:,i),SL_RL_ymax(:,i),SL_RL_ymin(:,i)] = tyre_fmax(Fz.RL(i),10);
         Fy.RL(i) = (Fz.RL(i) / sum(Fz.FL(i)+Fz.FR(i)+Fz.RL(i)+Fz.RR(i))) * Fy_real(i);
-        Fx.RL(i) = interp1(F_xRLmax(:,2,i),F_xRLmax(:,1,i),Fy.RL(i),'pchip');  
-        SA.RL(i) = interp1(F_xRLmax(:,2,i),SA_RL_xmax(:,i),Fy.RL(i),'pchip');
-        SL.RL(i) = interp1(F_xRLmax(:,2,i),SL_RL_xmax(:,i),Fy.RL(i),'pchip');
+        Fx.RL(i) = interp1(F_xRLmax(:,2,i),F_xRLmax(:,1,i),Fy.RL(i),'spline');  
+        SA.RL(i) = interp1(F_xRLmax(:,2,i),SA_RL_xmax(:,i),Fy.RL(i),'spline');
+        SL.RL(i) = interp1(F_xRLmax(:,2,i),SL_RL_xmax(:,i),Fy.RL(i),'spline');
     end
     a_y = Fy_real / Car.Mass.Total;
     Fy.FR = Fy.FL';
