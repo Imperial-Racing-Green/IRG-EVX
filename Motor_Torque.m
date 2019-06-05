@@ -11,7 +11,8 @@ T_Cap = Motor_Info.T_Cap;
 % wheel_rad = (velocity / radius)
 wheel_rad = (velocity / radius) * (30/pi); % wheel speed in RPM
 
-motorspeed = wheel_rad * Ratio;
+% motorspeed = wheel_rad * Ratio;
+motorspeed = wheel_rad * (Ratio * Motor_Info.Efficiencies.Gears);
 
 RPM_motor = min(motorspeed,RPM_Lim);
 
@@ -32,6 +33,8 @@ end
 if isnan(T_motor)
     T_motor = 0;
 end
+
+T_motor = T_motor * Motor_Info.Efficiencies.Motor;
 
 if strcmp(Config,'fwd') == 1
     T_FL = (T_motor * Ratio);
