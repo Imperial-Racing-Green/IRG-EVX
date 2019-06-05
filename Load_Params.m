@@ -75,7 +75,7 @@ Car.Tyres.Coefficients.RollingResistance = 0.020; % Need updated number for Hoos
 
 % Powertrain info
 % Engine
-Car.Powertrain.Engine.TransmissionRatio = 5; %3.6;
+Car.Powertrain.Engine.TransmissionRatio = 5.55;
 Car.Powertrain.Engine.RPM_Idle = 3000;                      % Idle RPM
 Car.Powertrain.Engine.T_Idle = 53.75;                       % Torque at idle RPM
 Car.Powertrain.Engine.RPM_Max_T = 9200;                      % RPM corresponding to max torque
