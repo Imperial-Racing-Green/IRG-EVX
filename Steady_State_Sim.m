@@ -37,10 +37,10 @@ for iSweep = 1:nSweeps
         if Validation ~= 1  % Only recheck mass for our own car (where we have component masses)
             Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
                  Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
-                 Car.Mass.Engine + Car.Mass.Motors + Car.Mass.Steering + Car.Mass.Pedals + ...
-                 Car.Mass.Seat + Car.Mass.FireWall + Car.Mass.Cooling + Car.Mass.Electrics + ...
-                 Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Floor + Car.Mass.Bodywork + ...
-                 Car.Mass.Brakes + Car.Mass.Fueltank;
+                 Car.Mass.Engine + Car.Mass.Motors + Car.Mass.MotorControllers + Car.Mass.MotorGears + ...
+                 Car.Mass.Steering + Car.Mass.Pedals + Car.Mass.Seat + Car.Mass.FireWall + ...
+                 Car.Mass.Cooling + Car.Mass.Electrics + Car.Mass.FrontWing + Car.Mass.RearWing + ...
+                 Car.Mass.Floor + Car.Mass.Bodywork + Car.Mass.Brakes + Car.Mass.Fueltank;             
         end
     elseif Sweep.Choose_Weatherfile == 1
         clear Environment
@@ -226,7 +226,8 @@ for iSweep = 1:nSweeps
     
     SlipAngle.Front = 0.5*(SA.FL + SA.FR);
     SlipAngle.Rear = 0.5*(SA.RL + SA.RR);
-    aSteeringWheel = rad2deg((atan(Car.Dimension.lWheelbase ./ radius_d))) + (abs(SlipAngle.Front) - abs(SlipAngle.Rear));
+    aSteer = rad2deg((atan(Car.Dimension.lWheelbase ./ radius_d))) + (abs(SlipAngle.Front) - abs(SlipAngle.Rear));
+    aSteeringWheel = aSteer * Car.Steering.Ratio;
     aUOSteer = abs(SlipAngle.Front) - abs(SlipAngle.Rear);
     gLat = a_y / abs(Environment.Gravity);
     gLong = a_x / abs(Environment.Gravity);
@@ -258,7 +259,7 @@ for iSweep = 1:nSweeps
         E_kwh = EPower_avg*(Laptime/3600)/1000;
         CO2_Usage = (0.65*E_kwh);
     elseif strcmp(Car.Category,'Hybrid') == 1% Assume half throttle for energy and fuel consumption each
-        MassFlowRate = ((0.5*rThrottle) * 0.0023) + 5.2842e-5; % Linear relationship to include idle fuel flow
+        MassFlowRate = (rThrottle * 0.0023) + 5.2842e-5; % Linear relationship to include idle fuel flow
         MassFlowRate(isnan(MassFlowRate)) = 5.2842e-5;
         mFuelBurn = trapz(tLap,MassFlowRate); % (kg)
         vFuelBurn = (mFuelBurn / 719.7) * 1000; % (litres)

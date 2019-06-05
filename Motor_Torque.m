@@ -1,12 +1,11 @@
 function [T] = Motor_Torque(velocity,radius,Motor_Info)
 
 Ratio = Motor_Info.TransmissionRatio;
-% Torque = Motor_Info.MaxTorque;
-% Power = Motor_Info.MaxPower;
+P_max = Motor_Info.P_max;
+Kv = Motor_Info.Kv;
+rated_voltage = Motor_Info.RatedVoltage;
 Config = Motor_Info.Config;
 RPM_Lim = Motor_Info.RPM_Lim;
-T_Stall = Motor_Info.T_Stall;
-T_Cap = Motor_Info.T_Cap;
 
 % wheel_rad = (velocity / radius)
 wheel_rad = (velocity / radius) * (30/pi); % wheel speed in RPM
@@ -16,14 +15,26 @@ motorspeed = wheel_rad * (Ratio * Motor_Info.Efficiencies.Gears);
 
 RPM_motor = min(motorspeed,RPM_Lim);
 
-% torque_line = abs(Power / motorspeed);
+% Find no load RPM from RPM constant and rated voltage
+RPM_no_load = Kv * rated_voltage;
 
-% motor_torque = min(Torque,torque_line);
+% Find RPM at max power
+RPM_maxP = 0.5 * RPM_no_load;
+
+% Find maximum torque
+T_maxP = (P_max/RPM_maxP)*(30/pi);
+
+% Find stall torque 
+T_stall = 2 * T_maxP;
+
+% Find capped torque
+T_cap = 0.5 * T_stall;
 
 % Find torque of motor from RPM of motor based on linear graph:
-T_motor =  T_Stall - ((RPM_motor/RPM_Lim)*T_Stall);
-T_motor = min(T_motor,T_Cap);
+T_motor =  T_stall - ((RPM_motor/RPM_Lim)*T_stall);
+T_motor = min(T_motor,T_cap);
 
+% Make sure motor power is not exceeding 30kW limit in regulations
 p_Motor = (T_motor * RPM_motor) / 9.5488;
 if p_Motor > 30000
     p_Motor = 30000;

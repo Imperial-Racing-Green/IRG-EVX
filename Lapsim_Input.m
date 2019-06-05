@@ -5,7 +5,7 @@ clc
 
 %% Save results location
 SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP';
-FolderName = 'CoP_Test';
+FolderName = 'Test2';
 SimName = {'Test'};
 
 %% Trackmap
@@ -29,13 +29,13 @@ trackmap = 'Full_FS_Weekend';
 BoundaryConditions.vCar_start = 0;
 BoundaryConditions.vCar_end = [];
 % SkidPad_Track 
-% BoundaryConditions.vCar_start = 12.8;
+% BoundaryConditions.vCar_start = 15;
 % BoundaryConditions.vCar_end = [];
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
-Sweep.Choose_Param = 1;                                % Choose whether to sweep anything or not
-Sweep.Param = {'Car.Balance.CoP(1)'};             % Variable within car structure to be swept
-Sweep.Values = 0.1:0.1:0.8;
+Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
+Sweep.Param = {'Car.Brakes.BrakeBias'};             % Variable within car structure to be swept
+Sweep.Values = 0.4:0.05:0.7;
 Sweep.Choose_Carfile = 0;
 Sweep.Carfile = {'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Carfiles\MainCarfiles\APS100HEV.mat'...
     'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Carfiles\MainCarfiles\APS120_50kv_smallmotor.mat'...
@@ -79,7 +79,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         trackmap = 'SkidPad_Track_new.mat';
         FolderSection = [FolderName '\SkidPad_Test'];
         SimName = {'SkidPad_Test'};
-        BoundaryConditions.vCar_start = 13.6;
+        BoundaryConditions.vCar_start = 15;
         BoundaryConditions.vCar_end = [];
         [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
         % Full lap (stationary start)

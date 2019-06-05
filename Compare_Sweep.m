@@ -3,7 +3,7 @@ close all
 clear
 clc
 
-FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\CoP_Test';
+FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Test2';
 full_weekend = 1;  % If selected point to folder of encolsing all weekend results
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%
@@ -317,11 +317,11 @@ if full_weekend == 1
     end
     % Get best and worst results of 2016 (not 2018)
     % Acceleration test
-    Times.Acceleration_Test.Best = 3.780; % 3.881;
+    Times.Acceleration_Test.Best = 3.881; % 3.780;
     % Skid-Pad test
-    Times.SkidPad_Test.Best = 4.735; % 4.729;
+    Times.SkidPad_Test.Best =  4.729; % 4.735;
     % Endurance test
-    Times.Endurance_Test.Best = 1271.04; % 1439.58;
+    Times.Endurance_Test.Best = 1427.580; % 1271.04;
     % Autocross test
     Times.Autocross_Test.Best = 52.161; % 47.148;
     % Fuel Efficiency test
