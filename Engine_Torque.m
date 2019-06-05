@@ -11,7 +11,7 @@ RPM_Max_T = Engine_Info.RPM_Max_T;
 % wheel_rad = velocity / radius;
 wheel_rad = (velocity / radius) * (30/pi);
 
-RPM_engine = wheel_rad * Ratio; 
+RPM_engine = wheel_rad * (Ratio * Engine_Info.Efficiencies.Gears); 
 
 RPM_engine = min(RPM_engine,RPM_Limit);
 % Ensure starting RPM is set as minimum (hard codes value for 3-cylinder

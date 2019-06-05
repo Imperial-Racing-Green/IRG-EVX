@@ -1,4 +1,4 @@
-function velocity_d = Vel_update(Fz_log,dist,dist_log,radius_d,Environment,Car,BoundaryConditions)
+function velocity_d = Vel_update(Fz_log,distanceTrack,dist_log,radius_d,Environment,Car,BoundaryConditions)
 
 %% Finding max velocity at each curvature
 radius_d(radius_d == 0) = 1e-5;
@@ -8,7 +8,7 @@ Fz_FR_t = Fz_log.Data(:,2);
 Fz_RL_t = Fz_log.Data(:,3);
 Fz_RR_t = Fz_log.Data(:,4);
 
-% time_d = interp1(dist_log.Data .* (max(dist)/max(dist_log.Data)),dist_log.Time,dist);
+% time_d = interp1(dist_log.Data .* (max(distanceTrack)/max(dist_log.Data)),dist_log.Time,distanceTrack);
 time_d = dist_log.Time;
 delta_steer=atand(Car.Dimension.lWheelbase./radius_d);
 
@@ -26,11 +26,12 @@ Fz_RR_static = Fz_RR_d;
 
 eps = 2001;
 eps_lim = 2000;
-v_x_check = zeros(1,length(dist));
+
+v_x_check = zeros(1,length(distanceTrack));
 
 while eps >= eps_lim
 
-    for i = 1:length(dist)
+    for i = 1:length(distanceTrack)
         [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),F_xFLmin(:,:,i),F_yFLmin(:,:,i),...
             SA_FL_xmax(:,i),SA_FL_xmin(:,i),SL_FL_xmax(:,i),SL_FL_xmin(:,i),...
             SA_FL_ymax(:,i),SA_FL_ymin(:,i),SL_FL_ymax(:,i),SL_FL_ymin(:,i)] = tyre_fmax(Fz_FL_d(i),10);
@@ -89,17 +90,14 @@ while eps >= eps_lim
 end
    
 %% Applying power limit
-v_x2 = zeros(length(dist),1);
-
-
-v_x = zeros(length(dist),1)+200;
+v_x2 = zeros(length(distanceTrack),1);
 
 if ~isempty(BoundaryConditions.vCar_start)
     v_x2(1) = BoundaryConditions.vCar_start;
 end
 Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
 
-for i = 1:length(dist)-1
+for i = 1:length(distanceTrack)-1
     v_x2(i) = min(v_x2(i),v_x(i));
     
     [F_L,F_D] = Aero_Forces(v_x2(i),Environment,Car);
@@ -109,10 +107,9 @@ for i = 1:length(dist)-1
     Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.CoP(1)))/2);
     Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.CoP(1)))/2);
     Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
-    
+
     Fz_front = [Fz_FL_d Fz_FR_d];
     Fz_rear  = [Fz_RL_d Fz_RR_d];
-    
     Fy_real = (Car.Mass.Total * v_x2(i)^2)/radius_d(i);
     
 %     Engine_nu=0.46;
@@ -212,6 +209,16 @@ for i = 1:length(dist)-1
         Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2) + Fz_FR;
         Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.CoP(1)))/2) + Fz_RL;
         Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.CoP(1)))/2) + Fz_RR;
+        % Calculate suspension effects (ride height, pitch and roll)
+        dhRideFL(i) = (Fz_FL_d(i) - Fz_FL_static(i)) / Car.Sus.Front.Stiffness.Vertical;
+        dhRideFR(i) = (Fz_FR_d(i) - Fz_FR_static(i)) / Car.Sus.Front.Stiffness.Vertical;
+        dhRideRL(i) = (Fz_RL_d(i) - Fz_RL_static(i)) / Car.Sus.Rear.Stiffness.Vertical;
+        dhRideRR(i) = (Fz_RR_d(i) - Fz_RR_static(i)) / Car.Sus.Rear.Stiffness.Vertical;
+        theta_y(i) = 0.5*(atan((0.5*(dhRideFL(i) + dhRideFR(i))) / (Car.Dimension.lWheelbase/2)) - ...
+            atan((0.5*(dhRideRL(i) + dhRideRR(i))) / (Car.Dimension.lWheelbase/2)));
+        theta_x(i) = 0.5*(atan((0.5*(dhRideFL(i) - dhRideFR(i))) / (Car.Dimension.Front_track/2)) + ...
+            atan((0.5*(dhRideRL(i) - dhRideRR(i))) / (Car.Dimension.Rear_track/2)));
+        
         eps = max(abs((Fz_check - [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)])./Fz_check));
         Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
         % Find corresponsing ride height changes
@@ -237,19 +244,17 @@ for i = 1:length(dist)-1
 %         Fx_sum = Fx_sum - F_D - Fx_rollres;    
 % 
 %         a_x = Fx_sum / Car.Mass.Total;
-
-    
-       v_x2(i+1) = (v_x2(i)^2 + (2*a_x*(dist(i+1) - dist(i))))^0.5;
+     v_x2(i+1) = (v_x2(i)^2 + (2*a_x*(distanceTrack(i+1) - distanceTrack(i))))^0.5;
        
-     b(i)=ceil(mod(i+1,length(dist)/10));  
+     b(i)=ceil(mod(i+1,length(distanceTrack)/10));  
      
      if b(i)==0
-      disp(['Power limit: ' num2str((i+1)/(length(dist)/100)) ' % complete']);
+      disp(['Power limit: ' num2str((i+1)/(length(distanceTrack)/100)) ' % complete']);
      end 
 end 
 %% Apply Braking Limit
 
-v_x3 = zeros(length(dist),1);
+v_x3 = zeros(length(distanceTrack),1);
 if ~isempty(BoundaryConditions.vCar_end)
     v_x3(end) = BoundaryConditions.vCar_end;
 else
@@ -258,9 +263,10 @@ end
 
 j=0;
 
-for i = length(dist):-1:2
+for i = length(distanceTrack):-1:2
+
     j=j+1;
-    
+     
     v_x3(i) = min(v_x3(i),v_x2(i));
     
     [F_L,F_D] = Aero_Forces(v_x3(i),Environment,Car);
@@ -271,7 +277,7 @@ for i = length(dist):-1:2
     Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.CoP(1)))/2);
     Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
     
-    Fy_real = (Car.Mass.Total * v_x3(i)^2)/radius_d(i-1);
+    Fy_real = (Car.Mass.Total * v_x3(i)^2)/radius_d(i);
     
     Brake_Fx = Brake_Model(Car.Brakes) ./ ...
                     [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
@@ -339,40 +345,9 @@ for i = length(dist):-1:2
             SA.RR(i) = interp1(F_xRLmin(:,2,i),SA_RL_xmin(:,i),Fy_RLreal,'spline');
             SL.RR(i) = interp1(F_xRLmin(:,2,i),SL_RL_xmin(:,i),Fy_RLreal,'spline');
         end
-        
-%         Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
-%         if Fz_FL_d(i) == 0
-%             Fx_FLreal = 0;
-%         else
-%             Fx_FLreal = interp1(F_xFLmin(:,2,i),F_xFLmin(:,1,i),Fy_FLreal);
-%         end
-% 
-%         Fy_FRreal = (Fz_FR_d(i) / Fz_sum(i)) * Fy_real;
-%         if Fz_FR_d(i) == 0
-%             Fx_FRreal = 0;
-%         else
-%             Fx_FRreal = interp1(F_xFRmin(:,2,i),F_xFRmin(:,1,i),Fy_FRreal);
-%         end
-% 
-%         Fy_RLreal = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
-%         if Fz_RL_d(i) == 0
-%             Fx_RLreal = 0;
-%         else
-%             Fx_RLreal = interp1(F_xRLmin(:,2,i),F_xRLmin(:,1,i),Fy_RLreal);
-%         end
-% 
-%         Fy_RRreal = (Fz_RR_d(i) / Fz_sum(i)) * Fy_real;
-%         if Fz_RR_d(i) == 0
-%             Fx_RRreal = 0;
-%         else
-%             Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal);
-%         end
+
         Fx_traction = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
         
-%         % Account for drag and rolling resistance
-%         Fx_rollres = - Car.Tyres.Coefficients.RollingResistance*[Fz_FL_d(i); Fz_FR_d(i); Fz_RL_d(i); Fz_RR_d(i)]; 
-%         Fx_decel = Brake_Fx - ((0.25*F_D)*ones(length(Brake_Fx),1)) - Fx_rollres;
-%         Fx_real = max(Fx_decel,Fx_traction);
         Fx_real = max(Brake_Fx,Fx_traction);
 
         Fx_sum = sum(Fx_real);
@@ -389,20 +364,28 @@ for i = length(dist):-1:2
         Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2) + Fz_FR;
         Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.CoP(1)))/2) + Fz_RL;
         Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.CoP(1)))/2) + Fz_RR;
+        % Calculate suspension effects (ride height, pitch and roll)
+        dhRideFL(i) = (Fz_FL_d(i) - Fz_FL_static(i)) / Car.Sus.Front.Stiffness.Vertical;
+        dhRideFR(i) = (Fz_FR_d(i) - Fz_FR_static(i)) / Car.Sus.Front.Stiffness.Vertical;
+        dhRideRL(i) = (Fz_RL_d(i) - Fz_RL_static(i)) / Car.Sus.Rear.Stiffness.Vertical;
+        dhRideRR(i) = (Fz_RR_d(i) - Fz_RR_static(i)) / Car.Sus.Rear.Stiffness.Vertical;
+        theta_y(i) = 0.5*(atan((0.5*(dhRideFL(i) + dhRideFR(i))) / (Car.Dimension.lWheelbase/2)) - ...
+            atan((0.5*(dhRideRL(i) + dhRideRR(i))) / (Car.Dimension.lWheelbase/2)));
+        theta_x(i) = 0.5*(atan((0.5*(dhRideFL(i) - dhRideFR(i))) / (Car.Dimension.Front_track/2)) + ...
+            atan((0.5*(dhRideRL(i) - dhRideRR(i))) / (Car.Dimension.Rear_track/2)));
+        
         eps = max(abs((Fz_check - [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)])./Fz_check));
         Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
-        % Find corresponsing ride height changes
         
     end
     
-    v_x3(i-1) = (v_x3(i)^2 - (2*a_x*(dist(i) - dist(i-1))))^0.5;
+    v_x3(i-1) = (v_x3(i)^2 - (2*a_x*(distanceTrack(i) - distanceTrack(i-1))))^0.5;
     
-    b=ceil(mod(j+1,length(dist)/10));  
+    b=ceil(mod(j+1,length(distanceTrack)/10));  
      
      if b==0
-      disp(['Brake limit: ' num2str((j+1)/(length(dist)/100)) ' % complete']);
+      disp(['Brake limit: ' num2str((j+1)/(length(distanceTrack)/100)) ' % complete']);
      end 
-     
 end
 v_x3(1) = min(v_x3(1),v_x2(1));
 
