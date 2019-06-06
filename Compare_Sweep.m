@@ -3,7 +3,7 @@ close all
 clear
 clc
 
-FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Gear_Ratio_Test';
+FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Test';
 full_weekend = 1;  % If selected point to folder of encolsing all weekend results
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%

@@ -5,7 +5,7 @@ clc
 
 %% Save results location
 SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP';
-FolderName = 'Gear_Ratio_Test';
+FolderName = 'Test';
 SimName = {'Test'};
 
 %% Trackmap
@@ -33,7 +33,7 @@ BoundaryConditions.vCar_end = [];
 % BoundaryConditions.vCar_end = [];
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
-Sweep.Choose_Param = 1;                                % Choose whether to sweep anything or not
+Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
 Sweep.Param = {'Car.Powertrain.Engine.TransmissionRatio'};             % Variable within car structure to be swept
 Sweep.Values = [3.5, 5.55, 6];
 Sweep.Choose_Carfile = 0;
