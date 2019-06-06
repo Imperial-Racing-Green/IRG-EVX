@@ -13,7 +13,7 @@ Car.Mass.Driver = 68;
 % Suspension
 Car.Mass.Suspension = 24;
 % Chassis (front + rear)
-Car.Mass.Chassis = 22.5 + 7.5;
+Car.Mass.Chassis = 24; % 22.5 + 7.5;
 % Battery
 Car.Mass.Battery = 27.5;
 % Engine
@@ -35,10 +35,10 @@ Car.Mass.Cooling = 5;
 % Electrics
 Car.Mass.Electrics = 10;
 % Aero
-Car.Mass.FrontWing = 7; 
-Car.Mass.RearWing = 6;
-Car.Mass.Floor = 7; % Including diffuser
-Car.Mass.Bodywork = 10;
+Car.Mass.FrontWing = 7.5; 
+Car.Mass.RearWing = 5;
+Car.Mass.Floor = 8.5; % Including diffuser
+Car.Mass.Bodywork = 10; % Sidepods/bargeboards
 % Brakes
 Car.Mass.Brakes = 4*2.3518;
 % Fuel tank (plus some fuel)
@@ -75,7 +75,7 @@ Car.Tyres.Coefficients.RollingResistance = 0.020; % Need updated number for Hoos
 
 % Powertrain info
 % Engine
-Car.Powertrain.Engine.TransmissionRatio = 5.55;
+Car.Powertrain.Engine.TransmissionRatio = 5.18;
 Car.Powertrain.Engine.RPM_Idle = 3000;                      % Idle RPM
 Car.Powertrain.Engine.T_Idle = 53.75;                       % Torque at idle RPM
 Car.Powertrain.Engine.RPM_Max_T = 9200;                      % RPM corresponding to max torque
@@ -121,8 +121,8 @@ Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 % Car aero performance
 Car.AeroPerformance.C_L = 3.0;
 Car.AeroPerformance.C_D = 1.15;
-Car.AeroPerformance.hRideF = 0.03; % (m) (Static ride height under the weight of the car)
-Car.AeroPerformance.hRideR = 0.03; % (m)
+Car.AeroPerformance.hRideF = 0.038; % (m) (Static ride height under the weight of the car)
+Car.AeroPerformance.hRideR = 0.038; % (m)
 Car.AeroPerformance.Initial_AoA = 5; % (deg)
 Car.AeroPerformance.dCl_dalpha = 0.1; % (/deg)
 
@@ -138,9 +138,9 @@ Environment.Pressure = 101325;                  % (Pa)
 
 load([pwd,'\kinematics\geometries\EV3 Front Hardpoints 13.01.19.mat']);
 Car.Sus.Front.Hardpoints = hardpoints_front;
-Car.Sus.Front.Stiffness.Vertical = 80000; %40000;
-Car.Sus.Front.Stiffness.Horizontal = 80000; %40000;
+Car.Sus.Front.Stiffness.Vertical = 65000; %40000;
+Car.Sus.Front.Stiffness.Horizontal = 65000; %40000;
 load([pwd,'\kinematics\geometries\Final rear Outboard 01.02.19.mat']);
 Car.Sus.Rear.Hardpoints = hardpoints_front;
-Car.Sus.Rear.Stiffness.Vertical = 80000; %40000;
-Car.Sus.Rear.Stiffness.Horizontal = 80000; %40000;
+Car.Sus.Rear.Stiffness.Vertical = 55000; %40000;
+Car.Sus.Rear.Stiffness.Horizontal = 55000; %40000;

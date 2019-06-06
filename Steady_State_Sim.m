@@ -246,15 +246,22 @@ for iSweep = 1:nSweeps
         % Get thrust from motors
         if strcmp(Car.Powertrain.Motor.Config,'fwd') == 1
             CombinedMotorThrust = Force.Powertrain.Thrust.FL + Force.Powertrain.Thrust.FR;
+            CombinedMotorThrust = CombinedMotorThrust.*rThrottle; % Find when motors are being applied
+            MotorPower = CombinedMotorThrust .* vCar; % (W)
+            MotorPower(MotorPower > (2*Car.Powertrain.Motor.P_max)) = Car.Powertrain.Motor.P_max * 2;
         elseif strcmp(Car.Powertrain.Motor.Config,'rwd') == 1
             CombinedMotorThrust = Force.Powertrain.Thrust.RL + Force.Powertrain.Thrust.RR;
+            CombinedMotorThrust = CombinedMotorThrust.*rThrottle; % Find when motors are being applied
+            MotorPower = CombinedMotorThrust .* vCar; % (W)
+            MotorPower(MotorPower > (2*Car.Powertrain.Motor.P_max)) = Car.Powertrain.Motor.P_max * 2;
         elseif strcmp(Car.Powertrain.Motor.Config,'4wd') == 1
             CombinedMotorThrust = Force.Powertrain.Thrust.FL + Force.Powertrain.Thrust.FR + Force.Powertrain.Thrust.RL + Force.Powertrain.Thrust.RR;
+            CombinedMotorThrust = CombinedMotorThrust.*rThrottle; % Find when motors are being applied
+            MotorPower = CombinedMotorThrust .* vCar; % (W)
+            MotorPower(MotorPower > (4*Car.Powertrain.Motor.P_max)) = Car.Powertrain.Motor.P_max * 4;
         else
             error('Incorrect motor configuration! How has the sim got this far???')
         end
-        CombinedMotorThrust = CombinedMotorThrust.*rThrottle; % Find when motors are being applied
-        MotorPower = CombinedMotorThrust .* vCar; % (W)
         EPower_avg = (trapz(tLap,MotorPower)) / Laptime;
         E_kwh = EPower_avg*(Laptime/3600)/1000;
         CO2_Usage = (0.65*E_kwh);
@@ -267,15 +274,22 @@ for iSweep = 1:nSweeps
         % Get thrust from motors
         if strcmp(Car.Powertrain.Motor.Config,'fwd') == 1
             CombinedMotorThrust = Force.Powertrain.Thrust.FL + Force.Powertrain.Thrust.FR;
+            CombinedMotorThrust = CombinedMotorThrust.*rThrottle; % Find when motors are being applied
+            MotorPower = CombinedMotorThrust .* vCar; % (W)
+            MotorPower(MotorPower > (2*Car.Powertrain.Motor.P_max)) = Car.Powertrain.Motor.P_max * 2;
         elseif strcmp(Car.Powertrain.Motor.Config,'rwd') == 1
             CombinedMotorThrust = Force.Powertrain.Thrust.RL + Force.Powertrain.Thrust.RR;
+            CombinedMotorThrust = CombinedMotorThrust.*rThrottle; % Find when motors are being applied
+            MotorPower = CombinedMotorThrust .* vCar; % (W)
+            MotorPower(MotorPower > (2*Car.Powertrain.Motor.P_max)) = Car.Powertrain.Motor.P_max * 2;
         elseif strcmp(Car.Powertrain.Motor.Config,'4wd') == 1
             CombinedMotorThrust = Force.Powertrain.Thrust.FL + Force.Powertrain.Thrust.FR + Force.Powertrain.Thrust.RL + Force.Powertrain.Thrust.RR;
+            CombinedMotorThrust = CombinedMotorThrust.*rThrottle; % Find when motors are being applied
+            MotorPower = CombinedMotorThrust .* vCar; % (W)
+            MotorPower(MotorPower > (4*Car.Powertrain.Motor.P_max)) = Car.Powertrain.Motor.P_max * 4;
         else
             error('Incorrect motor configuration! How has the sim got this far???')
         end
-        CombinedMotorThrust = CombinedMotorThrust.*rThrottle; % Find when motors are being applied
-        MotorPower = CombinedMotorThrust .* vCar; % (W)
         EPower_avg = (trapz(tLap,MotorPower)) / Laptime;
         E_kwh = EPower_avg*(Laptime/3600)/1000;
         CO2_Usage = CO2_Usage + (0.65*E_kwh);
@@ -311,7 +325,7 @@ for iSweep = 1:nSweeps
            mkdir(yourFolder)
         end
         sim_output_vars = {'Car','Environment','vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle',...
-                           'rBrake','CO2_Usage','MotorPower','Stability','aUOSteer','hRideF','hRideR'};
+                           'rBrake','CO2_Usage','MotorPower','Stability','aUOSteer','hRideF','hRideR','aPitch','aRoll'};
         save([SaveLocation '\' FolderName '\' SimName{iSweep} '.mat'],sim_output_vars{:})
     end
 
