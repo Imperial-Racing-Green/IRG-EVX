@@ -6,13 +6,13 @@ clc
 %% Save results location
 
 SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
-FolderName = 'Tyre_forces_for_Ronald';
+FolderName = 'Test235';
 
 SimName = {'Test'};
 
 %% Trackmap
-trackmap = 'Endurance_Track.mat';
-%trackmap = 'Autocross_Track_2018.mat';
+%trackmap = 'Endurance_Track.mat';
+trackmap = 'Autocross_Track_2018.mat';
 %trackmap = 'Acceleration_Track.mat';
 %trackmap = 'SkidPad_Track_new.mat';
 %trackmap = 'Full_FS_Weekend';
@@ -60,7 +60,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
 
     	% Steady state solve for full FS weekend
         SaveResults = 1;
-
+        tic
         % Acceleration test
         disp('Simulating sweep of Acceleration Test...')
         trackmap = 'Acceleration_Track.mat';
@@ -97,6 +97,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         % Dynamic solve for full FS weekend
         
     end
+    toc
 else
     if Solver.Steady_state == 1
         SaveResults = 1;

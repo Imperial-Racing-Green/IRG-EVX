@@ -8,13 +8,15 @@ function [Delta_T]=Torque_Vectoring(Car,Fy_tyres,curve_d,velocity,Fz_front,Fz_re
 %% Calculating Values needed 
 
 %Working out front axle to CG
-lf=Car.Dimension.xCoG;
+lf=Car.Dimension.CoG(1);
 %Working out rear axle to CG
-lr=Car.Dimension.lWheelbase-Car.Dimension.xCoG;
+lr=Car.Dimension.lWheelbase-Car.Dimension.CoG(1);
 %Working out Cornering stiffness front 
-Cf=CS_exp_model(Fz_front);
+Cf=corner_stiffness(abs(Fz_front));
+Cf=Cf*2;
 %Working out Cornering stiffness rear
-Cr=CS_exp_model(Fz_rear);
+Cr=corner_stiffness(abs(Fz_rear));
+Cr=Cr*2;
 
 %Calculating parameter g
 g=(4*Cf*Cr*lf*lr-2*Cf*lf*Car.Mass.Total*velocity^2)/(Car.Mass.Total*velocity^2+2*(Cf*lf-Cr*lr));
@@ -26,8 +28,7 @@ Mz_2=g*curve_d;
 
 %% Working out Delta_T
 
-Delta_T=(2*(Mz_2-Mz_1)*Car.Dimension.WheelFL.Radius)/Car.Dimension.Width;
-b=0;
+Delta_T=(2*(Mz_2-Mz_1)*Car.Dimension.WheelFL.Radius)/Car.Dimension.Front_track;
 
 
 

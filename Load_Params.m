@@ -84,7 +84,7 @@ Car.Powertrain.Engine.Config = 'rwd';      % (fwd/rwd/4wd   front/rear/4 wheel d
 % Battery/motor (values for single motor)
 Car.Powertrain.Motor.MaxPower = 23000; %60000;    % (W)
 Car.Powertrain.Motor.MaxTorque = 8.8*2; %180;     % (Nm)
-Car.Powertrain.Motor.TransmissionRatio = 10;
+Car.Powertrain.Motor.TransmissionRatio = 8;
 Car.Powertrain.Motor.RPM_Lim = 25500; 
 Car.Powertrain.Motor.T_Stall = 34.4524;
 Car.Powertrain.Motor.T_Cap = 25.8393; %9;
@@ -93,15 +93,9 @@ Car.Powertrain.Motor.Efficiencies.Gears = 0.941;
 Car.Powertrain.Motor.Config = 'fwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 
 % Brakes info
-<<<<<<< HEAD
-Car.Brakes.FPedalMax = 120*4.44822162825;                                           % 
-Car.Brakes.BrakeBias = 0.66;                                                        % > 0.5 is biased towards front
-Car.Brakes.PedalMotionRatio = 6;
-=======
 Car.Brakes.FPedalMax = 500;                                           % (N) 
 Car.Brakes.BrakeBias = 0.6757;                                                        % > 0.5 is biased towards front - might change with weight / CG
 Car.Brakes.PedalMotionRatio = 205.8/51.5;
->>>>>>> origin/Aero_GDP
 Car.Brakes.Front.wPad = 0.040894; %25.4e-3                                          % Pad width (m) 
 Car.Brakes.Rear.wPad = 0.040894; %25.4e-3
 Car.Brakes.Front.PadFrictionCoefficent = 0.55;

@@ -324,8 +324,8 @@ for iSweep = 1:nSweeps
            mkdir(yourFolder)
         end
         sim_output_vars = {'Car','Environment','vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle',...
-                           'rBrake','CO2_Usage','MotorPower','Stability','aUOSteer','hRideF','hRideR'};
-                       
+                           'rBrake','CO2_Usage','MotorPower','aUOSteer','hRideF','hRideR'};
+ %Stability                      
         save([SaveLocation '\' FolderName '\' SimName{iSweep} '.mat'],sim_output_vars{:})
     end
 

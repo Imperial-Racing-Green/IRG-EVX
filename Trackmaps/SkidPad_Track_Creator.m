@@ -32,13 +32,13 @@ axis equal
 % x = [x1 x2]';
 % y = [y1 y2]';
 Spacing = ((diff(x)).^2 + (diff(y)).^2).^0.5;
-dist = cumsum(Spacing);  
-dist = [ 0 ; dist ; 2*pi*R];
+distanceTrack = cumsum(Spacing);  
+distanceTrack = [ 0 ; distanceTrack ; 2*pi*R];
 radius_d = [R*(ones(1,length(x)))]';
 curve_d = 1./radius_d;
-theta_d = [0 ; cumsum(diff(dist).*curve_d)];
+theta_d = [0 ; cumsum(diff(distanceTrack).*curve_d)];
 
-save('SkidPad_Track_new','x','y','radius_d','curve_d','theta_d','dist')
+save('SkidPad_Track_new','x','y','radius_d','curve_d','theta_d','distanceTrack')
 
 % theta_d = atan2(diff(y),diff(x));
 
