@@ -27,5 +27,3 @@ T_RL = - (Rear.Flong * Brake_Info.Rear.rActing);
 T_RR = T_RL;
 
 T = [T_FL;T_FR;T_RL;T_RR];
-
-% T = [-400;-400;-200;-200];

@@ -7,7 +7,6 @@ clc
 
 SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
 FolderName = 'Test235';
-
 SimName = {'Test'};
 
 %% Trackmap
@@ -74,7 +73,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         trackmap = 'SkidPad_Track_new.mat';
         FolderSection = [FolderName '\SkidPad_Test'];
         SimName = {'SkidPad_Test'};
-        BoundaryConditions.vCar_start = 13.6;
+        BoundaryConditions.vCar_start = 15;
         BoundaryConditions.vCar_end = [];
         [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
         % Full lap (stationary start)

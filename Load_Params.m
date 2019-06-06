@@ -19,7 +19,9 @@ Car.Mass.Battery = 27.5;
 % Engine
 Car.Mass.Engine = 70;
 % Motors (plus controllers)
-Car.Mass.Motors = 13.94;
+Car.Mass.Motors = 2.93*2;
+Car.Mass.MotorControllers = 6.8*2;
+Car.Mass.MotorGears = 2.06*2;
 % Steering 
 Car.Mass.Steering = 3.5;
 % Pedals
@@ -44,10 +46,10 @@ Car.Mass.Fueltank = 5;
 % Total
 Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
                  Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
-                 Car.Mass.Engine + Car.Mass.Motors + Car.Mass.Steering + Car.Mass.Pedals + ...
-                 Car.Mass.Seat + Car.Mass.FireWall + Car.Mass.Cooling + Car.Mass.Electrics + ...
-                 Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Floor + Car.Mass.Bodywork + ...
-                 Car.Mass.Brakes + Car.Mass.Fueltank;
+                 Car.Mass.Engine + Car.Mass.Motors + Car.Mass.MotorControllers + Car.Mass.MotorGears + ...
+                 Car.Mass.Steering + Car.Mass.Pedals + Car.Mass.Seat + Car.Mass.FireWall + ...
+                 Car.Mass.Cooling + Car.Mass.Electrics + Car.Mass.FrontWing + Car.Mass.RearWing + ...
+                 Car.Mass.Floor + Car.Mass.Bodywork + Car.Mass.Brakes + Car.Mass.Fueltank;
              
 Car.Stiffness.Chassis = 50000;
 
@@ -73,27 +75,27 @@ Car.Tyres.Coefficients.RollingResistance = 0.020; % Need updated number for Hoos
 
 % Powertrain info
 % Engine
-Car.Powertrain.Engine.MaxPower = 79000;    % (W) (80000
-Car.Powertrain.Engine.MaxTorque = 69;     % (Nm) (240)
-Car.Powertrain.Engine.TransmissionRatio = 3.6;
-Car.Powertrain.Engine.T_Max = 68;                      % Max torque possible [Nm]
-Car.Powertrain.Engine.RPM_Limit = 13000;                   % Max RPM  [R/Min] 
+Car.Powertrain.Engine.TransmissionRatio = 5.55;
+Car.Powertrain.Engine.RPM_Idle = 3000;                      % Idle RPM
+Car.Powertrain.Engine.T_Idle = 53.75;                       % Torque at idle RPM
 Car.Powertrain.Engine.RPM_Max_T = 9200;                      % RPM corresponding to max torque
+Car.Powertrain.Engine.T_Max = 68;                      % Max torque possible [Nm]
+Car.Powertrain.Engine.RPM_Limit = 13000;                   % Max RPM  [R/Min]
+Car.Powertrain.Engine.T_Limit = 52;                   % Torque at max RPM
 Car.Powertrain.Engine.Efficiencies.Gears = 0.98;
 Car.Powertrain.Engine.Config = 'rwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 % Battery/motor (values for single motor)
-Car.Powertrain.Motor.MaxPower = 23000; %60000;    % (W)
-Car.Powertrain.Motor.MaxTorque = 8.8*2; %180;     % (Nm)
-Car.Powertrain.Motor.TransmissionRatio = 8;
+Car.Powertrain.Motor.P_max = 23000;    % Max power (W)
+Car.Powertrain.Motor.Kv = 200;          % RPM constant 
+Car.Powertrain.Motor.RatedVoltage = 125;          % (V) 
+Car.Powertrain.Motor.TransmissionRatio = 8; %10;
 Car.Powertrain.Motor.RPM_Lim = 25500; 
-Car.Powertrain.Motor.T_Stall = 34.4524;
-Car.Powertrain.Motor.T_Cap = 25.8393; %9;
 Car.Powertrain.Motor.Efficiencies.Motor = 0.87;
 Car.Powertrain.Motor.Efficiencies.Gears = 0.941;
 Car.Powertrain.Motor.Config = 'fwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 
 % Brakes info
-Car.Brakes.FPedalMax = 500;                                           % (N) 
+Car.Brakes.FPedalMax = 750;                                           % (N) 
 Car.Brakes.BrakeBias = 0.6757;                                                        % > 0.5 is biased towards front - might change with weight / CG
 Car.Brakes.PedalMotionRatio = 205.8/51.5;
 Car.Brakes.Front.wPad = 0.040894; %25.4e-3                                          % Pad width (m) 
@@ -121,10 +123,13 @@ Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 
 Car.AeroPerformance.C_L = 3.0;
 Car.AeroPerformance.C_D = 1.15;
-Car.AeroPerformance.hRideF = 0.03; % (m)
+Car.AeroPerformance.hRideF = 0.03; % (m) (Static ride height under the weight of the car)
 Car.AeroPerformance.hRideR = 0.03; % (m)
 Car.AeroPerformance.Initial_AoA = 5; % (deg)
 Car.AeroPerformance.dCl_dalpha = 0.1; % (/deg)
+
+% Steering
+Car.Steering.Ratio = 7;
 
 % Environment condtions
 Environment.Gravity = -9.81;                    % (m/s^2)
