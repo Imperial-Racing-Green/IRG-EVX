@@ -243,7 +243,7 @@ for iSweep = 1:nSweeps
         CO2_Usage = 2.31 * vFuelBurn;
         MotorPower = zeros(1,length(vCar));
     elseif strcmp(Car.Category,'EV') == 1
-        % Get thrust from motors
+         % Get thrust from motors
         if strcmp(Car.Powertrain.Motor.Config,'fwd') == 1
             CombinedMotorThrust = Force.Powertrain.Thrust.FL + Force.Powertrain.Thrust.FR;
             CombinedMotorThrust = CombinedMotorThrust.*rThrottle; % Find when motors are being applied

@@ -22,10 +22,14 @@ RPM_engine = max(RPM_engine,RPM_Idle);
 
 
 % Find torque of motor from RPM of motor based on quadratic assumption graph:
-x = [RPM_Idle, RPM_Max_T, RPM_Limit];
-y = [T_Idle, T_Max, T_Limit];
-p = polyfit(x,y,2);
-T_engine = (p(1)*(RPM_engine^2)) + (p(2)*RPM_engine) + p(3);
+if Ratio ~= 0
+    x = [RPM_Idle, RPM_Max_T, RPM_Limit];
+    y = [T_Idle, T_Max, T_Limit];
+    p = polyfit(x,y,2);
+    T_engine = (p(1)*(RPM_engine^2)) + (p(2)*RPM_engine) + p(3);
+else
+    T_engine = 0;
+end
 % T_engine = T_Max - ((T_Max/(RPM_Max_T^2))*((RPM_engine-RPM_Max_T)^2));
 
 if isnan(T_engine)
@@ -33,19 +37,19 @@ if isnan(T_engine)
 end
 
 if strcmp(Config,'fwd') == 1
-    T_FL = (T_engine * Ratio) / 2;
+    T_FL = (T_engine * Ratio);
     T_FR = T_FL;
     T_RL = 0;
     T_RR = T_RL;    
 elseif strcmp(Config,'rwd') == 1
     T_FL = 0;
     T_FR = T_FL;
-    T_RL = (T_engine * Ratio) / 2;
+    T_RL = (T_engine * Ratio);
     T_RR = T_RL;
 else % 4wd
-    T_FL = (T_engine * Ratio) / 4;  % Need to find torque distribution across axles
+    T_FL = (T_engine * Ratio) /2;  % Need to find torque distribution across axles
     T_FR = T_FL;
-    T_RL = (T_engine * Ratio) / 4;
+    T_RL = (T_engine * Ratio) / 2;
     T_RR = T_RL;
 end
 

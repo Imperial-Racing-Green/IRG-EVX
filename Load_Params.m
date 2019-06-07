@@ -119,8 +119,8 @@ Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2;   
 Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 
 % Car aero performance
-Car.AeroPerformance.C_L = 3.0;
-Car.AeroPerformance.C_D = 1.15;
+Car.AeroPerformance.C_L = 1.78; %3.0;
+Car.AeroPerformance.C_D = 0.731; %1.15;
 Car.AeroPerformance.hRideF = 0.038; % (m) (Static ride height under the weight of the car)
 Car.AeroPerformance.hRideR = 0.038; % (m)
 Car.AeroPerformance.Initial_AoA = 5; % (deg)

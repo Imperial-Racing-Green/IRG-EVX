@@ -11,7 +11,7 @@ Car.Points.Autocross = 84.90; %58.13;
 Car.Points.Endurance = 132.8; %132.0;
 Car.Points.FuelEfficiency = 100;
 Car.Points.Total = Car.Points.Acceleration + Car.Points.SkidPad + Car.Points.Autocross + Car.Points.Endurance + Car.Points.FuelEfficiency;
-Car.Mass.Total = 278;  %278
+Car.Mass.Total = 278;
 Car.Dimension.lWheelbase = 1525/1000;
 Car.Dimension.Front_track = 1150/1000;
 Car.Dimension.Rear_track = 1100/1000;
@@ -155,6 +155,7 @@ Car.Balance.CoG = [0.5367, 0, 0.25];
 Car.Balance.CoP = [0.55, 0, 0.30];
 Car.Tyres.Coefficients.RollingResistance = 0.020;
 % Powertrain parameters
+% Motors
 Car.Powertrain.Motor.Config = 'rwd';
 Car.Powertrain.Motor.TransmissionRatio = 0;                              % 18.7;                %Gear Ratio
 Car.Powertrain.Motor.RatedVoltage = 0;                     % Input rated voltage of motor [V]
@@ -163,12 +164,14 @@ Car.Powertrain.Motor.T_Stall = 0;                        % Max torque@max Curren
 Car.Powertrain.Motor.T_Cap = 0.75*Car.Powertrain.Motor.T_Stall;
 Car.Powertrain.Motor.T_const = 0;                   % Input Torque constant of Motor [Nm/A]
 Car.Powertrain.Motor.P_Max = 0;                       % Max power (W)
+% Engine
 Car.Powertrain.Engine.Config = 'rwd';
 Car.Powertrain.Engine.TransmissionRatio = 4.5;                               % Gear ratio
 Car.Powertrain.Engine.RPM_Limit = 10600;                   % Max RPM  [R/Min]         
 Car.Powertrain.Engine.T_Max = 58;                      % Max torque possible [Nm]
 Car.Powertrain.Engine.RPM_Max_T = 8900;                      % RPM corresponding to max torque
 Car.Powertrain.Engine.P_Max = 62000;                       % Max power (W)
+% Wheels
 Car.Dimension.WheelFL.Radius = 0.230;                          % Tyre radius          [m]   18"
 Car.Dimension.WheelFR.Radius = 0.230;
 Car.Dimension.WheelRL.Radius = 0.230;
@@ -221,6 +224,7 @@ Car.Balance.CoG = [0.5506, 0, 0.25];
 Car.Balance.CoP = [0.55, 0, 0.30];
 Car.Tyres.Coefficients.RollingResistance = 0.020;
 % Powertrain parameters
+% Motors
 Car.Powertrain.Motor.Config = 'rwd';
 Car.Powertrain.Motor.TransmissionRatio = 0;                              % 18.7;                %Gear Ratio
 Car.Powertrain.Motor.RatedVoltage = 0;                     % Input rated voltage of motor [V]
@@ -229,6 +233,7 @@ Car.Powertrain.Motor.T_Stall = 0;                        % Max torque@max Curren
 Car.Powertrain.Motor.T_Cap = 0.75*Car.Powertrain.Motor.T_Stall;
 Car.Powertrain.Motor.T_const = 0;                   % Input Torque constant of Motor [Nm/A]
 Car.Powertrain.Motor.P_Max = 0;                       % Max power (W)
+% Engine
 Car.Powertrain.Engine.Config = 'rwd';
 Car.Powertrain.Engine.TransmissionRatio = 2.5;                               % Gear ratio
 Car.Powertrain.Engine.RPM_Limit = 13100;                   % Max RPM  [R/Min]         
