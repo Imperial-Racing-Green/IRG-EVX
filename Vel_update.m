@@ -90,6 +90,7 @@ while eps >= eps_lim
 end
    
 %% Applying power limit
+
 v_x2 = zeros(length(distanceTrack),1);
 %v_x22 = zeros(length(distanceTrack),1);
 
@@ -101,7 +102,7 @@ Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
 
 for i = 1:length(distanceTrack)-1
     v_x2(i) = min(v_x2(i),v_x(i));
-    v_x22(i) = min(v_x22(i),v_x(i));
+    %v_x22(i) = min(v_x22(i),v_x(i));
     
     [F_L,F_D] = Aero_Forces(v_x2(i),Environment,Car);
     %Recalculate downforce
@@ -252,14 +253,15 @@ for i = 1:length(distanceTrack)-1
 %         a_x2(i) = Fx_sum_new(i) / Car.Mass.Total;
 %         v_x22(i+1) = (v_x22(i)^2 + (2*a_x2(i)*(distanceTrack(i+1) - distanceTrack(i))))^0.5;
 %        
-%         b(i)=ceil(mod(i+1,length(distanceTrack)/10));  
-%      
-%      if b(i)==0
-%       disp(['Power limit: ' num2str((i+1)/(length(distanceTrack)/100)) ' % complete']);
-%      end 
+     b=mod(i,round(length(distanceTrack)/5));  
+     
+     if b==0 
+      disp(['Power limit: ' num2str(round((i)/(length(distanceTrack)/100))) ' % complete']);
+    elseif mod(length(distanceTrack),2)~=0 && i==length(distanceTrack)-1
+      disp(['Power limit: 100% complete']);
+      end 
 end 
 %% Apply Braking Limit
-
 % Fx_diff = Fx_sum_new' - Fx_sum_original';
 % a_diff = a_x2'- a_x';
 % v_diff = v_x22' - v_x2';
@@ -393,11 +395,13 @@ for i = length(distanceTrack):-1:2
     
     v_x3(i-1) = (v_x3(i)^2 - (2*a_x*(distanceTrack(i) - distanceTrack(i-1))))^0.5;
     
-    b=ceil(mod(j+1,length(distanceTrack)/10));  
+     b=mod(j,round(length(distanceTrack)/5));  
      
-     if b==0
-      disp(['Brake limit: ' num2str((j+1)/(length(distanceTrack)/100)) ' % complete']);
-     end 
+     if b==0 
+      disp(['Brake limit: ' num2str(round((j)/(length(distanceTrack)/100))) ' % complete']);
+     elseif mod(length(distanceTrack),2)~=0 &&  j==length(distanceTrack)-1
+      disp(['Brake limit: 100% complete']);
+      end 
 end
 v_x3(1) = min(v_x3(1),v_x2(1));
 

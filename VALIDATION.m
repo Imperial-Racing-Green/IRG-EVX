@@ -17,14 +17,14 @@ FolderName = 'Validation';
 % teams = {'Catalunya_16', 'Aachen_15','West_Bohemia_16','Paderborn_16','Bath_16','Delft_15',...
 %     'Stuttgart_16','Bath_15','CTU_Prague_16','Karlsruhe_16','Wroclaw_16'};
 
-% carfiles = {'Bath_18.mat'};
-% teams = {'Bath_18'};
+carfiles = {'Stuttgart_16_V2.mat'};
+teams = {'Stuttgart_16'};
 
 % Cars we know work!
-carfiles = {'Delft_15.mat','Bath_15.mat','aachen.mat','Stuttgart_16.mat','cata.mat','Bath_16.mat',...
-            'CTU_Prague_16.mat','Karlsruhe_16.mat','Wroclaw_16.mat','Paderborn_16.mat','Bath_18.mat'};
-teams = {'Delft_15','Bath_15','Aachen_15','Stuttgart_16','Catalunya_16','Bath_16',...
-        'CTU_Prague_16','Karlsruhe_16','Wroclaw_16','Paderborn_16','Bath_18'};
+% carfiles = {'Delft_15.mat','Bath_15.mat','aachen.mat','Stuttgart_16.mat','cata.mat','Bath_16.mat',...
+%             'CTU_Prague_16.mat','Karlsruhe_16.mat','Wroclaw_16.mat','Paderborn_16.mat','Bath_18.mat'};
+% teams = {'Delft_15','Bath_15','Aachen_15','Stuttgart_16','Catalunya_16','Bath_16',...
+%         'CTU_Prague_16','Karlsruhe_16','Wroclaw_16','Paderborn_16','Bath_18'};
 
 
 events = {'Acceleration', 'SkidPad', 'Autocross', 'Endurance', 'FuelEfficiency'};
@@ -74,7 +74,7 @@ for iCar = 1:length(carfiles)
     [Laptimes.Autocross, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
     % Full lap (steady state)
     disp('Simulating steady state lap of Endurance Test...')
-    trackmap = 'Endurance_Track.mat';
+    trackmap = 'Endurance_Track_1400.mat';
     FolderSection = [FolderName '\Endurance_Test\Steady_State'];
     SimName = {'Endurance_Test_Steady_State'};
     BoundaryConditions.vCar_start = 26;
@@ -100,7 +100,6 @@ for iCar = 1:length(carfiles)
     end
     Points.Sims.(teams{iCar}).Total = Points.Sims.(teams{iCar}).Acceleration + Points.Sims.(teams{iCar}).SkidPad +...
         Points.Sims.(teams{iCar}).Autocross + Points.Sims.(teams{iCar}).Endurance + Points.Sims.(teams{iCar}).FuelEfficiency;
-    toc
 end
 % Output points for each event
 %% Acceleration

@@ -240,7 +240,8 @@ for iSweep = 1:nSweeps
     
     SlipAngle.Front = 0.5*(SA.FL + SA.FR);
     SlipAngle.Rear = 0.5*(SA.RL + SA.RR);
-    aSteeringWheel = rad2deg((atan(Car.Dimension.lWheelbase ./ radius_d))) + (abs(SlipAngle.Front) - abs(SlipAngle.Rear));
+    aSteer = rad2deg((atan(Car.Dimension.lWheelbase ./ radius_d))) + (abs(SlipAngle.Front) - abs(SlipAngle.Rear));
+    aSteeringWheel = aSteer * Car.Steering.Ratio;
     aUOSteer = abs(SlipAngle.Front) - abs(SlipAngle.Rear);
     gLat = a_y / abs(Environment.Gravity);
     gLong = a_x / abs(Environment.Gravity);
@@ -324,7 +325,7 @@ for iSweep = 1:nSweeps
            mkdir(yourFolder)
         end
         sim_output_vars = {'Car','Environment','vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle',...
-                           'rBrake','CO2_Usage','MotorPower','aUOSteer','hRideF','hRideR'};
+                           'rBrake','CO2_Usage','MotorPower','aUOSteer','aSteer','aSteeringWheel','hRideF','hRideR'};
  %Stability                      
         save([SaveLocation '\' FolderName '\' SimName{iSweep} '.mat'],sim_output_vars{:})
     end

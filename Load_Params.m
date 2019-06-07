@@ -75,7 +75,7 @@ Car.Tyres.Coefficients.RollingResistance = 0.020; % Need updated number for Hoos
 
 % Powertrain info
 % Engine
-Car.Powertrain.Engine.TransmissionRatio = 5.55;
+Car.Powertrain.Engine.TransmissionRatio = 5;
 Car.Powertrain.Engine.RPM_Idle = 3000;                      % Idle RPM
 Car.Powertrain.Engine.T_Idle = 53.75;                       % Torque at idle RPM
 Car.Powertrain.Engine.RPM_Max_T = 9200;                      % RPM corresponding to max torque
@@ -120,7 +120,6 @@ Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2;   
 Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 
 % Car aero performance
-
 Car.AeroPerformance.C_L = 3.0;
 Car.AeroPerformance.C_D = 1.15;
 Car.AeroPerformance.hRideF = 0.03; % (m) (Static ride height under the weight of the car)

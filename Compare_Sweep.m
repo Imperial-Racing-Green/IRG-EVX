@@ -1,9 +1,9 @@
 % Plot ouptuts of a sweep
 close all
 clear
-clc
 
-FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Test49386';
+
+FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Torque_divided_by_2_test';
 full_weekend = 1;  % If selected point to folder of encolsing all weekend results
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%
@@ -317,13 +317,13 @@ if full_weekend == 1
     end
     % Get best and worst results of 2016 (not 2018)
     % Acceleration test
-    Times.Acceleration_Test.Best = 3.881; % 3.780;
+    Times.Acceleration_Test.Best = 3.881; % 3.780; 3.881;
     % Skid-Pad test
-    Times.SkidPad_Test.Best =  4.729; % 4.735;
+    Times.SkidPad_Test.Best = 4.729; % 4.735;  4.729; 
     % Endurance test
-    Times.Endurance_Test.Best = 1427.580; % 1271.04;
+    Times.Endurance_Test.Best = 1427.580; % 1271.04; 1427.580; 
     % Autocross test
-    Times.Autocross_Test.Best = 52.161; % 47.148;
+    Times.Autocross_Test.Best = 52.161; % 47.148; 52.161;
     % Fuel Efficiency test
 %     FuelEfficiency_Test.Best = 0.806;
 %     FuelEfficiency_Test.Worst =  0.095;

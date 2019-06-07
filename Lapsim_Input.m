@@ -6,23 +6,23 @@ clc
 %% Save results location
 
 SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
-FolderName = 'Test235';
+FolderName = 'Actual_Trackmaps';
 SimName = {'Test'};
 
 %% Trackmap
-%trackmap = 'Endurance_Track.mat';
-trackmap = 'Autocross_Track_2018.mat';
+trackmap = 'Endurance_Track_1000.mat';
+%trackmap = 'Autocross_Track_2018.mat';
 %trackmap = 'Acceleration_Track.mat';
 %trackmap = 'SkidPad_Track_new.mat';
 %trackmap = 'Full_FS_Weekend';
 
 %% vCar boundary conditions
 % Racing_Line_ClosedLoop 
-%BoundaryConditions.vCar_start = 26;
-%BoundaryConditions.vCar_end = 26;
+BoundaryConditions.vCar_start = 26;
+BoundaryConditions.vCar_end = 26;
 % Acceleration_Track 
-BoundaryConditions.vCar_start = 0;
-BoundaryConditions.vCar_end = [];
+% BoundaryConditions.vCar_start = 0;
+% BoundaryConditions.vCar_end = [];
 % SkidPad_Track 
 %   BoundaryConditions.vCar_start = 13.6;
 %   BoundaryConditions.vCar_end = [];
@@ -33,13 +33,8 @@ Sweep.Choose_Param = 0;                                % Choose whether to sweep
 Sweep.Param = {'Car.AeroPerformance.C_L'};             % Variable within car structure to be swept
 Sweep.Values = 0:0.5:4;
 Sweep.Choose_Carfile = 0;
-Sweep.Carfile = {'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Baseline_Carfile_Master'...
-                 'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Baseline_Carfile_electric_fwd'...
-                 'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Baseline_Carfile_electric_rwd'...
-                 'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Baseline_Carfile_engine_fwd'...
-                 'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Baseline_Carfile_engine_rwd'...
-                 'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Baseline_Carfile_Master_fwd'...
-                 'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Baseline_Carfile_Master_rwd'};
+Sweep.Carfile = {'C:\Users\Ila\Documents\GDP\IRG-EVX\Baseline_Carfile.mat'...
+                 'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Car_13inch_tyres.mat'};
 Sweep.Choose_Weatherfile = 0;
 Sweep.Weatherfile = {'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\Baseline_Weatherfile.mat'};
 
@@ -86,7 +81,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
         % Full lap (steady state)
         disp('Simulating steady state lap of Endurance Test...')
-        trackmap = 'Endurance_Track.mat';
+        trackmap = 'Endurance_Track_1000.mat';
         FolderSection = [FolderName '\Endurance_Test'];
         SimName = {'Endurance_Test'};
         BoundaryConditions.vCar_start = 26;
