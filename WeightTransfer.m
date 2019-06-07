@@ -3,14 +3,14 @@ function [Fz_FL, Fz_FR, Fz_RL, Fz_RR] = WeightTransfer(Car,a_x,a_y)
 %% Longitudinal
 % Clockwise moment about CoG
 M = Car.Mass.Total*a_x*Car.Dimension.CoG(3);
-dF = (M*Car.Dimension.lWheelbase)/2;    % Weight transfer at each wheel (+ve upwards)
+dF = M / Car.Dimension.lWheelbase;    % Weight transfer at each wheel (+ve upwards)
 Fz_Front = dF;
 Fz_Rear = - dF;
 
 %% Lateral
 % Clockwise moment about CoG
 M = Car.Mass.Total*a_y*Car.Dimension.CoG(3);
-dF = (M*Car.Dimension.Front_track)/2;    % Weight transfer at each wheel (+ve upwards)
+dF =  M / Car.Dimension.Front_track;    % Weight transfer at each wheel (+ve upwards)
 Fz_Left = dF;
 Fz_Right = - dF;
 

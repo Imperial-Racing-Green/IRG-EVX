@@ -88,14 +88,13 @@ Car.Powertrain.Engine.Config = 'rwd';      % (fwd/rwd/4wd   front/rear/4 wheel d
 Car.Powertrain.Motor.P_max = 23000;    % Max power (W)
 Car.Powertrain.Motor.Kv = 200;          % RPM constant 
 Car.Powertrain.Motor.RatedVoltage = 125;          % (V) 
-Car.Powertrain.Motor.TransmissionRatio = 8; %10;
-Car.Powertrain.Motor.RPM_Lim = 25500; 
+Car.Powertrain.Motor.TransmissionRatio = 8;
 Car.Powertrain.Motor.Efficiencies.Motor = 0.87;
 Car.Powertrain.Motor.Efficiencies.Gears = 0.941;
 Car.Powertrain.Motor.Config = 'fwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 
 % Brakes info
-Car.Brakes.FPedalMax = 750;                                           % (N) 
+Car.Brakes.FPedalMax = 1500;                                           % (N) 
 Car.Brakes.BrakeBias = 0.6757;                                                        % > 0.5 is biased towards front - might change with weight / CG
 Car.Brakes.PedalMotionRatio = 205.8/51.5;
 Car.Brakes.Front.wPad = 0.040894; %25.4e-3                                          % Pad width (m) 

@@ -21,9 +21,9 @@ Front.FLong = Front.FClamp * Brake_Info.Front.PadFrictionCoefficent;
 Rear.Flong = Rear.FClamp * Brake_Info.Rear.PadFrictionCoefficent; 
 
 % Find equivalent torque (Nm)
-T_FL = - (Front.FLong * Brake_Info.Front.rActing);
+T_FL = - (Front.FLong * Brake_Info.Front.rActing) / 2;
 T_FR = T_FL;
-T_RL = - (Rear.Flong * Brake_Info.Rear.rActing);
+T_RL = - (Rear.Flong * Brake_Info.Rear.rActing) / 2;
 T_RR = T_RL;
 
 T = [T_FL;T_FR;T_RL;T_RR];

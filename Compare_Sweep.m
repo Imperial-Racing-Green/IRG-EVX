@@ -2,7 +2,6 @@
 close all
 clear
 
-
 FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Torque_divided_by_2_test';
 full_weekend = 1;  % If selected point to folder of encolsing all weekend results
 
