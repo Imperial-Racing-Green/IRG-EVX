@@ -10,6 +10,7 @@ FolderName = 'Power_Vs_Mass_400';
 SimName = {'Test'};
 
 %% Trackmap
+
 trackmap = 'Endurance_Track_1400.mat';
 %trackmap = 'Autocross_Track_2018.mat';
 %trackmap = 'Acceleration_Track.mat';
@@ -29,9 +30,15 @@ BoundaryConditions.vCar_end = 26;
 
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
+<<<<<<< HEAD
 Sweep.Choose_Param = 1;                                % Choose whether to sweep anything or not
 Sweep.Param = {'Car.Powertrain.Motor.P_max'};             % Variable within car structure to be swept
 Sweep.Values = 20000:10000:50000;
+=======
+Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
+Sweep.Param = {'Car.Powertrain.Engine.TransmissionRatio'};             % Variable within car structure to be swept
+Sweep.Values = [3.5, 5 5.55, 6];
+>>>>>>> Aero_GDP
 Sweep.Choose_Carfile = 0;
 Sweep.Carfile = {'C:\Users\Ila\Documents\GDP\IRG-EVX\Baseline_Carfile.mat'...
                  'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Car_13inch_tyres.mat'};

@@ -30,12 +30,12 @@ Car.Tyres.Coefficients.RollingResistance = 0.020;
 % Powertrain info
 % Engine
 Car.Powertrain.Engine.TransmissionRatio = 3;
-Car.Powertrain.Engine.RPM_Idle = 1200;                      % Idle RPM
-Car.Powertrain.Engine.T_Idle = 50;                       % Torque at idle RPM
+Car.Powertrain.Engine.RPM_Idle = 2000;                      % Idle RPM
+Car.Powertrain.Engine.T_Idle = 45;                       % Torque at idle RPM
 Car.Powertrain.Engine.RPM_Max_T = 5500;                      % RPM corresponding to max torque
 Car.Powertrain.Engine.T_Max = 63;                      % Max torque possible [Nm]
 Car.Powertrain.Engine.RPM_Limit = 9000;                  % Max RPM  [R/Min]
-Car.Powertrain.Engine.T_Limit = 50;                   % Torque at max RPM
+Car.Powertrain.Engine.T_Limit = 45;                   % Torque at max RPM
 Car.Powertrain.Engine.Efficiencies.Gears = 0.98;
 Car.Powertrain.Engine.Config = 'rwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 % Battery/motor (values for single motor)
@@ -71,7 +71,7 @@ Car.Brakes.Rear.dMasterCylinder = 0.0254;
 Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2;       % Master cylinder area (m^2)
 Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 % Car aero performance
-Car.AeroPerformance.C_L = 2.7;
+Car.AeroPerformance.C_L = 2.0;
 Car.AeroPerformance.C_D = 1.15;
 Car.AeroPerformance.hRideF = 0.038; % (m) (Static ride height under the weight of the car)
 Car.AeroPerformance.hRideR = 0.038; % (m)
@@ -80,6 +80,13 @@ Car.Steering.Ratio = 7;
 % Suspension
 Car.Sus.Front.Stiffness.Vertical = 65000;
 Car.Sus.Rear.Stiffness.Vertical = 55000;
+% Cambers
+Car.Tyres.Camber.FL = -1;
+Car.Tyres.Camber.FR = -1;
+Car.Tyres.Camber.RL = 0;
+Car.Tyres.Camber.RR = 0;
+Car.Tyres.CamberRollFactor.Front = 0.325;
+Car.Tyres.CamberRollFactor.Rear = 1.1;
 save('Bath_18.mat')
 clear
 
@@ -112,12 +119,12 @@ Car.Tyres.Coefficients.RollingResistance = 0.020;
 % Powertrain info
 % Engine
 Car.Powertrain.Engine.TransmissionRatio = 3;
-Car.Powertrain.Engine.RPM_Idle = 1200;                      % Idle RPM
-Car.Powertrain.Engine.T_Idle = 54;                       % Torque at idle RPM
+Car.Powertrain.Engine.RPM_Idle = 1000;                      % Idle RPM
+Car.Powertrain.Engine.T_Idle = 61;                       % Torque at idle RPM
 Car.Powertrain.Engine.RPM_Max_T = 5500;                      % RPM corresponding to max torque
 Car.Powertrain.Engine.T_Max = 63;                      % Max torque possible [Nm]
-Car.Powertrain.Engine.RPM_Limit = 9000;                   % Max RPM  [R/Min]
-Car.Powertrain.Engine.T_Limit = 54;                   % Torque at max RPM
+Car.Powertrain.Engine.RPM_Limit = 10000;                   % Max RPM  [R/Min]
+Car.Powertrain.Engine.T_Limit = 61;                   % Torque at max RPM
 Car.Powertrain.Engine.Efficiencies.Gears = 0.98;
 Car.Powertrain.Engine.Config = 'rwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 % Battery/motor (values for single motor)
@@ -162,6 +169,13 @@ Car.Steering.Ratio = 7;
 % Suspension
 Car.Sus.Front.Stiffness.Vertical = 65000;
 Car.Sus.Rear.Stiffness.Vertical = 55000;
+% Cambers
+Car.Tyres.Camber.FL = -1;
+Car.Tyres.Camber.FR = -1;
+Car.Tyres.Camber.RL = 0;
+Car.Tyres.Camber.RR = 0;
+Car.Tyres.CamberRollFactor.Front = 0.325;
+Car.Tyres.CamberRollFactor.Rear = 1.1;
 save('Bath_16.mat')
 clear
 
@@ -244,6 +258,13 @@ Car.Steering.Ratio = 7;
 % Suspension
 Car.Sus.Front.Stiffness.Vertical = 65000;
 Car.Sus.Rear.Stiffness.Vertical = 55000;
+% Cambers
+Car.Tyres.Camber.FL = -1;
+Car.Tyres.Camber.FR = -1;
+Car.Tyres.Camber.RL = 0;
+Car.Tyres.Camber.RR = 0;
+Car.Tyres.CamberRollFactor.Front = 0.325;
+Car.Tyres.CamberRollFactor.Rear = 1.1;
 save('cata.mat')
 clear
 
@@ -326,6 +347,13 @@ Car.Steering.Ratio = 7;
 % Suspension
 Car.Sus.Front.Stiffness.Vertical = 65000;
 Car.Sus.Rear.Stiffness.Vertical = 55000;
+% Cambers
+Car.Tyres.Camber.FL = -1;
+Car.Tyres.Camber.FR = -1;
+Car.Tyres.Camber.RL = 0;
+Car.Tyres.Camber.RR = 0;
+Car.Tyres.CamberRollFactor.Front = 0.325;
+Car.Tyres.CamberRollFactor.Rear = 1.1;
 save('aachen.mat')
 clear
 
@@ -408,6 +436,13 @@ Car.Steering.Ratio = 7;
 % Suspension
 Car.Sus.Front.Stiffness.Vertical = 65000;
 Car.Sus.Rear.Stiffness.Vertical = 55000;
+% Cambers
+Car.Tyres.Camber.FL = -1;
+Car.Tyres.Camber.FR = -1;
+Car.Tyres.Camber.RL = 0;
+Car.Tyres.Camber.RR = 0;
+Car.Tyres.CamberRollFactor.Front = 0.325;
+Car.Tyres.CamberRollFactor.Rear = 1.1;
 save('West_Bohemia_16.mat')
 clear
 
@@ -497,6 +532,13 @@ Car.Steering.Ratio = 7;
 % Suspension
 Car.Sus.Front.Stiffness.Vertical = 65000;
 Car.Sus.Rear.Stiffness.Vertical = 55000;
+% Cambers
+Car.Tyres.Camber.FL = -1;
+Car.Tyres.Camber.FR = -1;
+Car.Tyres.Camber.RL = 0;
+Car.Tyres.Camber.RR = 0;
+Car.Tyres.CamberRollFactor.Front = 0.325;
+Car.Tyres.CamberRollFactor.Rear = 1.1;
 save('CTU_Prague_16.mat')
 clear
 
@@ -527,8 +569,8 @@ Car.Dimension.WheelFR.Radius = 0.230;
 Car.Dimension.WheelRL.Radius = 0.230;
 Car.Dimension.WheelRR.Radius = 0.230;
 %Aero
-Car.AeroPerformance.C_L = 2.7;                          % unknown
-Car.AeroPerformance.C_D = 1.15;      % unknown
+Car.AeroPerformance.C_L = 3;                          % unknown
+Car.AeroPerformance.C_D = 1.4;      % unknown
 Car.AeroPerformance.hRideF = 0.038; % (m) (Static ride height under the weight of the car)
 Car.AeroPerformance.hRideR = 0.038; % (m)
 % Steering
@@ -538,9 +580,9 @@ Car.Steering.Ratio = 7;
 Car.Powertrain.Engine.Config = 'rwd';
 Car.Powertrain.Engine.TransmissionRatio = 3.18;                               % Gear ratio
 Car.Powertrain.Engine.RPM_Idle = 3000;                      % Idle RPM
-Car.Powertrain.Engine.T_Idle = 50;                       % Torque at idle RPM
+Car.Powertrain.Engine.T_Idle = 57;                       % Torque at idle RPM
 Car.Powertrain.Engine.RPM_Limit = 13100; % Max RPM  [R/Min]        
-Car.Powertrain.Engine.T_Limit = 50;                   % Torque at max RPM
+Car.Powertrain.Engine.T_Limit = 57;                   % Torque at max RPM
 Car.Powertrain.Engine.T_Max = 65;                      % Max torque possible [Nm]
 Car.Powertrain.Engine.RPM_Max_T = 11300;                      % RPM corresponding to max torque
 Car.Powertrain.Engine.P_Max = 63000;                       % Max power (W)
@@ -580,6 +622,13 @@ Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2;   
 Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 Car.Sus.Front.Stiffness.Vertical = 65000;
 Car.Sus.Rear.Stiffness.Vertical = 55000;
+% Cambers
+Car.Tyres.Camber.FL = -1;
+Car.Tyres.Camber.FR = -1;
+Car.Tyres.Camber.RL = 0;
+Car.Tyres.Camber.RR = 0;
+Car.Tyres.CamberRollFactor.Front = 0.325;
+Car.Tyres.CamberRollFactor.Rear = 1.1;
 save('Paderborn_16.mat')
 clear
 
@@ -663,6 +712,13 @@ Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2;   
 Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 Car.Sus.Front.Stiffness.Vertical = 65000;
 Car.Sus.Rear.Stiffness.Vertical = 55000;
+% Cambers
+Car.Tyres.Camber.FL = -1;
+Car.Tyres.Camber.FR = -1;
+Car.Tyres.Camber.RL = 0;
+Car.Tyres.Camber.RR = 0;
+Car.Tyres.CamberRollFactor.Front = 0.325;
+Car.Tyres.CamberRollFactor.Rear = 1.1;
 save('Delft_15.mat')
 clear
 
@@ -746,6 +802,13 @@ Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2;   
 Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 Car.Sus.Front.Stiffness.Vertical = 65000;
 Car.Sus.Rear.Stiffness.Vertical = 55000;
+% Cambers
+Car.Tyres.Camber.FL = -1;
+Car.Tyres.Camber.FR = -1;
+Car.Tyres.Camber.RL = 0;
+Car.Tyres.Camber.RR = 0;
+Car.Tyres.CamberRollFactor.Front = 0.325;
+Car.Tyres.CamberRollFactor.Rear = 1.1;
 save('Wroclaw_16.mat')
 clear
 
@@ -805,7 +868,7 @@ Car.Powertrain.Engine.RPM_Max_T = 4500;                      % RPM corresponding
 Car.Powertrain.Engine.P_Max = 65000;                       % Max power (W)
 Car.Powertrain.Engine.Efficiencies.Gears = 0.98;
 % Brakes info
-Car.Brakes.FPedalMax = 1500; %  
+Car.Brakes.FPedalMax = 1500; %  (N)
 Car.Brakes.BrakeBias = 0.6757; % > 0.5 is biased towards front - might change with weight / CG
 Car.Brakes.PedalMotionRatio = 205.8/51.5;
 Car.Brakes.Front.wPad = 0.040894; %25.4e-3 % Pad width (m) 
@@ -830,6 +893,13 @@ Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2; % 
 Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 Car.Sus.Front.Stiffness.Vertical = 65000;
 Car.Sus.Rear.Stiffness.Vertical = 55000;
+% Cambers
+Car.Tyres.Camber.FL = -1;
+Car.Tyres.Camber.FR = -1;
+Car.Tyres.Camber.RL = 0;
+Car.Tyres.Camber.RR = 0;
+Car.Tyres.CamberRollFactor.Front = 0.325;
+Car.Tyres.CamberRollFactor.Rear = 1.1;
 save('Karlsruhe_16.mat')
 clear
 
@@ -851,7 +921,7 @@ Car.Dimension.lWheelbase = 1540/1000;
 Car.Dimension.Front_track = 1114/1000;
 Car.Dimension.Rear_track = 1114/1000;
 Car.Dimension.FrontalArea = 1.2;
-Car.Dimension.CoG = [0.5147*Car.Dimension.lWheelbase, 0, 300/1000];   % height unknown
+Car.Dimension.CoG = [0.5147*Car.Dimension.lWheelbase, 0, 200/1000];   % height unknown
 Car.Dimension.CoP = [800/1000, 0, 300/1000];
 Car.Balance.CoG = [0.5147, 0, 0.25];
 Car.Balance.CoP = [0.5195, 0, 0.30];
@@ -862,7 +932,7 @@ Car.Dimension.WheelRL.Radius = 0.230;
 Car.Dimension.WheelRR.Radius = 0.230;
 %Aero
 Car.AeroPerformance.C_L = 2.7;                          % unknown
-Car.AeroPerformance.C_D = 1.15;                         % unknown
+Car.AeroPerformance.C_D = 1.4;                         % unknown
 Car.AeroPerformance.hRideF = 0.03; % (m) (Static ride height under the weight of the car)
 Car.AeroPerformance.hRideR = 0.03; % (m)
 % Steering
@@ -880,10 +950,10 @@ Car.Powertrain.Motor.Config = 'fwd'; % (fwd/rwd/4wd front/rear/4 wheel drive)
 % Engine
 Car.Powertrain.Engine.Config = 'rwd';
 Car.Powertrain.Engine.TransmissionRatio = 3;                               % Gear ratio
-Car.Powertrain.Engine.RPM_Idle = 1000; % Idle RPM
-Car.Powertrain.Engine.T_Idle = 57; % Torque at idle RPM
+Car.Powertrain.Engine.RPM_Idle = 800; % Idle RPM
+Car.Powertrain.Engine.T_Idle = 58; % Torque at idle RPM
 Car.Powertrain.Engine.RPM_Limit = 10000;                   % Max RPM  [R/Min]         
-Car.Powertrain.Engine.T_Limit = 57; % Torque at max RPM
+Car.Powertrain.Engine.T_Limit = 58; % Torque at max RPM
 Car.Powertrain.Engine.T_Max = 59;                      % Max torque possible [Nm]
 Car.Powertrain.Engine.RPM_Max_T = 5500;                      % RPM corresponding to max torque
 Car.Powertrain.Engine.P_Max = 51000;                       % Max power (W)
@@ -914,6 +984,13 @@ Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2; % 
 Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 Car.Sus.Front.Stiffness.Vertical = 65000;
 Car.Sus.Rear.Stiffness.Vertical = 55000;
+% Cambers
+Car.Tyres.Camber.FL = -1;
+Car.Tyres.Camber.FR = -1;
+Car.Tyres.Camber.RL = 0;
+Car.Tyres.Camber.RR = 0;
+Car.Tyres.CamberRollFactor.Front = 0.325;
+Car.Tyres.CamberRollFactor.Rear = 1.1;
 save('Bath_15.mat')
 clear
 
@@ -997,6 +1074,13 @@ Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2; % 
 Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 Car.Sus.Front.Stiffness.Vertical = 65000;
 Car.Sus.Rear.Stiffness.Vertical = 55000;
+% Cambers
+Car.Tyres.Camber.FL = -1;
+Car.Tyres.Camber.FR = -1;
+Car.Tyres.Camber.RL = 0;
+Car.Tyres.Camber.RR = 0;
+Car.Tyres.CamberRollFactor.Front = 0.325;
+Car.Tyres.CamberRollFactor.Rear = 1.1;
 save('Loughborough_16.mat')
 clear
 
@@ -1081,5 +1165,190 @@ Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2; % 
 Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 Car.Sus.Front.Stiffness.Vertical = 70000;
 Car.Sus.Rear.Stiffness.Vertical = 65000;
+% Cambers
+Car.Tyres.Camber.FL = -1;
+Car.Tyres.Camber.FR = -1;
+Car.Tyres.Camber.RL = 0;
+Car.Tyres.Camber.RR = 0;
+Car.Tyres.CamberRollFactor.Front = 0.325;
+Car.Tyres.CamberRollFactor.Rear = 1.1;
 save('Stuttgart_16.mat')
+clear
+
+
+%% Car Parameters (%Loughborough 2018)
+Car.Year = '2018';
+Car.Category = 'ICE'; % ICE/EV/Hybrid
+Car.Points.Acceleration = 60.4;
+Car.Points.SkidPad = 26.3;
+Car.Points.Autocross = 77.9;
+Car.Points.Endurance = 173.5; %
+Car.Points.FuelEfficiency = 34.4;
+Car.Points.Total = Car.Points.Acceleration + Car.Points.SkidPad + Car.Points.Autocross + Car.Points.Endurance + Car.Points.FuelEfficiency;
+%Mass
+Car.Mass.Total = 265;
+%Dimensions
+Car.Dimension.lWheelbase = 1547/1000;
+Car.Dimension.Front_track = 1300/1000;
+Car.Dimension.Rear_track = 1150/1000;
+Car.Dimension.FrontalArea = 1.0;
+Car.Dimension.CoG = [0.5*Car.Dimension.lWheelbase, 0, 300/1000]; % height unknown
+Car.Dimension.CoP = [0.5*Car.Dimension.lWheelbase, 0, 300/1000];
+Car.Balance.CoG = [0.5, 0, 0.25];
+Car.Balance.CoP = [0.5, 0, 0.30];
+Car.Tyres.Coefficients.RollingResistance = 0.020;
+Car.Dimension.WheelFL.Radius = 0.2302; % Tyre radius [m] 13"
+Car.Dimension.WheelFR.Radius = 0.2302;
+Car.Dimension.WheelRL.Radius = 0.2302;
+Car.Dimension.WheelRR.Radius = 0.2302;
+%Aero
+Car.AeroPerformance.C_L = 0.05; % unknown
+Car.AeroPerformance.C_D = 0.5; % unknown
+Car.AeroPerformance.hRideF = 0.03; % (m) (Static ride height under the weight of the car)
+Car.AeroPerformance.hRideR = 0.03; % (m)
+% Steering
+Car.Steering.Ratio = 7;
+% Powertrain parameters
+% Battery/motor (values for single motor)
+Car.Powertrain.Motor.P_max = 0; % Max power (W)
+Car.Powertrain.Motor.Kv = 0; % RPM constant 
+Car.Powertrain.Motor.RatedVoltage = 0; % (V) 
+Car.Powertrain.Motor.TransmissionRatio = 0; %10;
+Car.Powertrain.Motor.RPM_Lim = 0; 
+Car.Powertrain.Motor.Efficiencies.Motor = 0;
+Car.Powertrain.Motor.Efficiencies.Gears = 0;
+Car.Powertrain.Motor.Config = 'fwd'; % (fwd/rwd/4wd front/rear/4 wheel drive)
+Car.Powertrain.Engine.Config = 'rwd';
+Car.Powertrain.Engine.TransmissionRatio = 3.1; % Gear ratio %3.1
+Car.Powertrain.Engine.RPM_Idle = 1500; % Idle RPM
+Car.Powertrain.Engine.T_Idle = 75; % Torque at idle RPM  %55
+Car.Powertrain.Engine.RPM_Limit = 9500; % Max RPM [R/Min] 
+Car.Powertrain.Engine.T_Limit = 75; % Torque at max RPM %55
+Car.Powertrain.Engine.T_Max = 80; % Max torque possible [Nm]
+Car.Powertrain.Engine.RPM_Max_T = 12500; % RPM corresponding to max torque
+Car.Powertrain.Engine.P_Max = 63000; % Max power (W)
+Car.Powertrain.Engine.Efficiencies.Gears = 0.98; %0.98
+% Brakes info
+Car.Brakes.FPedalMax = 1500; %  
+Car.Brakes.BrakeBias = 0.6757; % > 0.5 is biased towards front - might change with weight / CG
+Car.Brakes.PedalMotionRatio = 205.8/51.5;
+Car.Brakes.Front.wPad = 0.040894; %25.4e-3 % Pad width (m) 
+Car.Brakes.Rear.wPad = 0.040894; %25.4e-3
+Car.Brakes.Front.PadFrictionCoefficent = 0.55;
+Car.Brakes.Rear.PadFrictionCoefficent = 0.55;
+Car.Brakes.Front.nPistons = 2; % Per caliper
+Car.Brakes.Rear.nPistons = 2; 
+Car.Brakes.Front.dBoreDisk = 30e-3; % Bore diameter of brake disk
+Car.Brakes.Rear.dBoreDisk = 30e-3;
+Car.Brakes.Front.dPiston = 25e-3; % Piston diameter (m)
+Car.Brakes.Rear.dPiston = 25e-3;
+Car.Brakes.Front.aPiston = pi*(Car.Brakes.Front.dPiston/2)^2; % Piston area (m^2)
+Car.Brakes.Rear.aPiston = pi*(Car.Brakes.Rear.dPiston/2)^2;
+Car.Brakes.Front.dDisk = 0.1905; % Disk diameter (m)
+Car.Brakes.Rear.dDisk = 0.1905;
+Car.Brakes.Front.rActing = (Car.Brakes.Front.dDisk/2) - (Car.Brakes.Front.wPad/2); % Acting radius (m)
+Car.Brakes.Rear.rActing = (Car.Brakes.Rear.dDisk/2) - (Car.Brakes.Rear.wPad/2);
+Car.Brakes.Front.dMasterCylinder = 0.0254; % Master cylinder diameter (m)
+Car.Brakes.Rear.dMasterCylinder = 0.0254;
+Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2; % Master cylinder area (m^2)
+Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
+Car.Sus.Front.Stiffness.Vertical = 65000;
+Car.Sus.Rear.Stiffness.Vertical = 55000;
+% Cambers
+Car.Tyres.Camber.FL = -1;
+Car.Tyres.Camber.FR = -1;
+Car.Tyres.Camber.RL = 0;
+Car.Tyres.Camber.RR = 0;
+Car.Tyres.CamberRollFactor.Front = 0.325;
+Car.Tyres.CamberRollFactor.Rear = 1.1;
+save('Loughborough_18.mat')
+clear
+
+
+%% Car Parameters (%Sussex 2018)
+Car.Year = '2018';
+Car.Category = 'ICE'; % ICE/EV/Hybrid
+Car.Points.Acceleration = 9.8;
+Car.Points.SkidPad = 0;
+Car.Points.Autocross = 48.7;
+Car.Points.Endurance = 118.3; %
+Car.Points.FuelEfficiency = 29.2;
+Car.Points.Total = Car.Points.Acceleration + Car.Points.SkidPad + Car.Points.Autocross + Car.Points.Endurance + Car.Points.FuelEfficiency;
+%Mass
+Car.Mass.Total = 290;
+%Dimensions
+Car.Dimension.lWheelbase = 1650/1000;
+Car.Dimension.Front_track = 1280/1000;
+Car.Dimension.Rear_track = 1250/1000;
+Car.Dimension.FrontalArea = 1.0;
+Car.Dimension.CoG = [0.6*Car.Dimension.lWheelbase, 0, 300/1000]; % height unknown
+Car.Dimension.CoP = [0.5*Car.Dimension.lWheelbase, 0, 300/1000];
+Car.Balance.CoG = [0.6, 0, 0.3];
+Car.Balance.CoP = [0.5, 0, 0.30];
+Car.Tyres.Coefficients.RollingResistance = 0.020;
+Car.Dimension.WheelFL.Radius = 0.2032; % Tyre radius [m] 13"
+Car.Dimension.WheelFR.Radius = 0.2032;
+Car.Dimension.WheelRL.Radius = 0.2032;
+Car.Dimension.WheelRR.Radius = 0.2032;
+%Aero
+Car.AeroPerformance.C_L = 0.2; % unknown
+Car.AeroPerformance.C_D = 1.2; % unknown
+Car.AeroPerformance.hRideF = 0.03; % (m) (Static ride height under the weight of the car)
+Car.AeroPerformance.hRideR = 0.03; % (m)
+% Steering
+Car.Steering.Ratio = 7;
+% Powertrain parameters
+% Battery/motor (values for single motor)
+Car.Powertrain.Motor.P_max = 0; % Max power (W)
+Car.Powertrain.Motor.Kv = 0; % RPM constant 
+Car.Powertrain.Motor.RatedVoltage = 0; % (V) 
+Car.Powertrain.Motor.TransmissionRatio = 0; %10;
+Car.Powertrain.Motor.RPM_Lim = 0; 
+Car.Powertrain.Motor.Efficiencies.Motor = 0;
+Car.Powertrain.Motor.Efficiencies.Gears = 0;
+Car.Powertrain.Motor.Config = 'fwd'; % (fwd/rwd/4wd front/rear/4 wheel drive)
+Car.Powertrain.Engine.Config = 'rwd';
+Car.Powertrain.Engine.TransmissionRatio = 3.1; % Gear ratio %3.46
+Car.Powertrain.Engine.RPM_Idle = 3000; % Idle RPM
+Car.Powertrain.Engine.T_Idle = 53; % Torque at idle RPM  %55
+Car.Powertrain.Engine.RPM_Limit = 7000; % Max RPM [R/Min] 
+Car.Powertrain.Engine.T_Limit = 53; % Torque at max RPM %55
+Car.Powertrain.Engine.T_Max = 64.1; % Max torque possible [Nm]
+Car.Powertrain.Engine.RPM_Max_T = 10000; % RPM corresponding to max torque
+Car.Powertrain.Engine.P_Max = 55000; % Max power (W)   %58800
+Car.Powertrain.Engine.Efficiencies.Gears = 0.98; %0.98
+% Brakes info
+Car.Brakes.FPedalMax = 1500; %  
+Car.Brakes.BrakeBias = 0.6757; % > 0.5 is biased towards front - might change with weight / CG
+Car.Brakes.PedalMotionRatio = 205.8/51.5;
+Car.Brakes.Front.wPad = 0.040894; %25.4e-3 % Pad width (m) 
+Car.Brakes.Rear.wPad = 0.040894; %25.4e-3
+Car.Brakes.Front.PadFrictionCoefficent = 0.55;
+Car.Brakes.Rear.PadFrictionCoefficent = 0.55;
+Car.Brakes.Front.nPistons = 2; % Per caliper
+Car.Brakes.Rear.nPistons = 2; 
+Car.Brakes.Front.dBoreDisk = 30e-3; % Bore diameter of brake disk
+Car.Brakes.Rear.dBoreDisk = 30e-3;
+Car.Brakes.Front.dPiston = 25e-3; % Piston diameter (m)
+Car.Brakes.Rear.dPiston = 25e-3;
+Car.Brakes.Front.aPiston = pi*(Car.Brakes.Front.dPiston/2)^2; % Piston area (m^2)
+Car.Brakes.Rear.aPiston = pi*(Car.Brakes.Rear.dPiston/2)^2;
+Car.Brakes.Front.dDisk = 0.1905; % Disk diameter (m)
+Car.Brakes.Rear.dDisk = 0.1905;
+Car.Brakes.Front.rActing = (Car.Brakes.Front.dDisk/2) - (Car.Brakes.Front.wPad/2); % Acting radius (m)
+Car.Brakes.Rear.rActing = (Car.Brakes.Rear.dDisk/2) - (Car.Brakes.Rear.wPad/2);
+Car.Brakes.Front.dMasterCylinder = 0.0254; % Master cylinder diameter (m)
+Car.Brakes.Rear.dMasterCylinder = 0.0254;
+Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2; % Master cylinder area (m^2)
+Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
+Car.Sus.Front.Stiffness.Vertical = 65000;
+Car.Sus.Rear.Stiffness.Vertical = 55000;
+% Cambers
+Car.Tyres.Camber.FL = -1;
+Car.Tyres.Camber.FR = -1;
+Car.Tyres.Camber.RL = 0;
+Car.Tyres.Camber.RR = 0;
+Car.Tyres.CamberRollFactor.Front = 0.325;
+Car.Tyres.CamberRollFactor.Rear = 1.1;
+save('Sussex_18.mat')
 clear
