@@ -44,12 +44,15 @@ Car.Mass.Brakes = 4*2.3518;
 % Fuel tank (plus some fuel)
 Car.Mass.Fueltank = 5;
 % Total
-Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
-                 Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
-                 Car.Mass.Engine + Car.Mass.Motors + Car.Mass.MotorControllers + Car.Mass.MotorGears + ...
-                 Car.Mass.Steering + Car.Mass.Pedals + Car.Mass.Seat + Car.Mass.FireWall + ...
-                 Car.Mass.Cooling + Car.Mass.Electrics + Car.Mass.FrontWing + Car.Mass.RearWing + ...
-                 Car.Mass.Floor + Car.Mass.Bodywork + Car.Mass.Brakes + Car.Mass.Fueltank;
+% Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
+%                  Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
+%                  Car.Mass.Engine + Car.Mass.Motors + Car.Mass.MotorControllers + Car.Mass.MotorGears + ...
+%                  Car.Mass.Steering + Car.Mass.Pedals + Car.Mass.Seat + Car.Mass.FireWall + ...
+%                  Car.Mass.Cooling + Car.Mass.Electrics + Car.Mass.FrontWing + Car.Mass.RearWing + ...
+%                  Car.Mass.Floor + Car.Mass.Bodywork + Car.Mass.Brakes + Car.Mass.Fueltank;
+             
+Car.Mass.Total = 400;             
+             
              
 Car.Stiffness.Chassis = 50000;
 
@@ -75,7 +78,7 @@ Car.Tyres.Coefficients.RollingResistance = 0.020; % Need updated number for Hoos
 
 % Powertrain info
 % Engine
-Car.Powertrain.Engine.TransmissionRatio = 5;
+Car.Powertrain.Engine.TransmissionRatio = 5.18;
 Car.Powertrain.Engine.RPM_Idle = 3000;                      % Idle RPM
 Car.Powertrain.Engine.T_Idle = 53.75;                       % Torque at idle RPM
 Car.Powertrain.Engine.RPM_Max_T = 9200;                      % RPM corresponding to max torque
@@ -119,8 +122,8 @@ Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2;   
 Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 
 % Car aero performance
-Car.AeroPerformance.C_L = 3.0;
-Car.AeroPerformance.C_D = 1.15;
+Car.AeroPerformance.C_L = 2.5;
+Car.AeroPerformance.C_D = 1.25;
 Car.AeroPerformance.hRideF = 0.03; % (m) (Static ride height under the weight of the car)
 Car.AeroPerformance.hRideR = 0.03; % (m)
 Car.AeroPerformance.Initial_AoA = 5; % (deg)
@@ -138,9 +141,9 @@ Environment.Pressure = 101325;                  % (Pa)
 
 load([pwd,'\kinematics\geometries\EV3 Front Hardpoints 13.01.19.mat']);
 Car.Sus.Front.Hardpoints = hardpoints_front;
-Car.Sus.Front.Stiffness.Vertical = 80000; %40000;
+Car.Sus.Front.Stiffness.Vertical = 65000; %40000;
 Car.Sus.Front.Stiffness.Horizontal = 80000; %40000;
 load([pwd,'\kinematics\geometries\Final rear Outboard 01.02.19.mat']);
 Car.Sus.Rear.Hardpoints = hardpoints_front;
-Car.Sus.Rear.Stiffness.Vertical = 80000; %40000;
+Car.Sus.Rear.Stiffness.Vertical = 55000; %40000;
 Car.Sus.Rear.Stiffness.Horizontal = 80000; %40000;

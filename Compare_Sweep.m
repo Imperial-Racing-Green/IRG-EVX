@@ -2,7 +2,7 @@
 close all
 clear
 
-FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Torque_divided_by_2_test';
+FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Power_Vs_Mass_250';
 full_weekend = 1;  % If selected point to folder of encolsing all weekend results
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%
@@ -309,7 +309,7 @@ if full_weekend == 1
         Co2 = [];
         for iSim = 1:length(sims)
             t(iSim) = Results.(Test{iTest}).(Sims{iSim}).Laptime;
-            Co2(iSim) = Results.(Test{iTest}).(Sims{iSim}).CO2_Usage;
+            Co2(iSim) = sum(Results.(Test{iTest}).(Sims{iSim}).CO2_Usage)/length(Results.(Test{iTest}).(Sims{iSim}).CO2_Usage);
         end
         Times.(Test{iTest}).Sims = t;
         CO2_Usage.(Test{iTest}).Sims = Co2;
@@ -343,34 +343,39 @@ if full_weekend == 1
     
     % Calculate other points
     Points.Sim = [1:length(FuelEfficiencyFactors)]';
-    Points.Acceleration = (71.5 * ((((Times.Acceleration_Test.Best*1.5)./Times.Acceleration_Test.Sims)-1)/0.5))' + 3.5;
-    Points.Acceleration(Points.Acceleration > 75) = 75;
-%     Points.Skidpad = (46.5 * (((((Times.SkidPad_Test.Best*1.25)./Times.SkidPad_Test.Sims).^2)-1)/0.5625))' + 3.5;
-    Points.Skidpad = (71.5 * (((((Times.SkidPad_Test.Best*1.25)./Times.SkidPad_Test.Sims).^2)-1)/0.5625))' + 3.5;
-%     Points.Skidpad(Points.Skidpad > 50) = 50;
-    Points.Skidpad(Points.Skidpad > 75) = 75;
-%     Points.Autocross = (145.5 * ((((Times.Autocross_Test.Best*1.25)./Times.Autocross_Test.Sims)-1)/0.25))' + 4.5;
-    Points.Autocross = (95.5 * ((((Times.Autocross_Test.Best*1.25)./Times.Autocross_Test.Sims)-1)/0.25))' + 4.5;
-%     Points.Autocross(Points.Autocross > 150) = 150;
-    Points.Autocross(Points.Autocross > 100) = 100;
-%     Points.Endurance = (275 * ((((Times.Endurance_Test.Best*1.333)./Times.Endurance_Test.Sims)-1)/0.333))' + 25;
-    Points.Endurance = (300 * ((((Times.Endurance_Test.Best*1.333)./Times.Endurance_Test.Sims)-1)/0.333))' + 25;
-%     Points.Endurance(Points.Endurance > 300) = 300;
-    Points.Endurance(Points.Endurance > 325) = 325;
-    Points.Efficiency = (100 * (((FuelEfficiency_Test.Worst./FuelEfficiencyFactors) - 1) / ((FuelEfficiency_Test.Worst/FuelEfficiency_Test.Best) - 1)))';
-    Points.Efficiency(Points.Efficiency > 100) = 100;
-    Points.Total = Points.Acceleration + Points.Skidpad + Points.Autocross + Points.Endurance + Points.Efficiency;
+    Points.Acceleration_2018 = (71.5 * ((((Times.Acceleration_Test.Best*1.5)./Times.Acceleration_Test.Sims)-1)/0.5))' + 3.5;
+    Points.Acceleration_2018(Points.Acceleration_2018 > 75) = 75;
+    Points.Acceleration_2019 = (71.5 * ((((Times.Acceleration_Test.Best*1.5)./Times.Acceleration_Test.Sims)-1)/0.5))' + 3.5;
+    Points.Acceleration_2019(Points.Acceleration_2019 > 75) = 75;
+    Points.Skidpad_2018 = (46.5 * (((((Times.SkidPad_Test.Best*1.25)./Times.SkidPad_Test.Sims).^2)-1)/0.5625))' + 3.5;
+    Points.Skidpad_2019 = (71.5 * (((((Times.SkidPad_Test.Best*1.25)./Times.SkidPad_Test.Sims).^2)-1)/0.5625))' + 3.5;
+    Points.Skidpad_2018(Points.Skidpad_2018 > 50) = 50;
+    Points.Skidpad_2019(Points.Skidpad_2019 > 75) = 75;
+    Points.Autocross_2018 = (145.5 * ((((Times.Autocross_Test.Best*1.25)./Times.Autocross_Test.Sims)-1)/0.25))' + 4.5;
+    Points.Autocross_2019 = (95.5 * ((((Times.Autocross_Test.Best*1.25)./Times.Autocross_Test.Sims)-1)/0.25))' + 4.5;
+    Points.Autocross_2018(Points.Autocross_2018 > 150) = 150;
+    Points.Autocross_2019(Points.Autocross_2019 > 100) = 100;
+    Points.Endurance_2018 = (275 * ((((Times.Endurance_Test.Best*1.333)./Times.Endurance_Test.Sims)-1)/0.333))' + 25;
+    Points.Endurance_2019 = (300 * ((((Times.Endurance_Test.Best*1.333)./Times.Endurance_Test.Sims)-1)/0.333))' + 25;
+    Points.Endurance_2018(Points.Endurance_2018 > 300) = 300;
+    Points.Endurance_2019(Points.Endurance_2019 > 325) = 325;
+    Points.Efficiency_2018 = (100 * (((FuelEfficiency_Test.Worst./FuelEfficiencyFactors) - 1) / ((FuelEfficiency_Test.Worst/FuelEfficiency_Test.Best) - 1)))';
+    Points.Efficiency_2018(Points.Efficiency_2018 > 100) = 100;
+    Points.Efficiency_2019 = (100 * (((FuelEfficiency_Test.Worst./FuelEfficiencyFactors) - 1) / ((FuelEfficiency_Test.Worst/FuelEfficiency_Test.Best) - 1)))';
+    Points.Efficiency_2019(Points.Efficiency_2019 > 100) = 100;
+    Points.Total_2018 = Points.Acceleration_2018 + Points.Skidpad_2018 + Points.Autocross_2018 + Points.Endurance_2018 + Points.Efficiency_2018;
+    Points.Total_2019 = Points.Acceleration_2019 + Points.Skidpad_2019 + Points.Autocross_2019 + Points.Endurance_2019 + Points.Efficiency_2019;
     Points = struct2table(Points);
     figure()
     subplot(2,3,1)
-    y = table2array(Points(:,2))';
+    y = table2array(Points(:,3))';
     plot(y,'b-o','LineWidth',1.2)
     title('Acceleration (75pts)')
     ylabel('Points')
     xlabel('Sim')
     grid on
     subplot(2,3,2)
-    y = table2array(Points(:,3))';
+    y = table2array(Points(:,5))';
     plot(y,'b-o','LineWidth',1.2)
 %     title('Skidpad (50pts)')
     title('Skidpad (75pts)')
@@ -378,7 +383,7 @@ if full_weekend == 1
     xlabel('Sim')
     grid on
     subplot(2,3,3)
-    y = table2array(Points(:,4))';
+    y = table2array(Points(:,7))';
     plot(y,'b-o','LineWidth',1.2)
 %     title('Autocross (150pts)')
     title('Autocross (100pts)')
@@ -386,7 +391,7 @@ if full_weekend == 1
     xlabel('Sim')
     grid on
     subplot(2,3,4)
-    y = table2array(Points(:,5))';
+    y = table2array(Points(:,9))';
     plot(y,'b-o','LineWidth',1.2)
 %     title('Endurance (300pts)')
     title('Endurance (325pts)')
@@ -394,14 +399,14 @@ if full_weekend == 1
     xlabel('Sim')
     grid on
     subplot(2,3,5)
-    y = table2array(Points(:,6))';
+    y = table2array(Points(:,11))';
     plot(y,'b-o','LineWidth',1.2)
     title('Efficiency (100 pts)')
     ylabel('Points')
     xlabel('Sim')
     grid on
     subplot(2,3,6)
-    y = table2array(Points(:,7))';
+    y = table2array(Points(:,13))';
     plot(y,'b-o','LineWidth',1.2)
     title('Total (675pts)')
     ylabel('Points')

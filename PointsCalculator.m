@@ -33,38 +33,38 @@ end
 disp(['Acceleration Time: ',num2str(T_team) 's           Score: ',num2str(Accel_score),' /75'])
 
 %% Skid Pad
-if strcmp(Car.Year,'2018') == 1
-    T_min_s = 4.729;
-elseif strcmp(Car.Year,'2017') == 1
-    T_min_s = 5.088;
-elseif strcmp(Car.Year,'2016') == 1
-    T_min_s = 4.735;
-elseif strcmp(Car.Year,'2015') == 1
-    T_min_s = 4.627;
-else
-    error('Need to add best results from the year of this car!')
-end
-T_max_s = 1.25*T_min_s; % 125% as per regulations
-T_team = Laptimes.SkidPad;
-if T_team > T_max_s
-    score_s = 0;
-else
-    if strcmp(Car.Year,'2015') == 1 || strcmp(Car.Year,'2016') == 1 || strcmp(Car.Year,'2017') == 1 || strcmp(Car.Year,'2018') == 1
-        score_s = (47.5*((((T_max_s/T_team)^2)-1)/(((T_max_s/T_min_s)^2)-1))) + 2.5;
-        if score_s > 50
-            score_s = 50;
-        end
-        disp(['Skidpad Time: ',num2str(T_team) 's         Score: ',num2str(score_s),' /50'])
-    elseif strcmp(Car.Year,'2019') == 1
-        score_s = (71.5 * ((((T_max_s/T_team)^2)-1)/0.5625)) + 3.5;
-        if score_s > 75
-            score_s = 75;
-        end
-        disp(['Skidpad Time: ',num2str(T_team) 's         Score: ',num2str(score_s),' /75'])
-    else
-       error('Need to add best results from the year of this car!')
-    end
-end
+% if strcmp(Car.Year,'2018') == 1
+%     T_min_s = 4.729;
+% elseif strcmp(Car.Year,'2017') == 1
+%     T_min_s = 5.088;
+% elseif strcmp(Car.Year,'2016') == 1
+%     T_min_s = 4.735;
+% elseif strcmp(Car.Year,'2015') == 1
+%     T_min_s = 4.627;
+% else
+%     error('Need to add best results from the year of this car!')
+% end
+% T_max_s = 1.25*T_min_s; % 125% as per regulations
+% T_team = Laptimes.SkidPad;
+% if T_team > T_max_s
+%     score_s = 0;
+% else
+%     if strcmp(Car.Year,'2015') == 1 || strcmp(Car.Year,'2016') == 1 || strcmp(Car.Year,'2017') == 1 || strcmp(Car.Year,'2018') == 1
+%         score_s = (47.5*((((T_max_s/T_team)^2)-1)/(((T_max_s/T_min_s)^2)-1))) + 2.5;
+%         if score_s > 50
+%             score_s = 50;
+%         end
+%         disp(['Skidpad Time: ',num2str(T_team) 's         Score: ',num2str(score_s),' /50'])
+%     elseif strcmp(Car.Year,'2019') == 1
+%         score_s = (71.5 * ((((T_max_s/T_team)^2)-1)/0.5625)) + 3.5;
+%         if score_s > 75
+%             score_s = 75;
+%         end
+%         disp(['Skidpad Time: ',num2str(T_team) 's         Score: ',num2str(score_s),' /75'])
+%     else
+%        error('Need to add best results from the year of this car!')
+%     end
+% end
 
 %% Autocross
 if strcmp(Car.Year,'2018') == 1
@@ -170,9 +170,9 @@ end
 disp(['Efficiency Score: ',num2str(score_eff),' /100'])
 
 %% Total Points
-Score_total = Accel_score + score_s + score_auto + score_end + score_eff;
+Score_total = Accel_score + score_auto + score_end + score_eff; % + score_s;
 Points.Acceleration = Accel_score;
-Points.SkidPad = score_s;
+%Points.SkidPad = score_s;
 Points.Autocross = score_auto;
 Points.Endurance = score_end;
 Points.FuelEfficiency = score_eff;

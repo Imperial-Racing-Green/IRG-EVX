@@ -1,5 +1,5 @@
     clear
-    Track_Dist = 1000; %track distance in metres
+    Track_Dist = 805; %track distance in metres
     Track_Width = 4; %track width in meteres
     % Max_Track_Resolution = 1; %track points per metre
     Steps = 1; %steps in optmisation smoothness

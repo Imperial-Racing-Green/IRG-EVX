@@ -250,8 +250,8 @@ for iSweep = 1:nSweeps
     
     % Use throttle to find fuel/energy consumption
     if strcmp(Car.Category,'ICE') == 1
-        MassFlowRate = (rThrottle * 0.0023) + 5.2842e-5; % Linear relationship to include idle fuel flow
-        MassFlowRate(isnan(MassFlowRate)) = 5.2842e-5;
+        MassFlowRate = ((Fx.RL+Fx.RR) * 1.42257529870920e-06) + 6.84678641286606e-05; % Linear relationship to include idle fuel flow
+        MassFlowRate(isnan(MassFlowRate)) = 6.84678641286606e-05;
         mFuelBurn = trapz(tLap,MassFlowRate); % (kg)
         vFuelBurn = (mFuelBurn / 719.7) * 1000; % (litres)
         CO2_Usage = 2.31 * vFuelBurn;
@@ -260,10 +260,13 @@ for iSweep = 1:nSweeps
         % Get thrust from motors
         if strcmp(Car.Powertrain.Motor.Config,'fwd') == 1
             CombinedMotorThrust = Force.Powertrain.Thrust.FL + Force.Powertrain.Thrust.FR;
+            %CombinedMotorThrust = Force.Wheel.Fx.FL + Force.Wheel.Fx.FR;
         elseif strcmp(Car.Powertrain.Motor.Config,'rwd') == 1
             CombinedMotorThrust = Force.Powertrain.Thrust.RL + Force.Powertrain.Thrust.RR;
+            %CombinedMotorThrust = Force.Wheel.Fx.RL + Force.Wheel.Fx.RR;
         elseif strcmp(Car.Powertrain.Motor.Config,'4wd') == 1
             CombinedMotorThrust = Force.Powertrain.Thrust.FL + Force.Powertrain.Thrust.FR + Force.Powertrain.Thrust.RL + Force.Powertrain.Thrust.RR;
+            %CombinedMotorThrust = Force.Wheel.Fx.FL + Force.Wheel.Fx.FR + Force.Wheel.Fx.RL + Force.Wheel.Fx.RR; 
         else
             error('Incorrect motor configuration! How has the sim got this far???')
         end
@@ -272,9 +275,9 @@ for iSweep = 1:nSweeps
         EPower_avg = (trapz(tLap,MotorPower)) / Laptime;
         E_kwh = EPower_avg*(Laptime/3600)/1000;
         CO2_Usage = (0.65*E_kwh);
-    elseif strcmp(Car.Category,'Hybrid') == 1% Assume half throttle for energy and fuel consumption each
-        MassFlowRate = ((0.5*rThrottle) * 0.0023) + 5.2842e-5; % Linear relationship to include idle fuel flow
-        MassFlowRate(isnan(MassFlowRate)) = 5.2842e-5;
+    elseif strcmp(Car.Category,'Hybrid') == 1
+        MassFlowRate = ((Fx.RL+Fx.RR) * 1.42257529870920e-06) + 6.84678641286606e-05; % Linear relationship to include idle fuel flow
+        MassFlowRate(isnan(MassFlowRate)) = 6.84678641286606e-05;
         mFuelBurn = trapz(tLap,MassFlowRate); % (kg)
         vFuelBurn = (mFuelBurn / 719.7) * 1000; % (litres)
         CO2_Usage = 2.31 * vFuelBurn;

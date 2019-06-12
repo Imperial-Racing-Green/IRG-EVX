@@ -6,11 +6,11 @@ clc
 %% Save results location
 
 SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
-FolderName = 'Actual_Trackmaps';
+FolderName = 'Power_Vs_Mass_400';
 SimName = {'Test'};
 
 %% Trackmap
-trackmap = 'Endurance_Track_1000.mat';
+trackmap = 'Endurance_Track_1400.mat';
 %trackmap = 'Autocross_Track_2018.mat';
 %trackmap = 'Acceleration_Track.mat';
 %trackmap = 'SkidPad_Track_new.mat';
@@ -29,9 +29,9 @@ BoundaryConditions.vCar_end = 26;
 
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
-Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
-Sweep.Param = {'Car.AeroPerformance.C_L'};             % Variable within car structure to be swept
-Sweep.Values = 0:0.5:4;
+Sweep.Choose_Param = 1;                                % Choose whether to sweep anything or not
+Sweep.Param = {'Car.Powertrain.Motor.P_max'};             % Variable within car structure to be swept
+Sweep.Values = 20000:10000:50000;
 Sweep.Choose_Carfile = 0;
 Sweep.Carfile = {'C:\Users\Ila\Documents\GDP\IRG-EVX\Baseline_Carfile.mat'...
                  'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Car_13inch_tyres.mat'};
@@ -81,7 +81,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
         % Full lap (steady state)
         disp('Simulating steady state lap of Endurance Test...')
-        trackmap = 'Endurance_Track_1000.mat';
+        trackmap = 'Endurance_Track_1400.mat';
         FolderSection = [FolderName '\Endurance_Test'];
         SimName = {'Endurance_Test'};
         BoundaryConditions.vCar_start = 26;
