@@ -11,20 +11,18 @@ SaveCarfiles2();
 SaveLocation = 'C:\Users\gregj\OneDrive\Documents\GitHub\GDP_2017_Lapsim';
 FolderName = 'Validation';
 
-%% Simulate each carfile and compare its simulated points to its total points
-% carfiles = {'cata.mat', 'aachen.mat','West_Bohemia_16.mat','Paderborn_16.mat','Bath_16.mat',...
-%     'Delft_15.mat','Stuttgart_16.mat','Bath_15.mat','CTU_Prague_16.mat','Karlsruhe_16.mat','Wroclaw_16.mat'};
-% teams = {'Catalunya_16', 'Aachen_15','West_Bohemia_16','Paderborn_16','Bath_16','Delft_15',...
-%     'Stuttgart_16','Bath_15','CTU_Prague_16','Karlsruhe_16','Wroclaw_16'};
+carfiles = {'cata.mat'};
+teams = {'cata'};
 
-carfiles = {'CTU_Prague_16.mat'};
-teams = {'CTU_Prague_16'};
+% Cars we know work!
+% carfiles = {'Delft_15.mat','Bath_15.mat','aachen.mat','cata.mat','Bath_16.mat',...
+%             'CTU_Prague_16.mat','Paderborn_16.mat','Bath_18.mat','Karlsruhe_16.mat',...
+%             'Loughborough_16.mat','Loughborough_18.mat'};
+% teams = {'Delft_15','Bath_15','Aachen_15','Catalunya_16','Bath_16',...
+%         'CTU_Prague_16','Paderborn_16','Bath_18','Karlsruhe_16','Loughborough_16',...
+%         'Loughborough_18'};
 
-% % Cars we know work!
-% carfiles = {'Delft_15.mat','Bath_15.mat','aachen.mat','Stuttgart_16.mat','cata.mat','Bath_16.mat',...
-%             'CTU_Prague_16.mat','Karlsruhe_16.mat','Wroclaw_16.mat','Paderborn_16.mat','Bath_18.mat'};
-% teams = {'Delft_15','Bath_15','Aachen_15','Stuttgart_16','Catalunya_16','Bath_16',...
-%         'CTU_Prague_16','Karlsruhe_16','Wroclaw_16','Paderborn_16','Bath_18'};
+% Cars we are ditching: Stuttgart_16, Wroclaw_16 Sussex_18
 
 events = {'Acceleration', 'SkidPad', 'Autocross', 'Endurance', 'FuelEfficiency'};
 
@@ -53,7 +51,7 @@ for iCar = 1:length(carfiles)
     trackmap = 'SkidPad_Track_new.mat';
     FolderSection = [FolderName '\SkidPad_Test'];
     SimName = {'SkidPad_Test'};
-    BoundaryConditions.vCar_start = 12.8;
+    BoundaryConditions.vCar_start = 15.5;
     BoundaryConditions.vCar_end = [];
     [Laptimes.SkidPad, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation);
     Laptimes.SkidPad = Laptimes.SkidPad;    
@@ -97,7 +95,7 @@ for iCar = 1:length(carfiles)
     end
     Points.Sims.(teams{iCar}).Total = Points.Sims.(teams{iCar}).Acceleration + Points.Sims.(teams{iCar}).SkidPad +...
         Points.Sims.(teams{iCar}).Autocross + Points.Sims.(teams{iCar}).Endurance + Points.Sims.(teams{iCar}).FuelEfficiency;
-    
+    save(['C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Validation Points\Points_' teams{iCar} '.mat'],'Points')
 end
 % Output points for each event
 %% Acceleration

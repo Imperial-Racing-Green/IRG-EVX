@@ -1,4 +1,4 @@
-function velocity_d = Vel_update(Fz_log,distanceTrack,dist_log,radius_d,Environment,Car,BoundaryConditions)
+function [velocity_d, Fx, Fy, Fz, SA, SL] = Vel_update(Fz_log,distanceTrack,dist_log,radius_d,Environment,Car,BoundaryConditions)
 
 %% Finding max velocity at each curvature
 radius_d(radius_d == 0) = 1e-5;
@@ -64,8 +64,8 @@ while eps >= eps_lim
             Fy_RR(i) = interp1(F_yRRmax(:,1,i),F_yRRmax(:,2,i),0,'spline');
         end
     end
-    Fy = Fy_FL + Fy_FR + Fy_RL + Fy_RR;
-    v_x = (abs((Fy .* radius_d)/Car.Mass.Total)).^0.5;
+    Fy_total = Fy_FL + Fy_FR + Fy_RL + Fy_RR;
+    v_x = (abs((Fy_total .* radius_d)/Car.Mass.Total)).^0.5;
 
     v_x(v_x > 200) = 200;
 
@@ -91,7 +91,7 @@ if ~isempty(BoundaryConditions.vCar_start)
 end
 Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
 
-for i = 1:length(distanceTrack)-1
+for i = 1:length(distanceTrack)
     v_x2(i) = min(v_x2(i),v_x(i));
     
     [F_L,F_D] = Aero_Forces(v_x2(i),Environment,Car);
@@ -131,52 +131,56 @@ for i = 1:length(distanceTrack)-1
             SA_RR_xmax(:,i),SA_RR_xmin(:,i),SL_RR_xmax(:,i),SL_RR_xmin(:,i),...
             SA_RR_ymax(:,i),SA_RR_ymin(:,i),SL_RR_ymax(:,i),SL_RR_ymin(:,i)] = tyre_fmax(Fz_RR_d(i),10);
     
-        Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
+        Fy_FLreal(i) = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_FL_d(i) == 0
             Fx_FLreal = 0;
             SA.FL(i) = 0;
             SL.FL(i) = 0;
         else
-            Fx_FLreal = interp1(F_xFLmax(:,2,i),F_xFLmax(:,1,i),Fy_FLreal,'spline');
-            SA.FL(i) = interp1(F_xFLmax(:,2,i),SA_FL_xmax(:,i),Fy_FLreal,'spline');
-            SL.FL(i) = interp1(F_xFLmax(:,2,i),SL_FL_xmax(:,i),Fy_FLreal,'spline');
+            Fx_FLreal = interp1(F_xFLmax(:,2,i),F_xFLmax(:,1,i),Fy_FLreal(i),'spline');
+            SA.FL(i) = interp1(F_xFLmax(:,2,i),SA_FL_xmax(:,i),Fy_FLreal(i),'spline');
+            SL.FL(i) = interp1(F_xFLmax(:,2,i),SL_FL_xmax(:,i),Fy_FLreal(i),'spline');
         end
 
-        Fy_FRreal = (Fz_FR_d(i) / Fz_sum(i)) * Fy_real;
+        Fy_FRreal(i) = (Fz_FR_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_FR_d(i) == 0
             Fx_FRreal = 0;
             SA.FR(i) = 0;
             SL.FR(i) = 0;
         else
-            Fx_FRreal = interp1(F_xFRmax(:,2,i),F_xFRmax(:,1,i),Fy_FRreal,'spline');
-            SA.FR(i) = interp1(F_xFRmax(:,2,i),SA_FR_xmax(:,i),Fy_FRreal,'spline');
-            SL.FR(i) = interp1(F_xFRmax(:,2,i),SL_FR_xmax(:,i),Fy_FRreal,'spline');
+            Fx_FRreal = interp1(F_xFRmax(:,2,i),F_xFRmax(:,1,i),Fy_FRreal(i),'spline');
+            SA.FR(i) = interp1(F_xFRmax(:,2,i),SA_FR_xmax(:,i),Fy_FRreal(i),'spline');
+            SL.FR(i) = interp1(F_xFRmax(:,2,i),SL_FR_xmax(:,i),Fy_FRreal(i),'spline');
         end
 
-        Fy_RLreal = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
+        Fy_RLreal(i) = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_RL_d(i) == 0
             Fx_RLreal = 0;
             SA.RL(i) = 0;
             SL.RL(i) = 0;
         else
-            Fx_RLreal = interp1(F_xRLmax(:,2,i),F_xRLmax(:,1,i),Fy_RLreal,'spline');
-            SA.RL(i) = interp1(F_xRLmax(:,2,i),SA_RL_xmax(:,i),Fy_RLreal,'spline');
-            SL.RL(i) = interp1(F_xRLmax(:,2,i),SL_RL_xmax(:,i),Fy_RLreal,'spline');
+            Fx_RLreal = interp1(F_xRLmax(:,2,i),F_xRLmax(:,1,i),Fy_RLreal(i),'spline');
+            SA.RL(i) = interp1(F_xRLmax(:,2,i),SA_RL_xmax(:,i),Fy_RLreal(i),'spline');
+            SL.RL(i) = interp1(F_xRLmax(:,2,i),SL_RL_xmax(:,i),Fy_RLreal(i),'spline');
         end
 
-        Fy_RRreal = (Fz_RR_d(i) / Fz_sum(i)) * Fy_real;
+        Fy_RRreal(i) = (Fz_RR_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_RR_d(i) == 0
             Fx_RRreal = 0;
             SA.RR(i) = 0;
             SL.RR(i) = 0;
         else
-            Fx_RRreal = interp1(F_xRRmax(:,2,i),F_xRRmax(:,1,i),Fy_RRreal,'spline');
-            SA.RR(i) = interp1(F_xRLmax(:,2,i),SA_RL_xmax(:,i),Fy_RLreal,'spline');
-            SL.RR(i) = interp1(F_xRLmax(:,2,i),SL_RL_xmax(:,i),Fy_RLreal,'spline');
+            Fx_RRreal = interp1(F_xRRmax(:,2,i),F_xRRmax(:,1,i),Fy_RRreal(i),'spline');
+            SA.RR(i) = interp1(F_xRRmax(:,2,i),SA_RR_xmax(:,i),Fy_RRreal(i),'spline');
+            SL.RR(i) = interp1(F_xRRmax(:,2,i),SL_RR_xmax(:,i),Fy_RRreal(i),'spline');
         end
         Fx_traction = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
 
         Fx_real = min(Powertrain_Fx,Fx_traction);
+        Fx.FL(i) = Fx_real(1);
+        Fx.FR(i) = Fx_real(2);
+        Fx.RL(i) = Fx_real(3);
+        Fx.RR(i) = Fx_real(4);
 
         Fx_sum = sum(Fx_real);
         % Account for drag and rolling resistance
@@ -192,6 +196,11 @@ for i = 1:length(distanceTrack)-1
         Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2) + Fz_FR;
         Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.CoP(1)))/2) + Fz_RL;
         Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.CoP(1)))/2) + Fz_RR;
+        % If tyres lift from ground set force to 0
+        Fz_FL_d(i) = min(Fz_FL_d(i),0);
+        Fz_FR_d(i) = min(Fz_FR_d(i),0);
+        Fz_RL_d(i) = min(Fz_RL_d(i),0);
+        Fz_RR_d(i) = min(Fz_RR_d(i),0);
         % Calculate suspension effects (ride height, pitch and roll)
         dhRideFL(i) = (Fz_FL_d(i) - Fz_FL_static(i)) / Car.Sus.Front.Stiffness.Vertical;
         dhRideFR(i) = (Fz_FR_d(i) - Fz_FR_static(i)) / Car.Sus.Front.Stiffness.Vertical;
@@ -206,9 +215,18 @@ for i = 1:length(distanceTrack)-1
         Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
         
     end   
-    
-    v_x2(i+1) = (v_x2(i)^2 + (2*a_x*(distanceTrack(i+1) - distanceTrack(i))))^0.5;
+    if i ~= length(distanceTrack)
+        v_x2(i+1) = (v_x2(i)^2 + (2*a_x*(distanceTrack(i+1) - distanceTrack(i))))^0.5;
+    end
 end
+Fz.FL = Fz_FL_d;
+Fz.FR = Fz_FR_d;
+Fz.RL = Fz_RL_d;
+Fz.RR = Fz_RR_d;
+Fy.FL = Fy_FLreal;
+Fy.FR = Fy_FRreal;
+Fy.RL = Fy_RLreal;
+Fy.RR = Fy_RRreal;
 
 %% Apply Braking Limit
 
@@ -219,7 +237,7 @@ else
     v_x3(end) = v_x2(end);
 end
 
-for i = length(distanceTrack):-1:2
+for i = length(distanceTrack):-1:1
     v_x3(i) = min(v_x3(i),v_x2(i));
     
     [F_L,F_D] = Aero_Forces(v_x3(i),Environment,Car);
@@ -255,54 +273,54 @@ for i = length(distanceTrack):-1:2
             SA_RR_xmax(:,i),SA_RR_xmin(:,i),SL_RR_xmax(:,i),SL_RR_xmin(:,i),...
             SA_RR_ymax(:,i),SA_RR_ymin(:,i),SL_RR_ymax(:,i),SL_RR_ymin(:,i)] = tyre_fmax(Fz_RR_d(i),10);
         
-        Fy_FLreal = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
+        Fy_FLreal(i) = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_FL_d(i) == 0
             Fx_FLreal = 0;
             SA.FL(i) = 0;
             SL.FL(i) = 0;
         else
-            Fx_FLreal = interp1(F_xFLmin(:,2,i),F_xFLmin(:,1,i),Fy_FLreal,'pchip');
-            SA.FL(i) = interp1(F_xFLmin(:,2,i),SA_FL_xmin(:,i),Fy_FLreal,'pchip');
-            SL.FL(i) = interp1(F_xFLmin(:,2,i),SL_FL_xmin(:,i),Fy_FLreal,'pchip');
+            Fx_FLreal = interp1(F_xFLmin(:,2,i),F_xFLmin(:,1,i),Fy_FLreal(i),'spline');
+            SA.FL(i) = interp1(F_xFLmin(:,2,i),SA_FL_xmin(:,i),Fy_FLreal(i),'spline');
+            SL.FL(i) = interp1(F_xFLmin(:,2,i),SL_FL_xmin(:,i),Fy_FLreal(i),'spline');
         end
 
-        Fy_FRreal = (Fz_FR_d(i) / Fz_sum(i)) * Fy_real;
+        Fy_FRreal(i) = (Fz_FR_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_FR_d(i) == 0
             Fx_FRreal = 0;
             SA.FR(i) = 0;
             SL.FR(i) = 0;
         else
-            Fx_FRreal = interp1(F_xFRmin(:,2,i),F_xFRmin(:,1,i),Fy_FRreal,'pchip');
-            SA.FR(i) = interp1(F_xFRmin(:,2,i),SA_FR_xmin(:,i),Fy_FRreal,'pchip');
-            SL.FR(i) = interp1(F_xFRmin(:,2,i),SL_FR_xmin(:,i),Fy_FRreal,'pchip');
+            Fx_FRreal = interp1(F_xFRmin(:,2,i),F_xFRmin(:,1,i),Fy_FRreal(i),'spline');
+            SA.FR(i) = interp1(F_xFRmin(:,2,i),SA_FR_xmin(:,i),Fy_FRreal(i),'spline');
+            SL.FR(i) = interp1(F_xFRmin(:,2,i),SL_FR_xmin(:,i),Fy_FRreal(i),'spline');
         end
 
-        Fy_RLreal = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
+        Fy_RLreal(i) = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_RL_d(i) == 0
             Fx_RLreal = 0;
             SA.RL(i) = 0;
             SL.RL(i) = 0;
         else
-            Fx_RLreal = interp1(F_xRLmin(:,2,i),F_xRLmin(:,1,i),Fy_RLreal,'pchip');
-            SA.RL(i) = interp1(F_xRLmin(:,2,i),SA_RL_xmin(:,i),Fy_RLreal,'pchip');
-            SL.RL(i) = interp1(F_xRLmin(:,2,i),SL_RL_xmin(:,i),Fy_RLreal,'pchip');
+            Fx_RLreal = interp1(F_xRLmin(:,2,i),F_xRLmin(:,1,i),Fy_RLreal(i),'spline');
+            SA.RL(i) = interp1(F_xRLmin(:,2,i),SA_RL_xmin(:,i),Fy_RLreal(i),'spline');
+            SL.RL(i) = interp1(F_xRLmin(:,2,i),SL_RL_xmin(:,i),Fy_RLreal(i),'spline');
         end
 
-        Fy_RRreal = (Fz_RR_d(i) / Fz_sum(i)) * Fy_real;
+        Fy_RRreal(i) = (Fz_RR_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_RR_d(i) == 0
             Fx_RRreal = 0;
             SA.RR(i) = 0;
             SL.RR(i) = 0;
         else
-            Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal,'pchip');
-            SA.RR(i) = interp1(F_xRLmin(:,2,i),SA_RL_xmin(:,i),Fy_RLreal,'pchip');
-            SL.RR(i) = interp1(F_xRLmin(:,2,i),SL_RL_xmin(:,i),Fy_RLreal,'pchip');
+            Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal(i),'spline');
+            SA.RR(i) = interp1(F_xRRmin(:,2,i),SA_RR_xmin(:,i),Fy_RRreal(i),'spline');
+            SL.RR(i) = interp1(F_xRRmin(:,2,i),SL_RR_xmin(:,i),Fy_RRreal(i),'spline');
         end
 
         Fx_traction = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
         
         Fx_real = max(Brake_Fx,Fx_traction);
-
+                
         Fx_sum = sum(Fx_real);
         % Account for drag and rolling resistance
         Fx_rollres = -Fz_sum(i)*Car.Tyres.Coefficients.RollingResistance; % Assume all wheels (including driven wheels) contribute
@@ -317,6 +335,11 @@ for i = length(distanceTrack):-1:2
         Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2) + Fz_FR;
         Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.CoP(1)))/2) + Fz_RL;
         Fz_RR_d(i) = Fz_RR_static(i) - ((F_L * (Car.Balance.CoP(1)))/2) + Fz_RR;
+        % If tyres lift from ground set force to 0
+        Fz_FL_d(i) = min(Fz_FL_d(i),0);
+        Fz_FR_d(i) = min(Fz_FR_d(i),0);
+        Fz_RL_d(i) = min(Fz_RL_d(i),0);
+        Fz_RR_d(i) = min(Fz_RR_d(i),0);
         % Calculate suspension effects (ride height, pitch and roll)
         dhRideFL(i) = (Fz_FL_d(i) - Fz_FL_static(i)) / Car.Sus.Front.Stiffness.Vertical;
         dhRideFR(i) = (Fz_FR_d(i) - Fz_FR_static(i)) / Car.Sus.Front.Stiffness.Vertical;
@@ -331,10 +354,27 @@ for i = length(distanceTrack):-1:2
         Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
         
     end
-    
-    v_x3(i-1) = (v_x3(i)^2 - (2*a_x*(distanceTrack(i) - distanceTrack(i-1))))^0.5;
+    if i ~= 1
+        v_x3(i-1) = (v_x3(i)^2 - (2*a_x*(distanceTrack(i) - distanceTrack(i-1))))^0.5;
+        if v_x3(i-1) < v_x2(i-1)
+            % Override tyre forces if brake limits is applied
+            Fx.FL(i) = Fx_real(1);
+            Fx.FR(i) = Fx_real(2);
+            Fx.RL(i) = Fx_real(3);
+            Fx.RR(i) = Fx_real(4);
+            Fy.FL(i) = Fy_FLreal(i);
+            Fy.FR(i) = Fy_FRreal(i);
+            Fy.RL(i) = Fy_RLreal(i);
+            Fy.RR(i) = Fy_RRreal(i);
+            Fz.FL(i) = Fz_FL_d(i);
+            Fz.FR(i) = Fz_FR_d(i);
+            Fz.RL(i) = Fz_RL_d(i);
+            Fz.RR(i) = Fz_RR_d(i);
+        end
+    end    
 end
 v_x3(1) = min(v_x3(1),v_x2(1));
 
 %% Output
 velocity_d = v_x3;
+
