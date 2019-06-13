@@ -2,7 +2,7 @@
 close all
 clear
 
-FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\Power_Vs_Mass_250';
+FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\TEEEEEST';
 full_weekend = 1;  % If selected point to folder of encolsing all weekend results
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%
@@ -334,7 +334,7 @@ if full_weekend == 1
     Times.SkidPad_Test.Sims = Times.SkidPad_Test.Sims; 
     Times.Endurance_Test.Sims = (22*(Times.Endurance_Test.Sims)) + 180 + 1.5;
     Times.Autocross_Test.Sims = Times.Autocross_Test.Sims;
-    % Calculate fuel efficiency    
+    % Calculate fuel efficiency  
     mFuelPitstop = 180*5.2842e-5;
     vFuelPitstop = (mFuelPitstop/719.7) * 1000; % (litres)
     CO2_pitstop = 2.31*vFuelPitstop;

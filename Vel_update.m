@@ -250,9 +250,7 @@ Fy.FL = Fy_FLreal;
 Fy.FR = Fy_FRreal;
 Fy.RL = Fy_RLreal;
 Fy.RR = Fy_RRreal;
-        a_x(i) = Fx_sum / Car.Mass.Total;
-        v_x2(i+1) = (v_x2(i)^2 + (2*a_x(i)*(distanceTrack(i+1) - distanceTrack(i))))^0.5;
-       
+            
 %         a_x2(i) = Fx_sum_new(i) / Car.Mass.Total;
 %         v_x22(i+1) = (v_x22(i)^2 + (2*a_x2(i)*(distanceTrack(i+1) - distanceTrack(i))))^0.5;
 %        
@@ -264,8 +262,6 @@ Fy.RR = Fy_RRreal;
 % v_diff = v_x22' - v_x2';
 % 
 % differences = [aSteeringWheel' Fx_diff a_diff v_diff'];
-
-
 
 v_x3 = zeros(length(distanceTrack),1);
 if ~isempty(BoundaryConditions.vCar_end)

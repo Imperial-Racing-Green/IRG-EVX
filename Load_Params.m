@@ -75,10 +75,10 @@ Car.Balance.CoP = [0.55, 0, Car.Dimension.CoP(3)/Car.Dimension.Height]; %[Car.Di
 
 % Tyre info
 Car.Tyres.Coefficients.RollingResistance = 0.020; % Need updated number for Hoosier tyres
-Car.Tyres.Camber.FL = -1;
-Car.Tyres.Camber.FR = -1;
-Car.Tyres.Camber.RL = 0;
-Car.Tyres.Camber.RR = 0;
+Car.Tyres.Camber.FL = -0.45;
+Car.Tyres.Camber.FR = -0.45;
+Car.Tyres.Camber.RL = -1.49;
+Car.Tyres.Camber.RR = -1.49;
 Car.Tyres.CamberRollFactor.Front = 0.325;
 Car.Tyres.CamberRollFactor.Rear = 1.1;
 
