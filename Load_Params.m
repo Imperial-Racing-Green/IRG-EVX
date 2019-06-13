@@ -146,7 +146,7 @@ Environment.Pressure = 101325;                  % (Pa)
 
 load([pwd,'\kinematics\geometries\EV3 Front Hardpoints 13.01.19.mat']);
 Car.Sus.Front.Hardpoints = hardpoints_front;
-Car.Sus.Front.Stiffness.Vertical = 65000; %40000;
+Car.Sus.Front.Stiffness.Vertical = 80000; %40000;
 Car.Sus.Front.Stiffness.Horizontal = 80000; %40000;
 load([pwd,'\kinematics\geometries\Final rear Outboard 01.02.19.mat']);
 Car.Sus.Rear.Hardpoints = hardpoints_front;
