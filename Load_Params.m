@@ -3,57 +3,53 @@ function [Car,Environment] = Load_Params()
 Car.Category = 'Hybrid';        % ICE/EV/Hybrid
 
 % Car component masses (kg)
-% Wheels (tyre + rim)
-Car.Mass.WheelFL = 2.68 + 4;
-Car.Mass.WheelFR = 2.68 + 4;
-Car.Mass.WheelRL = 2.68 + 4;
-Car.Mass.WheelRR = 2.68 + 4;
+% Wheels (tyre + rim + upright)
+Car.Mass.WheelFL = 3.63 + 1.66 + 0.37;
+Car.Mass.WheelFR = 3.63 + 1.66 + 0.37;
+Car.Mass.WheelRL = 3.63 + 1.66 + 0.52;
+Car.Mass.WheelRR = 3.63 + 1.66 + 0.52;
 % Driver
 Car.Mass.Driver = 68;
 % Suspension
-Car.Mass.Suspension = 24;
-% Chassis (front + rear)
-Car.Mass.Chassis = 24; % 22.5 + 7.5;
-% Battery
-Car.Mass.Battery = 27.5;
+Car.Mass.Suspension = 11;
+% Chassis (plus anti-intrusion plate, impact attenuator and jackoing bar)
+Car.Mass.Chassis = 24.1 + 2.14;
+% Battery (plus controller)
+Car.Mass.Battery = 33.75;
 % Engine
 Car.Mass.Engine = 70;
 % Motors (plus controllers)
 Car.Mass.Motors = 2.93*2;
 Car.Mass.MotorControllers = 6.8*2;
-Car.Mass.MotorGears = 2.06*2;
+Car.Mass.MotorGears = 3.86*2;
 % Steering 
-Car.Mass.Steering = 3.5;
+Car.Mass.Steering = 3.97;
 % Pedals
 Car.Mass.Pedals = 2.5;
-% Seat
+% Seat (plus headrest)
 Car.Mass.Seat = 5;
 % Firewall
-Car.Mass.FireWall = 4.4;
-% Cooling 
+Car.Mass.FireWall = 2.547;
+% Cooling (including radiator)
 Car.Mass.Cooling = 5;
-% Electrics
-Car.Mass.Electrics = 10;
 % Aero
-Car.Mass.FrontWing = 7.5; 
-Car.Mass.RearWing = 5;
-Car.Mass.Floor = 8.5; % Including diffuser
-Car.Mass.Bodywork = 10; % Sidepods/bargeboards
+Car.Mass.FrontWing = 9.32; 
+Car.Mass.RearWing = 6.45;
+Car.Mass.Floor = 6.65; % Including diffuser
+Car.Mass.Bodywork = 0; % Sidepods/bargeboards
 % Brakes
-Car.Mass.Brakes = 4*2.3518;
+Car.Mass.Brakes = 4*1.103;
 % Fuel tank (plus some fuel)
 Car.Mass.Fueltank = 5;
+% Misc (random mass in order to reach actual weight)
+Car.Mass.Misc = 5.5;
 % Total
 Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
                  Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
                  Car.Mass.Engine + Car.Mass.Motors + Car.Mass.MotorControllers + Car.Mass.MotorGears + ...
                  Car.Mass.Steering + Car.Mass.Pedals + Car.Mass.Seat + Car.Mass.FireWall + ...
-                 Car.Mass.Cooling + Car.Mass.Electrics + Car.Mass.FrontWing + Car.Mass.RearWing + ...
-                 Car.Mass.Floor + Car.Mass.Bodywork + Car.Mass.Brakes + Car.Mass.Fueltank;
-             
-% Car.Mass.Total = 400;             
-      
-Car.Stiffness.Chassis = 50000;
+                 Car.Mass.Cooling + Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Floor + ...
+                 Car.Mass.Bodywork + Car.Mass.Brakes + Car.Mass.Fueltank + Car.Mass.Misc;
 
 % Car dimensions (m)
 Car.Dimension.WheelFL.Radius = 0.2032; % Rim radius + tyre thickness
@@ -65,19 +61,18 @@ Car.Dimension.Rear_track = 1.2;
 Car.Dimension.Height = 1.4;
 Car.Dimension.FrontalArea = 1.2;
 Car.Dimension.lWheelbase = 1.55;
-Car.Dimension.CoG = [0.8029, 0, 0.311]; % Behind front axle
-Car.Dimension.CoP = [0.8525, 0, 0.37]; % Behind front axle
+Car.Dimension.CoG = [0.73315, 0, 0.309]; % Behind front axle
+Car.Dimension.CoP = [0.9300, 0, 0.37]; % Behind front axle
 
 % Percentage of axle separation length from front axles 
-Car.Balance.CoG = [0.473, 0, Car.Dimension.CoG(3)/Car.Dimension.Height]; %[Car.Dimension.xCoG/Car.Dimension.lWheelbase, 0, Car.Dimension.zCoG/Car.Dimension.Height]; 
-Car.Balance.CoP = [0.55, 0, Car.Dimension.CoP(3)/Car.Dimension.Height]; %[Car.Dimension.xCoP/Car.Dimension.lWheelbase, 0, Car.Dimension.zCoP/Car.Dimension.Height];
-
+Car.Balance.CoG = [Car.Dimension.CoG(1)/Car.Dimension.lWheelbase, 0, Car.Dimension.CoG(3)/Car.Dimension.Height]; %[Car.Dimension.xCoG/Car.Dimension.lWheelbase, 0, Car.Dimension.zCoG/Car.Dimension.Height]; 
+Car.Balance.CoP = [Car.Dimension.CoP(1)/Car.Dimension.lWheelbase, 0, Car.Dimension.CoP(3)/Car.Dimension.Height]; %[Car.Dimension.xCoP/Car.Dimension.lWheelbase, 0, Car.Dimension.zCoP/Car.Dimension.Height];
 % Tyre info
 Car.Tyres.Coefficients.RollingResistance = 0.020; % Need updated number for Hoosier tyres
-Car.Tyres.Camber.FL = -0.45;
-Car.Tyres.Camber.FR = -0.45;
-Car.Tyres.Camber.RL = -1.49;
-Car.Tyres.Camber.RR = -1.49;
+Car.Tyres.Camber.FL = -0.39;
+Car.Tyres.Camber.FR = -0.39;
+Car.Tyres.Camber.RL = -1.14;
+Car.Tyres.Camber.RR = -1.14;
 Car.Tyres.CamberRollFactor.Front = 0.325;
 Car.Tyres.CamberRollFactor.Rear = 1.1;
 
@@ -102,7 +97,7 @@ Car.Powertrain.Motor.Efficiencies.Gears = 0.941;
 Car.Powertrain.Motor.Config = 'fwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
 
 % Brakes info
-Car.Brakes.FPedalMax = 1500;                                           % (N) 
+Car.Brakes.FPedalMax = 1500;                                           % ? 
 Car.Brakes.BrakeBias = 0.6757;                                                        % > 0.5 is biased towards front - might change with weight / CG
 Car.Brakes.PedalMotionRatio = 205.8/51.5;
 Car.Brakes.Front.wPad = 0.040894; %25.4e-3                                          % Pad width (m) 
@@ -153,3 +148,5 @@ Car.Sus.Rear.Hardpoints = hardpoints_front;
 Car.Sus.Rear.Stiffness.Vertical = 75000; %40000;
 Car.Sus.Rear.Stiffness.Horizontal = 75000; %40000;
 
+save('Baseline_Carfile','Car')
+save('Baseline_Weatherfile','Environment')

@@ -2,7 +2,7 @@
 close all
 clear
 
-FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\TEEEEEST';
+FolderName = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP\CG_Sweep';
 full_weekend = 1;  % If selected point to folder of encolsing all weekend results
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%

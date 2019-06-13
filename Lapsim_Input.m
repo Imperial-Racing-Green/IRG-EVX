@@ -6,16 +6,16 @@ clc
 %% Save results location
 
 SaveLocation = 'C:\Users\Ila\OneDrive for Business\Year 3\GDP';
-FolderName = 'TEEEEEST';
+FolderName = 'Pres_week_5';
 SimName = {'Test'};
 
 %% Trackmap
 
-%trackmap = 'Endurance_Track_1400.mat';
+trackmap = 'Endurance_Track_1400.mat';
 %trackmap = 'Autocross_Track_2018.mat';
 %trackmap = 'Acceleration_Track.mat';
 %trackmap = 'SkidPad_Track_new.mat';
-trackmap = 'Full_FS_Weekend';
+%trackmap = 'Full_FS_Weekend';
 
 %% vCar boundary conditions
 % Racing_Line_ClosedLoop 
@@ -31,8 +31,8 @@ BoundaryConditions.vCar_end = 26;
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
 Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
-Sweep.Param = {'Car.Tyres.Camber.FL'};             % Variable within car structure to be swept
-Sweep.Values = -2:1:2;
+Sweep.Param = {'Car.Balance.CoG'};             % Variable within car structure to be swept
+Sweep.Values = 0.2:0.1:0.6;
 Sweep.Choose_Carfile = 0;
 Sweep.Carfile = {'C:\Users\Ila\Documents\GDP\IRG-EVX\Baseline_Carfile.mat'...
                  'C:\Users\Ila\Documents\GDP\IRG-EVX\Carfiles\Car_13inch_tyres.mat'};

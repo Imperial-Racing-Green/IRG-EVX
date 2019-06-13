@@ -40,13 +40,12 @@ for iSweep = 1:nSweeps
         load(Sweep.Carfile{iSweep});
         if Validation ~= 1  % Only recheck mass for our own car (where we have component masses)
 
-            Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
+          Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
                  Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
-                 Car.Mass.Engine + Car.Mass.Motors + Car.Mass.Steering + Car.Mass.Pedals + ...
-                 Car.Mass.Seat + Car.Mass.FireWall + Car.Mass.Cooling + Car.Mass.Electrics + ...
-                 Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Floor + Car.Mass.Bodywork + ...
-                 Car.Mass.Brakes + Car.Mass.Fueltank;
-
+                 Car.Mass.Engine + Car.Mass.Motors + Car.Mass.MotorControllers + Car.Mass.MotorGears + ...
+                 Car.Mass.Steering + Car.Mass.Pedals + Car.Mass.Seat + Car.Mass.FireWall + ...
+                 Car.Mass.Cooling + Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Floor + ...
+                 Car.Mass.Bodywork + Car.Mass.Brakes + Car.Mass.Fueltank + Car.Mass.Misc;
         end
     elseif Sweep.Choose_Weatherfile == 1
         clear Environment
@@ -235,6 +234,11 @@ for iSweep = 1:nSweeps
         atan((0.5*(dhRideRL - dhRideRR)) / (Car.Dimension.Rear_track/2)));
     aPitch = rad2deg(theta_y);
     aRoll = rad2deg(theta_x);
+    
+    
+    
+    
+    
     % Calculate tyre camber changes from static position
     Camber.FL = Car.Tyres.Camber.FL + (aRoll*Car.Tyres.CamberRollFactor.Front);
     Camber.FR = Car.Tyres.Camber.FR - (aRoll*Car.Tyres.CamberRollFactor.Front);
@@ -243,9 +247,9 @@ for iSweep = 1:nSweeps
     
     SlipAngle.Front = 0.5*(SA.FL + SA.FR);
     SlipAngle.Rear = 0.5*(SA.RL + SA.RR);
-    aSteer = rad2deg((atan(Car.Dimension.lWheelbase ./ radius_d))) + (SlipAngle.Front - SlipAngle.Rear);    % Tyre steer angle
+    aSteer = rad2deg((atan(Car.Dimension.lWheelbase ./ radius_d))) + (abs(SlipAngle.Front) - abs(SlipAngle.Rear));    % Tyre steer angle
     aSteeringWheel = aSteer * Car.Steering.Ratio;   % Steering wheel angle
-    aUOSteer = SlipAngle.Front - SlipAngle.Rear;    % Under/oversteer angle
+    aUOSteer = abs(SlipAngle.Front) - abs(SlipAngle.Rear);    % Under/oversteer angle
     gLat = a_y / abs(Environment.Gravity);
     gLong = a_x / abs(Environment.Gravity);
     tLap = [0; cumsum(tLap)];
