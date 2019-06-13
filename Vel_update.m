@@ -233,6 +233,14 @@ for i = 1:length(distanceTrack)
     if i ~= length(distanceTrack)
         v_x2(i+1) = (v_x2(i)^2 + (2*a_x*(distanceTrack(i+1) - distanceTrack(i))))^0.5;
     end
+    
+     b=mod(i,round(length(distanceTrack)/5));  
+     
+     if b==0 
+      disp(['Power limit: ' num2str(round((i)/(length(distanceTrack)/100))) ' % complete']);
+     elseif mod(length(distanceTrack),2)~=0 && i==length(distanceTrack)-1
+      disp(['Power limit: 100% complete']);
+     end  
 end
 Fz.FL = Fz_FL_d;
 Fz.FR = Fz_FR_d;
@@ -248,20 +256,16 @@ Fy.RR = Fy_RRreal;
 %         a_x2(i) = Fx_sum_new(i) / Car.Mass.Total;
 %         v_x22(i+1) = (v_x22(i)^2 + (2*a_x2(i)*(distanceTrack(i+1) - distanceTrack(i))))^0.5;
 %        
-     b=mod(i,round(length(distanceTrack)/5));  
-     
-     if b==0 
-      disp(['Power limit: ' num2str(round((i)/(length(distanceTrack)/100))) ' % complete']);
-    elseif mod(length(distanceTrack),2)~=0 && i==length(distanceTrack)-1
-      disp(['Power limit: 100% complete']);
-      end 
-end 
+
 %% Apply Braking Limit
+
 % Fx_diff = Fx_sum_new' - Fx_sum_original';
 % a_diff = a_x2'- a_x';
 % v_diff = v_x22' - v_x2';
 % 
 % differences = [aSteeringWheel' Fx_diff a_diff v_diff'];
+
+
 
 v_x3 = zeros(length(distanceTrack),1);
 if ~isempty(BoundaryConditions.vCar_end)
