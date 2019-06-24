@@ -34,10 +34,6 @@ if Ratio ~= 0
         p = polyfit(x,y,2);
         T_engine = (p(1)*(RPM_engine^2)) + (p(2)*RPM_engine) + p(3);
     end
-%     x = [RPM_Idle, RPM_Max_T, RPM_Limit];
-%     y = [T_Idle, T_Max, T_Limit];
-%     p = polyfit(x,y,2);
-%     T_engine = (p(1)*(RPM_engine^2)) + (p(2)*RPM_engine) + p(3);
 else
     T_engine = 0;
 end
@@ -54,7 +50,7 @@ if strcmp(Config,'fwd') == 1
 elseif strcmp(Config,'rwd') == 1
     T_FL = 0;
     T_FR = T_FL;
-    T_RL = (T_engine * Ratio);
+    T_RL = (T_engine * Ratio) / 2;
     T_RR = T_RL;
 else % 4wd
     T_FL = (T_engine * Ratio) /2;  % Need to find torque distribution across axles

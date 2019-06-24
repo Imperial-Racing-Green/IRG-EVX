@@ -14,9 +14,10 @@ SimName = {'Test'};
 % trackmap = 'DragRace_Track.mat';
 % trackmap = 'Trackmap_ClosedLoop_with_slalom.mat';
 
-% trackmap = 'Autocross_Track_2.mat';
+% trackmap = 'Autocross_Track_800.mat';
 trackmap = 'Autocross_Track_2018.mat';
 % trackmap = 'Endurance_Track.mat';
+% trackmap = 'Endurance_Track_1000.mat';
 % trackmap = 'Acceleration_Track.mat';
 % trackmap = 'SkidPad_Track_new.mat';
 % trackmap = 'Full_FS_Weekend';

@@ -128,8 +128,6 @@ Car.AeroPerformance.C_L = 2.5; %1.78; %3.0;
 Car.AeroPerformance.C_D = 1.25; %0.731; %1.15;
 Car.AeroPerformance.hRideF = 0.030; % (m) (Static ride height under the weight of the car)
 Car.AeroPerformance.hRideR = 0.030; % (m)
-Car.AeroPerformance.Initial_AoA = 5; % (deg)
-Car.AeroPerformance.dCl_dalpha = 0.1; % (/deg)
 
 % Steering
 Car.Steering.Ratio = 5.8;
