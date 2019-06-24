@@ -11,18 +11,16 @@ SaveCarfiles2();
 SaveLocation = 'C:\Users\gregj\OneDrive\Documents\GitHub\GDP_2017_Lapsim';
 FolderName = 'Validation';
 
-carfiles = {'cata.mat'};
-teams = {'cata'};
+% carfiles = {'cata.mat'};
+% teams = {'cata'};
 
 % Cars we know work!
-% carfiles = {'Delft_15.mat','Bath_15.mat','aachen.mat','cata.mat','Bath_16.mat',...
-%             'CTU_Prague_16.mat','Paderborn_16.mat','Bath_18.mat','Karlsruhe_16.mat',...
-%             'Loughborough_16.mat','Loughborough_18.mat'};
-% teams = {'Delft_15','Bath_15','Aachen_15','Catalunya_16','Bath_16',...
-%         'CTU_Prague_16','Paderborn_16','Bath_18','Karlsruhe_16','Loughborough_16',...
-%         'Loughborough_18'};
-
-% Cars we are ditching: Stuttgart_16, Wroclaw_16 Sussex_18
+carfiles = {'Delft_15.mat','Bath_15.mat','aachen.mat','cata.mat','Bath_16.mat',...
+            'CTU_Prague_16.mat','Paderborn_16.mat','Bath_18.mat','Karlsruhe_16.mat',...
+            'Loughborough_16.mat','Loughborough_18.mat','Sussex_18.mat'};
+teams = {'Delft_15','Bath_15','Aachen_15','Catalunya_16','Bath_16',...
+        'CTU_Prague_16','Paderborn_16','Bath_18','Karlsruhe_16','Loughborough_16',...
+        'Loughborough_18','Sussex_18'};
 
 events = {'Acceleration', 'SkidPad', 'Autocross', 'Endurance', 'FuelEfficiency'};
 
@@ -176,3 +174,14 @@ ylim([0 675])
 grid on 
 xlabel('Lapsim points predicted')
 ylabel('Real points attained')
+
+% Find RMS for each event
+events = [events 'Total'];
+for iEvent = 1:length(events)
+    errors = [];
+    for iTeam = 1:length(teams)
+        errors(iTeam) = (Points.Real.(teams{iTeam}).(events{iEvent}) - Points.Sims.(teams{iTeam}).(events{iEvent}))^2;
+    end
+    rms = sqrt(sum(errors)/length(errors));
+    disp([events{iEvent} ' RMS: ' num2str(rms)])
+end

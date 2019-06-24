@@ -1222,10 +1222,10 @@ Car.Powertrain.Engine.Config = 'rwd';
 Car.Powertrain.Engine.TransmissionRatio = 3.1; % Gear ratio %3.1
 Car.Powertrain.Engine.RPM_Idle = 1500; % Idle RPM
 Car.Powertrain.Engine.T_Idle = 75; % Torque at idle RPM  %55
-Car.Powertrain.Engine.RPM_Limit = 9500; % Max RPM [R/Min] 
+Car.Powertrain.Engine.RPM_Limit = 12500; % Max RPM [R/Min] 
 Car.Powertrain.Engine.T_Limit = 75; % Torque at max RPM %55
 Car.Powertrain.Engine.T_Max = 80; % Max torque possible [Nm]
-Car.Powertrain.Engine.RPM_Max_T = 12500; % RPM corresponding to max torque
+Car.Powertrain.Engine.RPM_Max_T = 9500; % RPM corresponding to max torque
 Car.Powertrain.Engine.P_Max = 63000; % Max power (W)
 Car.Powertrain.Engine.Efficiencies.Gears = 0.98; %0.98
 % Brakes info

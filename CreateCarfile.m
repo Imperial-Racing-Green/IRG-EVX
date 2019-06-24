@@ -1,4 +1,7 @@
-function [Car,Environment] = Load_Params()
+clear
+clc
+% Script to generate carfile
+name = 'HEV1';
 
 Car.Category = 'Hybrid';        % ICE/EV/Hybrid
 
@@ -42,7 +45,7 @@ Car.Mass.Brakes = 4*1.103;
 % Fuel tank (plus some fuel)
 Car.Mass.Fueltank = 5;
 % Misc (random mass in order to reach actual weight)
-Car.Mass.Misc = 5.5;
+Car.Mass.Misc = 38;
 % Total
 Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
                  Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
@@ -59,15 +62,14 @@ Car.Dimension.WheelRR.Radius = 0.2032;
 Car.Dimension.Front_track = 1.2;
 Car.Dimension.Rear_track = 1.2;
 Car.Dimension.Height = 1.4;
-Car.Dimension.FrontalArea = 1.2;
+Car.Dimension.FrontalArea = 1;
 Car.Dimension.lWheelbase = 1.55;
-Car.Dimension.CoG = [0.73315, 0, 0.309]; % Behind front axle
+Car.Dimension.CoG = [0.8525, 0, 0.300]; % Behind front axle
 Car.Dimension.CoP = [0.9300, 0, 0.37]; % Behind front axle
 
 % Percentage of axle separation length from front axles 
 Car.Balance.CoG = [Car.Dimension.CoG(1)/Car.Dimension.lWheelbase, 0, Car.Dimension.CoG(3)/Car.Dimension.Height]; %[Car.Dimension.xCoG/Car.Dimension.lWheelbase, 0, Car.Dimension.zCoG/Car.Dimension.Height]; 
-% Car.Balance.CoP = [Car.Dimension.CoP(1)/Car.Dimension.lWheelbase, 0, Car.Dimension.CoP(3)/Car.Dimension.Height]; %[Car.Dimension.xCoP/Car.Dimension.lWheelbase, 0, Car.Dimension.zCoP/Car.Dimension.Height];
-Car.Balance.CoP = [0.341, 0, Car.Dimension.CoP(3)/Car.Dimension.Height]; %[Car.Dimension.xCoP/Car.Dimension.lWheelbase, 0, Car.Dimension.zCoP/Car.Dimension.Height];
+Car.Balance.CoP = [Car.Dimension.CoP(1)/Car.Dimension.lWheelbase, 0, Car.Dimension.CoP(3)/Car.Dimension.Height]; %[Car.Dimension.xCoP/Car.Dimension.lWheelbase, 0, Car.Dimension.zCoP/Car.Dimension.Height];
 
 % Tyre info
 Car.Tyres.Coefficients.RollingResistance = 0.020; % Need updated number for Hoosier tyres
@@ -80,8 +82,8 @@ Car.Tyres.CamberRollFactor.Rear = 1.1;
 
 % Powertrain info
 % Engine
-Car.Powertrain.Engine.TransmissionRatio = 5.18;
-Car.Powertrain.Engine.RPM_Idle = 3000;                      % Idle RPM
+Car.Powertrain.Engine.TransmissionRatio = 3.56;
+Car.Powertrain.Engine.RPM_Idle = 2000;                      % Idle RPM
 Car.Powertrain.Engine.T_Idle = 53.75;                       % Torque at idle RPM
 Car.Powertrain.Engine.RPM_Max_T = 9200;                      % RPM corresponding to max torque
 Car.Powertrain.Engine.T_Max = 68;                      % Max torque possible [Nm]
@@ -93,7 +95,7 @@ Car.Powertrain.Engine.Config = 'rwd';      % (fwd/rwd/4wd   front/rear/4 wheel d
 Car.Powertrain.Motor.P_max = 23000;    % Max power (W)
 Car.Powertrain.Motor.Kv = 200;          % RPM constant 
 Car.Powertrain.Motor.RatedVoltage = 125;          % (V) 
-Car.Powertrain.Motor.TransmissionRatio = 8;
+Car.Powertrain.Motor.TransmissionRatio = 10;
 Car.Powertrain.Motor.Efficiencies.Motor = 0.87;
 Car.Powertrain.Motor.Efficiencies.Gears = 0.941;
 Car.Powertrain.Motor.Config = 'fwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
@@ -114,8 +116,8 @@ Car.Brakes.Front.dPiston = 25e-3;                                  % Piston diam
 Car.Brakes.Rear.dPiston =  25e-3;
 Car.Brakes.Front.aPiston = pi*(Car.Brakes.Front.dPiston/2)^2;                       % Piston area (m^2)
 Car.Brakes.Rear.aPiston = pi*(Car.Brakes.Rear.dPiston/2)^2;
-Car.Brakes.Front.dDisk = 0.1905;                                        % Disk diameter (m)
-Car.Brakes.Rear.dDisk = 0.1905;
+Car.Brakes.Front.dDisk = 0.254;                                        % Disk diameter (m)
+Car.Brakes.Rear.dDisk = 0.254;
 Car.Brakes.Front.rActing =  (Car.Brakes.Front.dDisk/2) - (Car.Brakes.Front.wPad/2); % Acting radius (m)
 Car.Brakes.Rear.rActing =  (Car.Brakes.Rear.dDisk/2) - (Car.Brakes.Rear.wPad/2);
 Car.Brakes.Front.dMasterCylinder =  0.0254;                      % Master cylinder diameter (m)
@@ -124,8 +126,8 @@ Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2;   
 Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 
 % Car aero performance
-Car.AeroPerformance.C_L = 2.5; %1.78; %3.0;
-Car.AeroPerformance.C_D = 1.25; %0.731; %1.15;
+Car.AeroPerformance.C_L = 2.45; %1.78; %3.0;
+Car.AeroPerformance.C_D = 1.45; %0.731; %1.15;
 Car.AeroPerformance.hRideF = 0.030; % (m) (Static ride height under the weight of the car)
 Car.AeroPerformance.hRideR = 0.030; % (m)
 Car.AeroPerformance.Initial_AoA = 5; % (deg)
@@ -150,5 +152,4 @@ Car.Sus.Rear.Hardpoints = hardpoints_front;
 Car.Sus.Rear.Stiffness.Vertical = 75000; %40000;
 Car.Sus.Rear.Stiffness.Horizontal = 75000; %40000;
 
-save('Baseline_Carfile','Car')
-save('Baseline_Weatherfile','Environment')
+save(name,'Car')

@@ -23,14 +23,24 @@ RPM_engine = max(RPM_engine,RPM_Idle);
 
 % Find torque of motor from RPM of motor based on quadratic assumption graph:
 if Ratio ~= 0
-    x = [RPM_Idle, RPM_Max_T, RPM_Limit];
-    y = [T_Idle, T_Max, T_Limit];
-    p = polyfit(x,y,2);
-    T_engine = (p(1)*(RPM_engine^2)) + (p(2)*RPM_engine) + p(3);
+    if RPM_engine <= RPM_Max_T
+        x = [RPM_Idle, RPM_Max_T, (RPM_Max_T + (RPM_Max_T-RPM_Idle))];
+        y = [T_Idle, T_Max, T_Idle];
+        p = polyfit(x,y,2);
+        T_engine = (p(1)*(RPM_engine^2)) + (p(2)*RPM_engine) + p(3);
+    else % Use parabolic equation for other side to torque curve
+        x = [(RPM_Max_T - (RPM_Limit-RPM_Max_T)), RPM_Max_T, RPM_Limit];
+        y = [T_Limit, T_Max, T_Limit];
+        p = polyfit(x,y,2);
+        T_engine = (p(1)*(RPM_engine^2)) + (p(2)*RPM_engine) + p(3);
+    end
+%     x = [RPM_Idle, RPM_Max_T, RPM_Limit];
+%     y = [T_Idle, T_Max, T_Limit];
+%     p = polyfit(x,y,2);
+%     T_engine = (p(1)*(RPM_engine^2)) + (p(2)*RPM_engine) + p(3);
 else
     T_engine = 0;
 end
-% T_engine = T_Max - ((T_Max/(RPM_Max_T^2))*((RPM_engine-RPM_Max_T)^2));
 
 if isnan(T_engine)
     T_engine = 0;

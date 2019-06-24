@@ -4,9 +4,9 @@ close all
 clc
 
 %% Save results location
-SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP';
-FolderName = 'Test';
-SimName = {'Test'};
+SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Final Sims';
+FolderName = 'CP_Final';
+SimName = {'HEV1'};
 
 %% Trackmap
 % trackmap = 'Trackmap_ClosedLoop.mat';
@@ -15,11 +15,11 @@ SimName = {'Test'};
 % trackmap = 'Trackmap_ClosedLoop_with_slalom.mat';
 
 % trackmap = 'Autocross_Track_2.mat';
-trackmap = 'Autocross_Track_2018.mat';
+% trackmap = 'Autocross_Track_2018.mat';
 % trackmap = 'Endurance_Track.mat';
 % trackmap = 'Acceleration_Track.mat';
 % trackmap = 'SkidPad_Track_new.mat';
-% trackmap = 'Full_FS_Weekend';
+trackmap = 'Full_FS_Weekend';
 
 %% vCar boundary conditions
 % Racing_Line_ClosedLoop 
@@ -35,19 +35,10 @@ BoundaryConditions.vCar_end = [];
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
 Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
 Sweep.Param = {'Car.Powertrain.Engine.TransmissionRatio'};             % Variable within car structure to be swept
-Sweep.Values = [3.5, 5 5.55, 6];
+Sweep.Values = 2:0.5:7;
 Sweep.Choose_Carfile = 0;
-Sweep.Carfile = {'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Carfiles\MainCarfiles\APS100HEV.mat'...
-    'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Carfiles\MainCarfiles\APS120_50kv_smallmotor.mat'...
-    'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Carfiles\MainCarfiles\APS120_70kv_smallmotor.mat'...
-    'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Carfiles\MainCarfiles\APS120_85kv_smallmotor.mat'...
-    'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Carfiles\MainCarfiles\APS150_27kv_smallmotor_10tyres.mat'...
-    'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Carfiles\MainCarfiles\APS150_27kv_smallmotor_13tyres.mat'...
-    'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Carfiles\MainCarfiles\APS150_35kv_smallmotor_10tyres.mat'...
-    'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Carfiles\MainCarfiles\APS150_50kv_smallmotor_10tyres.mat'...
-    'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Carfiles\MainCarfiles\APS150_80kv_smallmotor_10tyres.mat'...
-    'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Carfiles\MainCarfiles\emrax188_bigmotor_13tyres.mat'...
-    'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Carfiles\MainCarfiles\rwd.mat'};
+Sweep.Carfile = {'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\HEV1.mat',...
+    'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\Baseline_Carfile'};
 Sweep.Choose_Weatherfile = 0;
 Sweep.Weatherfile = {'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\Baseline_Weatherfile.mat'};
 

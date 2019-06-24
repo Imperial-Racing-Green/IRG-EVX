@@ -3,8 +3,8 @@ close all
 clear
 clc
 
-FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Test';
-full_weekend = 1;  % If selected point to folder of encolsing all weekend results
+FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Final Sims\HEV2';
+full_weekend = 1;  % If selected point to folder of enclosing all weekend results
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%
 
@@ -59,7 +59,7 @@ for iTest = 1:length(FolderName)
     ylabel('vCar (m/s)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
-    ylim([0 45])
+    ylim([0 50])
     % tDiff
     t = uitab(tabgp,'Title','tDiff');
     ax = axes(t,'Position',[0.1 0.12 0.8 0.85]);
@@ -78,7 +78,7 @@ for iTest = 1:length(FolderName)
     ylabel('vCar (m/s)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
-    ylim([0 45])
+    ylim([0 50])
     yyaxis right
     for i = 1:length(filenames)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,tDiff(i,:),'LineWidth',1,'Color',col(i,:),'LineStyle','--','Marker','none')
