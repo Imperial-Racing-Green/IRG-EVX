@@ -5,8 +5,8 @@ clc
 
 %% Save results location
 SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Final Sims';
-FolderName = 'CP_Final';
-SimName = {'HEV1'};
+FolderName = 'Test';
+SimName = {'Test'};
 
 %% Trackmap
 % trackmap = 'Trackmap_ClosedLoop.mat';
@@ -15,11 +15,11 @@ SimName = {'HEV1'};
 % trackmap = 'Trackmap_ClosedLoop_with_slalom.mat';
 
 % trackmap = 'Autocross_Track_2.mat';
-% trackmap = 'Autocross_Track_2018.mat';
+trackmap = 'Autocross_Track_2018.mat';
 % trackmap = 'Endurance_Track.mat';
 % trackmap = 'Acceleration_Track.mat';
 % trackmap = 'SkidPad_Track_new.mat';
-trackmap = 'Full_FS_Weekend';
+% trackmap = 'Full_FS_Weekend';
 
 %% vCar boundary conditions
 % Racing_Line_ClosedLoop 
