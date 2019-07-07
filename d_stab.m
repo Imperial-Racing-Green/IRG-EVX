@@ -1,4 +1,4 @@
-function[A] = d_stab(m,V,WBASE,X_CG,CoP,C_L,A_frontal)
+function[A] = d_stab(m,V,WBASE,X_CG,CoP,SC_L)
 
 % Lateral Vehicle Dynamics 
 % define states and input in symbolic toolbox
@@ -6,7 +6,7 @@ syms y y_dot psii psii_dot delta
 % syms m Cf Cr a b Vx Iz
 % defining the parameters
 
-[Fzf,Fzr] = F_z_calc(m, V, X_CG, CoP, C_L, A_frontal); %needs to change based on Cl
+[Fzf,Fzr] = F_z_calc(m, V, X_CG, CoP, SC_L); %needs to change based on Cl
 Cf = -2*corner_stiffness(Fzf/2)*180/pi; %- cornering stiffness front in N/rad
 Cr = -2*corner_stiffness(Fzr/2)*180/pi; %- cornering stiffness rear in N/rad
 

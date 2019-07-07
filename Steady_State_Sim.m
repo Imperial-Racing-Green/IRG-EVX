@@ -73,7 +73,11 @@ for iSweep = 1:nSweeps
     load(trackmap)
     %     [x_new,y_new] = Path_Optim(x,y,x0,y0,theta_d,Track_Width,Iterations);
     radius_d = interp1([1:length(radius_d)],radius_d,[1:length(distanceTrack)]);
-    radius_d(isnan(radius_d)) = 1e5; % Replace NaN's with straights
+    % Remove NaNs from interpolation
+    [~,idx] = find(isnan(radius_d));
+    for i = 1:length(idx)
+        radius_d(idx(i)) = radius_d(idx(i)-1);
+    end
 
     %% Running Sim
     ControlSystemDriverModel = Simulink.Variant('Driver_Model == 1');
@@ -126,7 +130,8 @@ for iSweep = 1:nSweeps
     a_x = diff(vCar)./tLap;
     a_x = [a_x; a_x(end)];
     Fx_real = Car.Mass.Total * a_x;
-    a_y = (vCar.^2)./radius_d';
+    Fy_real = (Car.Mass.Total * (vCar.^2))./radius_d';
+    a_y = Fy_real / Car.Mass.Total;
     Fx_rollres = -(Fz.FL+ Fz.FR + Fz.RL + Fz.RR) * Car.Tyres.Coefficients.RollingResistance;
     Fx_mechanical = Fx_real + Force.Aero.Drag + Fx_rollres;
     fwd_T = Fx_mechanical;
@@ -134,11 +139,7 @@ for iSweep = 1:nSweeps
     bkd_T = -Fx_mechanical;
     bkd_T(bkd_T <= 0) = 0;
     rThrottle = fwd_T ./ Force.Powertrain.Thrust.Total;
-    rThrottle(isnan(rThrottle)) = 1;
-    rThrottle(rThrottle > 1) = 1;
     rBrake = bkd_T ./ Force.Brakes.Total;
-    Fy_real = (Car.Mass.Total * (vCar.^2))./radius_d';
-    a_y = Fy_real / Car.Mass.Total;
     % Wheel forces (include drag and rolling resistance)
     Force.Wheel.Fx.FL = Fx.FL' - (Force.Aero.Drag/4)  + (Fz.FL*Car.Tyres.Coefficients.RollingResistance);
     Force.Wheel.Fx.FR = Fx.FR' - (Force.Aero.Drag/4)  + (Fz.FR*Car.Tyres.Coefficients.RollingResistance);
@@ -162,7 +163,7 @@ for iSweep = 1:nSweeps
     hRideF = Car.AeroPerformance.hRideF + dhRideF;
     hRideR = Car.AeroPerformance.hRideR + dhRideR;
     theta_y = 0.5*(atan(dhRideF/(Car.Dimension.lWheelbase/2)) - atan(dhRideR/(Car.Dimension.lWheelbase/2)));
-    theta_x = 0.5*(atan(dhRideF/(Car.Dimension.Front_track/2)) + atan(dhRideR/(Car.Dimension.Rear_track/2)));
+    theta_x = 0.5*(atan((0.5*(dhRideFL - dhRideFR))/(Car.Dimension.Front_track/2)) - atan((0.5*(dhRideRL - dhRideRR))/(Car.Dimension.Rear_track/2)));
     aPitch = rad2deg(theta_y);
     aRoll = rad2deg(theta_x);
     % Calculate tyre camber changes from static position
@@ -205,8 +206,8 @@ for iSweep = 1:nSweeps
     % Use throttle to find fuel/energy consumption
     if strcmp(Car.Category,'ICE') == 1
         % Assume rear wheel drive
-        MassFlowRate = ((Fx.RL + Fx.RR) * 1.42257529870920e-06) + 6.84678641286606e-05; % Linear relationship to include idle fuel flow
-        MassFlowRate(isnan(MassFlowRate)) = 6.84678641286606e-05;
+        MassFlowRate = ((Force.Wheel.Fx.RL + Force.Wheel.Fx.RR) * 1.42257529870920e-06) + 6.84678641286606e-05; % Linear relationship to include idle fuel flow
+        MassFlowRate(MassFlowRate < 6.84678641286606e-05) = 6.84678641286606e-05;   % No gaining fuel under braking!
         mFuelBurn = trapz(tLap,MassFlowRate); % (kg)
         vFuelBurn = (mFuelBurn / 719.7) * 1000; % (litres)
         CO2_Usage = 2.31 * vFuelBurn;
@@ -236,8 +237,8 @@ for iSweep = 1:nSweeps
         CO2_Usage = (0.65*E_kwh);
     elseif strcmp(Car.Category,'Hybrid') == 1
         % Assume rear wheel drive
-        MassFlowRate = ((Fx.RL + Fx.RR) * 1.42257529870920e-06) + 6.84678641286606e-05; % Linear relationship to include idle fuel flow
-        MassFlowRate(isnan(MassFlowRate)) = 6.84678641286606e-05;
+        MassFlowRate = ((Force.Wheel.Fx.RL + Force.Wheel.Fx.RR) * 1.42257529870920e-06) + 6.84678641286606e-05; % Linear relationship to include idle fuel flow
+        MassFlowRate(MassFlowRate < 6.84678641286606e-05) = 6.84678641286606e-05; % No gaining fuel under braking!
         mFuelBurn = trapz(tLap,MassFlowRate); % (kg)
         vFuelBurn = (mFuelBurn / 719.7) * 1000; % (litres)
         CO2_Usage = 2.31 * vFuelBurn;
@@ -268,7 +269,7 @@ for iSweep = 1:nSweeps
     %% Stability analasis checks
     vCar_avg_corner = 20;   % Avergae cornering speed (m/s)
     % Static stability
-    [K,SM,SI,UG,V_tangent,V_crit,V_char,K_Aero,SM_Aero,SI_Aero,UG_Aero,V_tangent_Aero,V_crit_Aero,V_char_Aero,delta_neutral] = s_stab(Car.Mass.Total,vCar_avg_corner,Car.Dimension.lWheelbase,Car.Balance.CoG(1),Car.Balance.CoP(1),-Car.AeroPerformance.C_L,Car.Dimension.FrontalArea);
+    [K,SM,SI,UG,V_tangent,V_crit,V_char,K_Aero,SM_Aero,SI_Aero,UG_Aero,V_tangent_Aero,V_crit_Aero,V_char_Aero,delta_neutral] = s_stab(Car.Mass.Total,vCar_avg_corner,Car.Dimension.lWheelbase,Car.Balance.CoG(1),Car.Balance.CoP(1),-Car.AeroPerformance.SC_L,radius_d);
     Stability.Static.K = K;
     Stability.Static.SM = SM;
     Stability.Static.SI = SI;
@@ -285,7 +286,7 @@ for iSweep = 1:nSweeps
     Stability.Static.V_char_Aero = V_char_Aero;
     Stability.Static.delta_neutral = delta_neutral;
     % Dynamic Stability
-    [E_Values] = d_stab(Car.Mass.Total,vCar_avg_corner,Car.Dimension.lWheelbase,Car.Balance.CoG(1),Car.Balance.CoP(1),-Car.AeroPerformance.C_L,Car.Dimension.FrontalArea);
+    [E_Values] = d_stab(Car.Mass.Total,vCar_avg_corner,Car.Dimension.lWheelbase,Car.Balance.CoG(1),Car.Balance.CoP(1),-Car.AeroPerformance.SC_L);
     Stability.Dynamic.E_Values = E_Values;
 
     if SaveResults == 1
@@ -300,6 +301,7 @@ for iSweep = 1:nSweeps
     end
 
     disp(['Sims completed:  ' num2str(iSweep) '/' num2str(nSweeps) '       Laptime: ' num2str(Laptime) 's'])
+    disp('--------------------------------------------------------')
 end
     
 end

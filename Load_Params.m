@@ -59,7 +59,6 @@ Car.Dimension.WheelRR.Radius = 0.2032;
 Car.Dimension.Front_track = 1.2;
 Car.Dimension.Rear_track = 1.2;
 Car.Dimension.Height = 1.4;
-Car.Dimension.FrontalArea = 1.2;
 Car.Dimension.lWheelbase = 1.55;
 Car.Dimension.CoG = [0.73315, 0, 0.309]; % Behind front axle
 Car.Dimension.CoP = [0.9300, 0, 0.37]; % Behind front axle
@@ -100,7 +99,7 @@ Car.Powertrain.Motor.Config = 'fwd';      % (fwd/rwd/4wd   front/rear/4 wheel dr
 
 % Brakes info
 Car.Brakes.FPedalMax = 1500;                                           % (N) 
-Car.Brakes.BrakeBias = 0.6757;                                                        % > 0.5 is biased towards front - might change with weight / CG
+Car.Brakes.BrakeBias = 0.57; %0.6757;                                                        % > 0.5 is biased towards front - might change with weight / CG
 Car.Brakes.PedalMotionRatio = 205.8/51.5;
 Car.Brakes.Front.wPad = 0.040894; %25.4e-3                                          % Pad width (m) 
 Car.Brakes.Rear.wPad = 0.040894; %25.4e-3
@@ -124,8 +123,8 @@ Car.Brakes.Front.aMasterCylinder = pi*(Car.Brakes.Front.dMasterCylinder/2)^2;   
 Car.Brakes.Rear.aMasterCylinder = pi*(Car.Brakes.Rear.dMasterCylinder/2)^2;
 
 % Car aero performance
-Car.AeroPerformance.C_L = 2.5; %1.78; %3.0;
-Car.AeroPerformance.C_D = 1.25; %0.731; %1.15;
+Car.AeroPerformance.SC_L = 3.0;
+Car.AeroPerformance.SC_D = 1.5;
 Car.AeroPerformance.hRideF = 0.030; % (m) (Static ride height under the weight of the car)
 Car.AeroPerformance.hRideR = 0.030; % (m)
 
@@ -141,12 +140,12 @@ Environment.Pressure = 101325;                  % (Pa)
 
 load([pwd,'\kinematics\geometries\EV3 Front Hardpoints 13.01.19.mat']);
 Car.Sus.Front.Hardpoints = hardpoints_front;
-Car.Sus.Front.Stiffness.Vertical = 80000; %40000;
-Car.Sus.Front.Stiffness.Horizontal = 80000; %40000;
+Car.Sus.Front.Stiffness.Vertical = 55000; %40000;
+Car.Sus.Front.Stiffness.Horizontal = 55000; %40000;
 load([pwd,'\kinematics\geometries\Final rear Outboard 01.02.19.mat']);
 Car.Sus.Rear.Hardpoints = hardpoints_front;
-Car.Sus.Rear.Stiffness.Vertical = 75000; %40000;
-Car.Sus.Rear.Stiffness.Horizontal = 75000; %40000;
+Car.Sus.Rear.Stiffness.Vertical = 40000; %40000;
+Car.Sus.Rear.Stiffness.Horizontal = 40000; %40000;
 
 save('Baseline_Carfile','Car')
 save('Baseline_Weatherfile','Environment')

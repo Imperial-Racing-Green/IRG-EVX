@@ -22,8 +22,8 @@ Fz_FR_static = Fz_FR_d;
 Fz_RL_static = Fz_RL_d;
 Fz_RR_static = Fz_RR_d;
 
-eps = 2001;
-eps_lim = 2000;
+eps = 1;
+eps_lim = 0.01;
 v_x_check = zeros(1,length(distanceTrack));
 while eps >= eps_lim
 
@@ -67,7 +67,7 @@ while eps >= eps_lim
     Fy_total = Fy_FL + Fy_FR + Fy_RL + Fy_RR;
     v_x = (abs((Fy_total .* radius_d)/Car.Mass.Total)).^0.5;
 
-    v_x(v_x > 200) = 200;
+    v_x(v_x > 75) = 75;
 
     % Add downforce
     for i = 1:length(v_x)
@@ -79,12 +79,14 @@ while eps >= eps_lim
     end
     
     % Check for convergence of velocities
-    eps = sum(v_x - v_x_check);
+    v_diff = (v_x - v_x_check)./v_x_check;
+    eps = sqrt(mean(v_diff.^2));
     disp(['Approaching vCar convergence criterion: ' num2str(min((eps_lim/eps),1)*100) ' %'])
     v_x_check = v_x;
 end
     
 %% Applying power limit
+disp('Applying power limits...')
 v_x2 = zeros(length(distanceTrack),1);
 if ~isempty(BoundaryConditions.vCar_start)
     v_x2(1) = BoundaryConditions.vCar_start;
@@ -112,7 +114,7 @@ for i = 1:length(distanceTrack)
                         Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
     Powertrain_Fx = Engine_Fx + Motor_Fx;
         
-    eps = 2;
+    eps = 1;
     Fz_check = [0 0 0 0];
     eps_lim = 0.01;
     while eps > eps_lim
@@ -175,8 +177,11 @@ for i = 1:length(distanceTrack)
             SL.RR(i) = interp1(F_xRRmax(:,2,i),SL_RR_xmax(:,i),Fy_RRreal(i),'spline');
         end
         Fx_traction = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
-
-        Fx_real = min(Powertrain_Fx,Fx_traction);
+        
+        % Check if throttle modulation required
+%         Fx_real = min(Powertrain_Fx,Fx_traction);
+        rThrottle = min(min(Fx_traction./Powertrain_Fx),1);
+        Fx_real = Powertrain_Fx * rThrottle;
         Fx.FL(i) = Fx_real(1);
         Fx.FR(i) = Fx_real(2);
         Fx.RL(i) = Fx_real(3);
@@ -206,10 +211,19 @@ for i = 1:length(distanceTrack)
         dhRideFR(i) = (Fz_FR_d(i) - Fz_FR_static(i)) / Car.Sus.Front.Stiffness.Vertical;
         dhRideRL(i) = (Fz_RL_d(i) - Fz_RL_static(i)) / Car.Sus.Rear.Stiffness.Vertical;
         dhRideRR(i) = (Fz_RR_d(i) - Fz_RR_static(i)) / Car.Sus.Rear.Stiffness.Vertical;
-        theta_y(i) = 0.5*(atan((0.5*(dhRideFL(i) + dhRideFR(i))) / (Car.Dimension.lWheelbase/2)) - ...
-            atan((0.5*(dhRideRL(i) + dhRideRR(i))) / (Car.Dimension.lWheelbase/2)));
-        theta_x(i) = 0.5*(atan((0.5*(dhRideFL(i) - dhRideFR(i))) / (Car.Dimension.Front_track/2)) + ...
-            atan((0.5*(dhRideRL(i) - dhRideRR(i))) / (Car.Dimension.Rear_track/2)));
+        dhRideF(i) = 0.5*(dhRideFL(i) + dhRideFR(i));
+        dhRideR(i) = 0.5*(dhRideRL(i) + dhRideRR(i));
+        hRideF(i) = Car.AeroPerformance.hRideF + dhRideF(i);
+        hRideR(i) = Car.AeroPerformance.hRideR + dhRideR(i);
+        theta_y(i) = 0.5*(atan(dhRideF(i)/(Car.Dimension.lWheelbase/2)) - atan(dhRideR(i)/(Car.Dimension.lWheelbase/2)));
+        theta_x(i) = 0.5*(atan((0.5*(dhRideFL(i) - dhRideFR(i)))/(Car.Dimension.Front_track/2)) + atan((0.5*(dhRideRL(i) - dhRideRR(i)))/(Car.Dimension.Rear_track/2)));
+        aPitch(i) = rad2deg(theta_y(i));
+        aRoll(i) = rad2deg(theta_x(i));
+        % Calculate tyre camber changes from static position
+        Camber.FL(i) = Car.Tyres.Camber.FL + (aRoll(i)*Car.Tyres.CamberRollFactor.Front);
+        Camber.FR(i) = Car.Tyres.Camber.FR - (aRoll(i)*Car.Tyres.CamberRollFactor.Front);
+        Camber.RL(i) = Car.Tyres.Camber.RL + (aRoll(i)*Car.Tyres.CamberRollFactor.Rear);
+        Camber.RR(i) = Car.Tyres.Camber.RR - (aRoll(i)*Car.Tyres.CamberRollFactor.Rear);
         
         eps = max(abs((Fz_check - [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)])./Fz_check));
         Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
@@ -229,7 +243,7 @@ Fy.RL = Fy_RLreal;
 Fy.RR = Fy_RRreal;
 
 %% Apply Braking Limit
-
+disp('Applying brake limits...')
 v_x3 = zeros(length(distanceTrack),1);
 if ~isempty(BoundaryConditions.vCar_end)
     v_x3(end) = BoundaryConditions.vCar_end;
@@ -254,7 +268,7 @@ for i = length(distanceTrack):-1:1
                     [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
                     Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius]; 
     
-    eps = 2;
+    eps = 1;
     Fz_check = [0 0 0 0];
     eps_lim = 0.01;
     while eps > eps_lim
@@ -276,51 +290,54 @@ for i = length(distanceTrack):-1:1
         Fy_FLreal(i) = (Fz_FL_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_FL_d(i) == 0
             Fx_FLreal = 0;
-            SA.FL(i) = 0;
-            SL.FL(i) = 0;
+            SA_FL = 0;
+            SL_FL = 0;
         else
             Fx_FLreal = interp1(F_xFLmin(:,2,i),F_xFLmin(:,1,i),Fy_FLreal(i),'spline');
-            SA.FL(i) = interp1(F_xFLmin(:,2,i),SA_FL_xmin(:,i),Fy_FLreal(i),'spline');
-            SL.FL(i) = interp1(F_xFLmin(:,2,i),SL_FL_xmin(:,i),Fy_FLreal(i),'spline');
+            SA_FL = interp1(F_xFLmin(:,2,i),SA_FL_xmin(:,i),Fy_FLreal(i),'spline');
+            SL_FL = interp1(F_xFLmin(:,2,i),SL_FL_xmin(:,i),Fy_FLreal(i),'spline');
         end
 
         Fy_FRreal(i) = (Fz_FR_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_FR_d(i) == 0
             Fx_FRreal = 0;
-            SA.FR(i) = 0;
-            SL.FR(i) = 0;
+            SA_FR = 0;
+            SL_FR = 0;
         else
             Fx_FRreal = interp1(F_xFRmin(:,2,i),F_xFRmin(:,1,i),Fy_FRreal(i),'spline');
-            SA.FR(i) = interp1(F_xFRmin(:,2,i),SA_FR_xmin(:,i),Fy_FRreal(i),'spline');
-            SL.FR(i) = interp1(F_xFRmin(:,2,i),SL_FR_xmin(:,i),Fy_FRreal(i),'spline');
+            SA_FR = interp1(F_xFRmin(:,2,i),SA_FR_xmin(:,i),Fy_FRreal(i),'spline');
+            SL_FR = interp1(F_xFRmin(:,2,i),SL_FR_xmin(:,i),Fy_FRreal(i),'spline');
         end
 
         Fy_RLreal(i) = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_RL_d(i) == 0
             Fx_RLreal = 0;
-            SA.RL(i) = 0;
-            SL.RL(i) = 0;
+            SA_RL = 0;
+            SL_RL = 0;
         else
             Fx_RLreal = interp1(F_xRLmin(:,2,i),F_xRLmin(:,1,i),Fy_RLreal(i),'spline');
-            SA.RL(i) = interp1(F_xRLmin(:,2,i),SA_RL_xmin(:,i),Fy_RLreal(i),'spline');
-            SL.RL(i) = interp1(F_xRLmin(:,2,i),SL_RL_xmin(:,i),Fy_RLreal(i),'spline');
+            SA_RL = interp1(F_xRLmin(:,2,i),SA_RL_xmin(:,i),Fy_RLreal(i),'spline');
+            SL_RL = interp1(F_xRLmin(:,2,i),SL_RL_xmin(:,i),Fy_RLreal(i),'spline');
         end
 
         Fy_RRreal(i) = (Fz_RR_d(i) / Fz_sum(i)) * Fy_real;
         if Fz_RR_d(i) == 0
             Fx_RRreal = 0;
-            SA.RR(i) = 0;
-            SL.RR(i) = 0;
+            SA_RR = 0;
+            SL_RR = 0;
         else
             Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal(i),'spline');
-            SA.RR(i) = interp1(F_xRRmin(:,2,i),SA_RR_xmin(:,i),Fy_RRreal(i),'spline');
-            SL.RR(i) = interp1(F_xRRmin(:,2,i),SL_RR_xmin(:,i),Fy_RRreal(i),'spline');
+            SA_RR = interp1(F_xRRmin(:,2,i),SA_RR_xmin(:,i),Fy_RRreal(i),'spline');
+            SL_RR = interp1(F_xRRmin(:,2,i),SL_RR_xmin(:,i),Fy_RRreal(i),'spline');
         end
 
         Fx_traction = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
         
-        Fx_real = max(Brake_Fx,Fx_traction);
-                
+        % Check if brake modulation required
+%         Fx_real = max(Brake_Fx,Fx_traction);
+        rBrake = min(min(Fx_traction./Brake_Fx),1);
+        Fx_real = Brake_Fx * rBrake;
+        
         Fx_sum = sum(Fx_real);
         % Account for drag and rolling resistance
         Fx_rollres = -Fz_sum(i)*Car.Tyres.Coefficients.RollingResistance; % Assume all wheels (including driven wheels) contribute
@@ -355,7 +372,7 @@ for i = length(distanceTrack):-1:1
         
     end
     if i ~= 1
-        v_x3(i-1) = (v_x3(i)^2 - (2*a_x*(distanceTrack(i) - distanceTrack(i-1))))^0.5;
+        v_x3(i-1) = ((v_x3(i)^2) - (2*a_x*(distanceTrack(i) - distanceTrack(i-1))))^0.5;
         if v_x3(i-1) < v_x2(i-1)
             % Override tyre forces if brake limits is applied
             Fx.FL(i) = Fx_real(1);
@@ -370,6 +387,14 @@ for i = length(distanceTrack):-1:1
             Fz.FR(i) = Fz_FR_d(i);
             Fz.RL(i) = Fz_RL_d(i);
             Fz.RR(i) = Fz_RR_d(i);
+            SA.FL(i) = SA_FL;
+            SA.FR(i) = SA_FR;
+            SA.RL(i) = SA_RL;
+            SA.RR(i) = SA_RR;
+            SL.FL(i) = SL_FL;
+            SL.FR(i) = SL_FR;
+            SL.RL(i) = SL_RL;
+            SL.RR(i) = SL_RR;
         end
     end    
 end

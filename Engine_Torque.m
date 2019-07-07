@@ -43,7 +43,7 @@ if isnan(T_engine)
 end
 
 if strcmp(Config,'fwd') == 1
-    T_FL = (T_engine * Ratio);
+    T_FL = (T_engine * Ratio) / 2;
     T_FR = T_FL;
     T_RL = 0;
     T_RR = T_RL;    
@@ -53,9 +53,9 @@ elseif strcmp(Config,'rwd') == 1
     T_RL = (T_engine * Ratio) / 2;
     T_RR = T_RL;
 else % 4wd
-    T_FL = (T_engine * Ratio) /2;  % Need to find torque distribution across axles
+    T_FL = (T_engine * Ratio) / 4;  % Need to find torque distribution across axles
     T_FR = T_FL;
-    T_RL = (T_engine * Ratio) / 2;
+    T_RL = (T_engine * Ratio) / 4;
     T_RR = T_RL;
 end
 

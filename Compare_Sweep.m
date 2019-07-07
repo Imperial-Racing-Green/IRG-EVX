@@ -3,8 +3,8 @@ close all
 clear
 clc
 
-FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Final Sims\HEV2';
-full_weekend = 1;  % If selected point to folder of enclosing all weekend results
+FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Final Sims\Test';
+full_weekend = 0;  % If selected point to folder of enclosing all weekend results
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%
 
@@ -111,6 +111,18 @@ for iTest = 1:length(FolderName)
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
     ylim([-5 105])
+    % Steering wheel
+    t = uitab(tabgp,'Title','Steering angle');
+    ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).aSteeringWheel,'LineWidth',1)
+        hold on
+    end 
+    legend(listing.name)
+    xlabel('sLap (m)')
+    ylabel('aSteeringWheel (deg)')
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
     % gLat
     t = uitab(tabgp,'Title','gLat');
     ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
@@ -161,18 +173,104 @@ for iTest = 1:length(FolderName)
     ylabel('Downforce (N)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
-    % Powertrain Thrust
-    t = uitab(tabgp,'Title','Engine Thrust');
-    ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
+    % Ride heights
+    t = uitab(tabgp,'Title','Ride heights');
+    ax1 = axes(t,'Position',[0.05 0.55 0.9 0.4]);
     for i = 1:length(filenames)
-        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).Force.Powertrain.Thrust.Total,'LineWidth',1)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).hRideF*1000,'LineWidth',1)
+        hold on
+    end 
+    legend(listing.name)
+    ylabel('hRideF (mm)')
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
+    ax2 = axes(t,'Position',[0.05 0.08 0.9 0.4]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).hRideR*1000,'LineWidth',1)
         hold on
     end 
     legend(listing.name)
     xlabel('sLap (m)')
-    ylabel('Total Thrust (N)')
+    ylabel('hRideR (mm)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
+    % Tyre cambers
+    t = uitab(tabgp,'Title','Camber angles');
+    ax1 = axes(t,'Position',[0.1 0.55 0.4 0.4]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).Camber.FL,'LineWidth',1)
+        hold on
+    end
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
+    title('FL')
+    ylabel('Camber angle (deg)')
+    ax2 = axes(t,'Position',[0.55 0.55 0.4 0.4]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).Camber.FR,'LineWidth',1)
+        hold on
+    end
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
+    title('FR')
+    ax3 = axes(t,'Position',[0.1 0.08 0.4 0.4]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).Camber.RL,'LineWidth',1)
+        hold on
+    end
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
+    title('RL')
+    ylabel('Camber angle (deg)')
+    xlabel('sLap (m)')
+    ax4 = axes(t,'Position',[0.55 0.08 0.4 0.4]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).Camber.RR,'LineWidth',1)
+        hold on
+    end
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
+    title('RR')
+    xlabel('sLap (m)')
+    yl1 = ax1.YLim;    yl2 = ax2.YLim;    yl3 = ax4.YLim;    yl4 = ax4.YLim;
+    ymin = min([yl1(1) yl2(1) yl3(1) yl4(1)]);
+    ymax = max([yl1(2) yl2(2) yl3(2) yl4(2)]);
+    ax1.YLim = [ymin ymax];    ax2.YLim = [ymin ymax];    ax3.YLim = [ymin ymax];    ax4.YLim = [ymin ymax];
+    % Grip
+    t = uitab(tabgp,'Title','Grip');
+    ax1 = axes(t,'Position',[0.05 0.55 0.9 0.4]);
+    for i = 1:length(filenames)
+        scatter([Results.(Test{iTest}).(['Sim' num2str(i)]).gLong;...
+            Results.(Test{iTest}).(['Sim' num2str(i)]).gLong;...
+            Results.(Test{iTest}).(['Sim' num2str(i)]).gLong;...
+            Results.(Test{iTest}).(['Sim' num2str(i)]).gLong],...
+            [abs(Results.(Test{iTest}).(['Sim' num2str(i)]).Grip.FL.mu_x);...
+            abs(Results.(Test{iTest}).(['Sim' num2str(i)]).Grip.FR.mu_x);...
+            abs(Results.(Test{iTest}).(['Sim' num2str(i)]).Grip.RL.mu_x);...
+            abs(Results.(Test{iTest}).(['Sim' num2str(i)]).Grip.RR.mu_x)],10,'filled')
+        hold on
+    end 
+    legend(listing.name)
+    ylabel('Grip mu_x')
+    xlabel('gLong (g)')
+    ylim([0 3])
+    grid minor
+    ax2 = axes(t,'Position',[0.05 0.08 0.9 0.4]);
+    for i = 1:length(filenames)
+        scatter([Results.(Test{iTest}).(['Sim' num2str(i)]).gLat;...
+            Results.(Test{iTest}).(['Sim' num2str(i)]).gLat;...
+            Results.(Test{iTest}).(['Sim' num2str(i)]).gLat;...
+            Results.(Test{iTest}).(['Sim' num2str(i)]).gLat],...
+            [abs(Results.(Test{iTest}).(['Sim' num2str(i)]).Grip.FL.mu_y);...
+            abs(Results.(Test{iTest}).(['Sim' num2str(i)]).Grip.FR.mu_y);...
+            abs(Results.(Test{iTest}).(['Sim' num2str(i)]).Grip.RL.mu_y);...
+            abs(Results.(Test{iTest}).(['Sim' num2str(i)]).Grip.RR.mu_y)],10,'filled')
+        hold on
+    end 
+    legend(listing.name)
+    ylabel('Grip mu_y')
+    xlabel('gLat (g)')
+    grid minor
     % Tyre Fx
     t = uitab(tabgp,'Title','Tyre Fx');
     ax1 = axes(t,'Position',[0.1 0.55 0.4 0.4]);
@@ -299,7 +397,46 @@ for iTest = 1:length(FolderName)
     ymin = min([yl1(1) yl2(1) yl3(1) yl4(1)]);
     ymax = max([yl1(2) yl2(2) yl3(2) yl4(2)]);
     ax1.YLim = [ymin ymax];    ax2.YLim = [ymin ymax];    ax3.YLim = [ymin ymax];    ax4.YLim = [ymin ymax];
-
+    % Rotations
+    t = uitab(tabgp,'Title','Rotations');
+    ax1 = axes(t,'Position',[0.05 0.55 0.9 0.4]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).aPitch,'LineWidth',1)
+        hold on
+    end 
+    legend(listing.name)
+    ylabel('aPitch (deg)')
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
+    ax2 = axes(t,'Position',[0.05 0.08 0.9 0.4]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).aRoll,'LineWidth',1)
+        hold on
+    end 
+    legend(listing.name)
+    xlabel('sLap (m)')
+    ylabel('aRoll (deg)')
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
+    % Stability
+    t = uitab(tabgp,'Title','Stability');
+    ax1 = axes(t,'Position',[0.05 0.55 0.9 0.4]);
+    for i = 1:length(filenames)
+        scatter(1,Results.(Test{iTest}).(['Sim' num2str(i)]).Stability.Static.SM*100,'filled')
+        hold on
+    end 
+    legend(listing.name)
+    ylabel('Static margin (%)')
+    grid minor
+    ax2 = axes(t,'Position',[0.05 0.08 0.9 0.4]);
+    for i = 1:length(filenames)
+        scatter(real(Results.(Test{iTest}).(['Sim' num2str(i)]).Stability.Dynamic.E_Values),imag(Results.(Test{iTest}).(['Sim' num2str(i)]).Stability.Dynamic.E_Values),'filled')
+        hold on
+    end 
+    legend(listing.name)
+    ylabel('Dynamic eigenvalues')
+    grid minor
+    
 end
 
 % Calculate scores
@@ -321,9 +458,9 @@ if full_weekend == 1
     % Skid-Pad test
     Times.SkidPad_Test.Best =  4.729; % 4.735;
     % Endurance test
-    Times.Endurance_Test.Best = 1427.580; % 1271.04;
+    Times.Endurance_Test.Best = 1271.04; %1427.580;
     % Autocross test
-    Times.Autocross_Test.Best = 52.161; % 47.148;
+    Times.Autocross_Test.Best = 47.148; % 52.161;
     % Fuel Efficiency test
 %     FuelEfficiency_Test.Best = 0.806;
 %     FuelEfficiency_Test.Worst =  0.095;

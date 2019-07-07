@@ -4,7 +4,7 @@ function [F_x,F_y,F_xmax,F_ymax,F_xmin,F_ymin,SA_xmax,SA_xmin,SL_xmax,SL_xmin,SA
 SL = linspace(-1,1,points);
 
 % Slip angle
-SA = linspace(-30,30,points);
+SA = linspace(-20,20,points);
 
 [SA,SL] = meshgrid(SA,SL);
 
@@ -75,6 +75,8 @@ k = k(1:end-1);
 % end
 Fx = Force(k,1);
 Fy = Force(k,2);
+Slip.Angle = SlipAngle(k);
+Slip.Ratio = SlipRatio(k);
 k_xmax = k(Fx >= 0);
 k_xmin = k(Fx <= 0);
 k_ymax = k(Fy >= 0);

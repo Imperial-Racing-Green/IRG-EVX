@@ -1,10 +1,10 @@
-function[K,SM,SI,UG,V_tangent,V_crit,V_char,K_Aero,SM_Aero,SI_Aero,UG_Aero,V_tangent_Aero,V_crit_Aero,V_char_Aero,delta_neutral] = s_stab(m,V,WBASE,X_CG,CoP,C_L,A_frontal)
+function[K,SM,SI,UG,V_tangent,V_crit,V_char,K_Aero,SM_Aero,SI_Aero,UG_Aero,V_tangent_Aero,V_crit_Aero,V_char_Aero,delta_neutral] = s_stab(m,V,WBASE,X_CG,CoP,SC_L,radius_d)
 
 %Function to determine Static Stability parameters, first without Aero
 %effects, then with Aero effects. Finally determine neutral steer angle.
 %All SI units.
 
-[F_z_F,F_z_R] = F_z_calc(m,V,X_CG,CoP,0,A_frontal); %determine force distribution on axles front/rear 
+[F_z_F,F_z_R] = F_z_calc(m,V,X_CG,CoP,0); %determine force distribution on axles front/rear 
 Stiffness_Front = -corner_stiffness(F_z_F/2)*180/pi; %find tyre cornering stiffness
 Stiffness_Rear = -corner_stiffness(F_z_R/2)*180/pi;
 
@@ -23,7 +23,7 @@ end
 
 %With Aero effects below
 
-[F_z_F_Aero,F_z_R_Aero] = F_z_calc(m,V,X_CG,CoP,C_L,A_frontal);
+[F_z_F_Aero,F_z_R_Aero] = F_z_calc(m,V,X_CG,CoP,SC_L);
 Stiffness_Front_Aero = -corner_stiffness(F_z_F_Aero/2)*180/pi;
 Stiffness_Rear_Aero = -corner_stiffness(F_z_R_Aero/2)*180/pi;
 
@@ -39,6 +39,5 @@ elseif K_Aero < 0
 end
 
 %Neutral Steer Angle
-load('Racing_Line_ClosedLoop.mat')
-delta_neutral = (a+b)./radius_d*180/pi; %compare to track data
+delta_neutral = ((a+b)./radius_d)*180/pi; %compare to track data
 end
