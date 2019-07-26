@@ -124,13 +124,17 @@ classdef EVX_tyre
         
         function [FX, FY, MZ] = get_forces(obj,SR,SA,P,IA,FZ)
             SA = 0.0174533*SA;
+            
+            %non-dimensionalise according to Pacejka pg 101
+            SA_nd = tan(SA)/(1+SR);
+            SR_nd = SR/(1+SR);
             FZ = -FZ;
             
             if SR==0 && SA==0
                 G_x = 1;
                 G_y = 1;
             else
-                slip_direction = atan(abs(SR)./abs(SA));
+                slip_direction = atan(abs(SR_nd)./abs(SA_nd));
                 G_x = sin(slip_direction);
                 G_y = cos(slip_direction);
             end

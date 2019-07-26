@@ -169,6 +169,10 @@ for i = 1:n_data %Calculate heave properties
     
     AntiSquat(i) = 100 * (SVSA(2)./SVSA(1)) ./ (h/l);
     AntiDive(i) = 60 * (SV_delta(2)./SV_delta(1)) ./ (h/l);
+%     [~, idx] = min(abs(simOut.channels.z_contact_patch(vert_test_start:end))); 
+%     if i == vert_test_start + idx - 1;
+%         keyboard
+%     end
 end
 
 simOut.channels.FVIC = FVIC;
@@ -237,6 +241,8 @@ metrics.l_damper_static = simOut.channels.l_damper(static_idx);
 metrics.MaxSteer_inside = max(simOut.channels.a_toe); 
 metrics.MaxSteer_outside = min(simOut.channels.a_toe);
 metrics.static_idx = static_idx;
+metrics.steer_test_end_idx = steer_test_end;
+metrics.vert_test_start_idx = vert_test_start;
 metrics.steer_ratio_coef = polyfit(simOut.channels.y_trackrod(1:steer_test_end),simOut.channels.a_toe(1:steer_test_end),3);
 
 simOut.metrics = metrics;

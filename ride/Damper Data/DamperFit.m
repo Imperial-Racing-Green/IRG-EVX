@@ -19,16 +19,16 @@ end
 v = linspace(-250,250,500);
 for i = 1:length(fits)
     [F, fits(i).Lookup_Values] = DamperCurve(fits(i).coef,v,1);
-    h = figure;
-    hold on
-    plot(v,F)
-    scatter(fits(i).data(:,2),fits(i).data(:,1))
-    hold off
-    title(fits(i).name)
-    grid on
-    fits(i).figure = h;
-%     pause(2)
-    savefig([target_folder '/Figures/' fits(i).name '.fig'])
+% %     h = figure;
+% %     hold on
+% %     plot(v,F)
+% % %     scatter(fits(i).data(:,2),fits(i).data(:,1))
+% %     hold off
+% %     title(fits(i).name)
+% %     grid on
+% %     fits(i).figure = h;
+% %     pause(2)
+% %     savefig([target_folder '/Figures/' fits(i).name '.fig'])
 end
 
-save([target_folder '/Fits.mat'],'fits')
+% save([target_folder '/Fits.mat'],'fits')

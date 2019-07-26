@@ -1,5 +1,5 @@
-clear
-close all
+% clear
+% close all
 
 try
     % Hoosier 10" Lateral
@@ -48,6 +48,8 @@ for i = 1:length(tyre_model.lateral_model)
     contourf(x_fit,y_fit,coef)
     colorbar;
     title(coefs{i})
+    xlabel('Vertical Load [N]')
+    ylabel('Camber Angle [deg]')
     %     scatter3(x_test,y_test,coef_test)
 end
 
@@ -107,14 +109,14 @@ x = x/0.0174533;
 
 for i = 1:size(x,1)
     for j = 1:size(x,2)
-        [FX_model(i,j),FY_model(i,j),~] = tyre_model.get_forces(y(i,j),x(i,j),84,0,-1080);
+        [FX_model(i,j),FY_model(i,j),~] = tyre_model.get_forces(y(i,j),x(i,j),84,2,-660);
     end
 end
 
 load(filename_long)
 load([pwd '\tyres\model_fitting\models\combined_bins.mat'])
 
-bin = P_bin(:,2) & IA_bin(:,1) & FZ_bin(:,4);% & SA_bin(:,);
+bin = P_bin(:,2) & IA_bin(:,2) & FZ_bin(:,2);% & SA_bin(:,);
 
 figure
 subplot(121)
@@ -122,7 +124,7 @@ subplot(121)
 surf(x,y,FX_model,'EdgeColor','none')
 % colorbar
 hold on
-% scatter3(-SA(bin),SR(bin),FX(bin))
+scatter3(-SA(bin),SR(bin),FX(bin))
 xlabel('Slip Angle [deg]')
 ylabel('Slip Ratio [-]')
 zlabel('Longitudinal Force [N]')
@@ -135,7 +137,7 @@ subplot(122)
 surf(x,y,FY_model,'EdgeColor','none')
 % colorbar
 hold on
-% scatter3(-SA(bin),SR(bin),FY(bin))
+scatter3(-SA(bin),SR(bin),FY(bin))
 xlabel('Slip Angle [deg]')
 ylabel('Slip Ratio [-]')
 zlabel('Lateral Force [N]')
@@ -144,9 +146,12 @@ axis vis3d
 
 figure
 F_tot = sqrt(FX_model.^2 + FY_model.^2);
+F_tot_exp = sqrt(FX(bin).^2 + FY(bin).^2);
 surf(x,y,F_tot,'EdgeColor','none')
+hold on
 % contourf(x,y,F_tot,0:100:2500)
 colorbar
+scatter3(-SA(bin),SR(bin),F_tot_exp)
 xlabel('Slip Angle [deg]')
 ylabel('Slip Ratio [-]')
 zlabel('Combined Force [N]')
@@ -166,10 +171,35 @@ axis vis3d
 % % axis vis3d
 
 figure
-plot(x',FX_model')
+% hold on
+% for i = 1:length(x)
+%     plot3(x',ones(length(x),1)*y(i),FX_model(i,:)')
+plot3(x(1:8:end,1:8:end)',y(1:8:end,1:8:end)',FX_model(1:8:end,1:8:end)','k')
+axis vis3d
+hold on
+idx = (size(x,2)-1)/2 + 1;
+plot3(x(:,idx),y(:,idx),FX_model(:,idx))
+xlabel('Slip Angle [deg]')
+ylabel('Slip Ratio [-]')
+zlabel('Longitudinal Force [N]')
+% end
 
 figure
 for i = 1:length(SA_binvalues)
-    
+%     for 
     
 end
+
+x = linspace(tyre_model.longitudinal_model{3}.GridVectors{3}(1),tyre_model.lateral_model{3}.GridVectors{3}(end),100);
+y = linspace(tyre_model.longitudinal_model{3}.GridVectors{1}(1),tyre_model.lateral_model{3}.GridVectors{1}(end),100);
+
+[x_fit,y_fit] = meshgrid(x,y);
+for i = 1:length(x_fit)
+    for j = 1:length(y_fit)
+        mu_lat(i,j) = tyre_mu_lat(tyre_model,y_fit(i,j),2,x_fit(i,j));
+    end
+end
+
+figure
+contourf(x_fit,y_fit,mu_lat,0:0.1:5)
+colorbar;
