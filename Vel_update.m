@@ -106,6 +106,7 @@ for i = 1:length(dist)-2
     
     v_x2(i+1) = (v_x2(i)^2 + (2*a_x*(dist(i+1) - dist(i))))^0.5;
 end
+v_x2(end) = v_x2(end-1);
 
 %% Apply Braking Limit
 
@@ -155,7 +156,10 @@ for i = length(dist)-1:-1:2
     
     v_x3(i-1) = (v_x3(i)^2 - (2*a_x*(dist(i) - dist(i-1))))^0.5;
 end
-v_x3(1)=0;
+v_x3(1)=min(v_x3(1),v_x2(1));
+if v_x3(1) == 0
+    v_x3(1) = 0.5;
+end
 %% Output
 
 velocity_d = v_x3;

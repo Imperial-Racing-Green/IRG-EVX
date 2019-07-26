@@ -12,7 +12,7 @@ velocity_d = velocity_d(2:end);
 %     time = time + step;
 %     i = i + 1;
 % end
-time = 300;
+time = 100;
 % time = linspace(0,time,i-1)';
 % dist_cum = dist_cum';
 

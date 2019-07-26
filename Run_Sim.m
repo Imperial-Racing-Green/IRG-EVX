@@ -33,7 +33,7 @@ ControlSystemDriverModel = Simulink.Variant('Driver_Model == 1');
 InputDefinedDriverModel = Simulink.Variant('Driver_Model == 2');
 Driver_Model = 1;
 
-mass = 270;
+mass = 300;
 
 Fz_log.Data = mass .* -9.81 .* ones(length(dist),4) ./ 4;
 Fz_log.Time = linspace(0,120,length(dist))';
@@ -42,7 +42,7 @@ dist_log.Time = linspace(0,120,length(dist))';
 
 velocity_d = zeros(length(dist),1);
 velocity_dmax = Vel_update(Fz_log,dist,dist_log,radius_d,mass);
-velocity_dnew = velocity_d + 0.75 .* (velocity_dmax - velocity_d);
+velocity_dnew = velocity_d + 0.5 .* (velocity_dmax - velocity_d);
 
 % velocity_d = Vel_Init(dist,10);
 % 
@@ -63,17 +63,19 @@ figure
 iter = 1;
 Limit_d = 0;
 Limit_Perc = sum(Limit_d)/length(Limit_d);
-while min(Limit_Perc) < 0.95
+velocity_step = 0.5;
+while min(Limit_Perc) < 2
 Limit_Perc = sum(Limit_d)/length(Limit_d);
 Power_Lim = Limits.signals.values(:,1);
 Traction_Lim = Limits.signals.values(:,2);
 Brake_Lim = Limits.signals.values(:,3);
 Corner_Lim = Limits.signals.values(:,4);
 Brake_Lim(1:end-1) = Brake_Lim(2:end);
-Limit = sign(Power_Lim + Traction_Lim + Brake_Lim + Corner_Lim);
+Velocity_Lim = Limits.signals.values(:,5);
+Angle_Lim = Limits.signals.values(:,6);
+Limit = sign(Power_Lim + Traction_Lim + Brake_Lim + Corner_Lim + Velocity_Lim + Angle_Lim);
 Limit_d = interp1(dist_log.Data,Limit,dist,'nearest');
 Limit_d(isnan(Limit_d)) = 1;
-velocity_step = 0.25;
 velocity_dnew = velocity_step .* (1-Limit_d) + velocity_dnew;
 sim('EVX_Lap_Simulation',max(time)*1.5);
 lap_time = max(dist_log.Time);
@@ -100,6 +102,7 @@ ylabel('Limit Percentage (%)')
 xlabel('Iteration Number')
 iter = iter + 1;
 end
+figure
 velocity_log = diff(dist_log.Data)./diff(dist_log.Time);
 lap_time = max(dist_log.Time);
 
