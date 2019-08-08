@@ -24,14 +24,23 @@ end
 %% Load Files
 Car = feval(Files.Car_File);
 
-%% Quasi-static Simulation
 
+%% Quasi-static Simulation
+if strcmp(Options.Quasi_Static_Simulation,'On') == 1
+    
+end
 
 %% Dynamic Simulation
-Settings = Dynamic_Settings(Options);
 
-simOut = sim('Dynamic_Simulation');
+if strcmp(Options.Dynamic_Simulation,'On') == 1
+    Track = 1;
+    Environment = 2;
+    
+    % SimOutputs = Run_Dynamic_Sim(Simulation,Car,Track,Environment,Options)
+    SimOutputs = Run_Dynamic_Sim('Dynamic_Simulation',Car,Track,Environment,Options);
+    
+    Results = 1;
+end
 
-Results = 1;
 end
 
