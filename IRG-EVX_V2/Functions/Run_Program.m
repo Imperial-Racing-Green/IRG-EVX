@@ -23,16 +23,16 @@ end
 
 %% Load Files
 Car = feval(Files.Car_File);
-
+Track = Track_Gen(Files.Track_File,Car,Options);
 
 %% Quasi-static Simulation
-if strcmp(Options.Quasi_Static_Simulation,'On') == 1
+if strcmpi(Options.Quasi_Static_Simulation,'On') == 1
     
 end
 
 %% Dynamic Simulation
 
-if strcmp(Options.Dynamic_Simulation,'On') == 1
+if strcmpi(Options.Dynamic_Simulation,'On') == 1
     Track = 1;
     Environment = 2;
     

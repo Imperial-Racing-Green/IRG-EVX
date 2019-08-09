@@ -1,165 +1,119 @@
-function [x,y,theta,curvature,radius,Distance] = Track_Gen(filename,Interpolation,Length,Smoothing,Line_Optim,Track_Width,Optim_Iterations)
-
-%% Set Up
-Direction = 1;
-% Interpolation = 100;
-% Length = 1200;
-% Smoothing = 'On';
-Plots = 'On';
+function [Track] = Track_Gen(File,Car,Options)
 
 %% Read Data
-csv_data = csvread(filename);
 
-x = csv_data(:,1);
-y = csv_data(:,2);
+% Setup the Import Options
+opts = delimitedTextImportOptions("NumVariables", 4);
 
-%% Adjust Start Finish
-dist = (x.^2 + y.^2).^0.5;
-[~,start] = min(dist);
+% Specify range and delimiter
+opts.DataLines = [2, Inf];
+opts.Delimiter = ",";
 
-x = circshift(x,length(x) - start + 1);
-y = circshift(y,length(y) - start + 1);
-x = x - x(1);
-y = y - y(1);
+% Specify column names and types
+opts.VariableNames = ["x", "y", "z", "w"];
+opts.VariableTypes = ["double", "double", "double", "double"];
+opts.ExtraColumnsRule = "ignore";
+opts.EmptyLineRule = "read";
 
-%% Interpolation
-npoint_old = linspace(0,1,length(x))';
-npoint_new = linspace(0,1,Interpolation)';
+% Import the data
+FSUK_Sprint = readtable(File, opts);
 
-method = 'spline'; 
-x = (interp1( npoint_old, x, npoint_new, method));
-y = (interp1( npoint_old, y, npoint_new, method));
+clear opts
 
 %% Change Direction
 
-if Direction == -1
-    x = fliplr(x);
-    y = fliplr(y);
+if strcmpi(Options.Flip_Direction,'On') == 1
+    FSUK_Sprint = flip(FSUK_Sprint);
 end
 
-%% Path Length Adjust
-Spacing = ((diff(x)).^2 + (diff(y)).^2).^0.5;    	%Magnitude distance between successive coordinates
-Distance = cumsum(Spacing);                       	%Cumulative segment/path length
-% Distance = Distance - Distance(1)/3;
+%% Adjust Start Finish
+dist = (FSUK_Sprint.x.^2 + FSUK_Sprint.y.^2).^0.5;
+[~,start] = min(dist);
 
-if Length > 0
-    Ratio = Length/max(Distance);
-    x = Ratio .* x;
-    y = Ratio .* y;
-    Distance = Ratio .* Distance;
-end
-
-%% Yaw Angle
-theta = atan2(diff(y),diff(x));
-
-% Address Discontinuities
-for k = 2:1:length(theta)
-    dChange = theta(k) - theta(k-1);
-    if (abs(dChange) > 0.9*pi)
-        r = round(dChange/pi);
-        theta(k) = theta(k) - r*pi;
-    end
-end
-
-%% Driving Line Optimisation
-if strcmpi(Line_Optim,'On') == 1
-    x0 = x;
-    y0 = y;
-    [x_new,y_new] = Path_Optim(x,y,x0,y0,theta,Track_Width,Optim_Iterations);
-    
-%     if strcmpi(Plots,'On') == 1
-%         plot(x_new,y_new,'r')
-%     end
-    x = x_new;
-    y = y_new;
-    
-    %Yaw Angle again
-    theta = atan2(diff(y),diff(x));
-    
-    % Address Discontinuities
-    for k = 2:1:length(theta)
-        dChange = theta(k) - theta(k-1);
-        if (abs(dChange) > 0.9*pi)
-            r = round(dChange/pi);
-            theta(k) = theta(k) - r*pi;
-        end
-    end
-    Spacing = ((diff(x)).^2 + (diff(y)).^2).^0.5;    	%Magnitude distance between successive coordinates
-    Distance = cumsum(Spacing);                       	%Cumulative segment/path length
-%     Distance = Distance - Distance(1)/3;
-end
-
-%% Curvature
-curvature = diff(theta)./diff(Distance);
-
-%% Smoothing
-if strcmpi(Smoothing,'On') == 1
-    windowSize = round(length(x) / 500);
-    b = (1/windowSize)*ones(1,windowSize);
-    a = 1;
-    theta_filtered = filter(b,a,theta);
-    windowSize = round(length(x) / 50);
-    b = (1/windowSize)*ones(1,windowSize);
-    curvature_filtered = filter(b,a,curvature);
-end
-
-%% Radius
-radius = 1./curvature;
-if strcmpi(Smoothing,'On') == 1
-    radius_filtered = 1./curvature_filtered;
-end
-
-%% Plot
-if strcmpi(Plots,'On') == 1
-
-%     hold on
-%     plot(Distance,theta);
-%     if strcmpi(Smoothing,'On') == 1
-%         plot(Distance,theta_filtered);
-%         legend('Original','Smoothed')
-%     end
-%     title('Yaw Angle')
-%     xlabel('Distance (m)')
-%     ylabel('Yaw Angle (rad)')
-%     
-%     figure
-%     hold on
-%     plot(Distance(1:end-1),curvature);
-%     if strcmpi(Smoothing,'On') == 1
-%         plot(Distance(1:end-1),curvature_filtered);
-%         legend('Original','Smoothed')
-%     end
-%     title('Curvature')
-%     xlabel('Distance (m)')
-%     ylabel('Curvature (1/m)')
-%     
-%     figure
-%     hold on
-%     plot(Distance(1:end-1),radius);
-%     if strcmpi(Smoothing,'On') == 1
-%         plot(Distance(1:end-1),radius_filtered);
-%         legend('Original','Smoothed')
-%     end
-%     title('Radius')
-%     xlabel('Distance (m)')
-%     ylabel('Radius (1/m)')
-    
-%     figure
-    hold on
-    plot(x,y,'r');
-    scatter(x(1),y(1),'x','r');
-    title('Track Map')
-    xlabel('x Direction (m)')
-    ylabel('y Direction (m)')
-end
-
-%% Outputs
+x = circshift(FSUK_Sprint.x,length(FSUK_Sprint.x) - start + 1);
+y = circshift(FSUK_Sprint.y,length(FSUK_Sprint.y) - start + 1);
+z = circshift(FSUK_Sprint.z,length(FSUK_Sprint.z) - start + 1);
+w = circshift(FSUK_Sprint.w,length(FSUK_Sprint.w) - start + 1);
 x = x - x(1);
 y = y - y(1);
-Distance = [0;Distance];
-if strcmpi(Smoothing,'On') == 1
-    curvature = curvature_filtered;
-    theta = theta_filtered;
-    radius = radius_filtered;
+z = z - min(z);
+
+%% Add Extra Point for Complete Laps
+% Check if start and finish are in same place
+Gap = ((x(1)-x(end))^2 + (y(1)-y(end))^2)^0.5;
+if Gap <= 1
+    x = [x;x(1)];
+    y = [y;y(1)];
+    z = [z;z(1)];
+    w = [w;w(1)];
 end
-theta = [theta(1);theta];
+
+%% Caluclate Track Length
+Spacing = ((diff(x)).^2 + (diff(y)).^2).^0.5;    	%Magnitude distance between successive coordinates
+Distance = cumsum(Spacing);                       	%Cumulative segment/path length
+
+%% Interpolate to Default Track Resolution
+
+DefaultRes = 2;
+[x,y,z,w] = Track_Interp(x,y,z,w,max(Distance)*DefaultRes);
+
+%% Get Track Boundaries
+[x_left,y_left,x_right,y_right,~,~] = Track_Boundary(x,y,w);
+
+%% Driving Line Optimisation
+if strcmpi(Options.Driving_Line_Optimisation,'On') == 1
+    
+    % Interpolation to Reduce Resolution
+    % Set Resolution
+    if strcmpi(Options.Driving_Line_Optimisation_Accuracy,'Very High') == 1
+        Resolution = 1;
+    elseif strcmpi(Options.Driving_Line_Optimisation_Accuracy,'High') == 1
+        Resolution = 0.75;
+    elseif strcmpi(Options.Driving_Line_Optimisation_Accuracy,'Medium') == 1
+        Resolution = 0.5;
+    elseif strcmpi(Options.Driving_Line_Optimisation_Accuracy,'Low') == 1
+        Resolution = 0.375;
+    elseif strcmpi(Options.Driving_Line_Optimisation_Accuracy,'Very Low') == 1
+        Resolution = 0.25;
+    else
+        disp('Driving Line Optimisation Accuracy setting invalid.');
+        disp('Terminating Simulation.');
+    end
+    
+    % [x,y,z,w] = Track_Interp(x,y,z,w,Resolution);
+    [x_low,y_low,~,w_low] = Track_Interp(x,y,z,w,Resolution * max(Distance));
+    
+    % Line Optimisation
+    % Get Path Boundaries
+    [~,~,~,~,lb,ub] = Track_Boundary(x_low,y_low,w_low,Car);
+    
+    [xnew,ynew] = Path_Optim(x_low,y_low,lb,ub,Options);
+    
+    % Interpolate to Increase Path Resolution
+    [Path.x_left,Path.y_left,Path.x_right,Path.y_right,~,~] = Track_Boundary(x,y,w,Car);
+    Path.x = Interpolate(length(xnew),round(max(Distance)*DefaultRes),xnew,'spline')';
+    Path.y = Interpolate(length(ynew),round(max(Distance)*DefaultRes),ynew,'spline')';
+    
+    % Erase Track Width Data
+    w = zeros(length(w),1);
+end
+
+% Pass output variables to output structure
+Track.x = x;
+Track.y = y;
+Track.z = z;
+Track.w = w;
+Track.x_left = x_left;
+Track.x_right = x_right;
+Track.y_left = y_left;
+Track.y_right = y_right;
+Track.Path.x = Path.x;
+Track.Path.y = Path.y;
+Track.Path.theta = Theta([Path.x,Path.y]);
+Track.Path.x_left = Path.x_left;
+Track.Path.x_right = Path.x_right;
+Track.Path.y_left = Path.y_left;
+Track.Path.y_right = Path.y_right;
+
+end
+

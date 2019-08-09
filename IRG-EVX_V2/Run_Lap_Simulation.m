@@ -10,26 +10,29 @@ clc
 %% User File Set-up
 % Choose car, track and environment files for the simulation.
 Files.Car_File = 'EV3_FSUK2019';
-Files.Track_File = 'FSUK_Sprint';
 Files.Environment_File = 'Silverstone_Dry';
+Files.Track_File = 'FSUK_Sprint.csv';
 
 %% User Simulation Options
-% Set simulation options to 'On' or 'Off'.
-Options.Quasi_Static_Simulation = 'On';
-Options.Dynamic_Simulation = 'On';
-Options.Driving_Line_Optimisation = 'On';
-Options.Rolling_Start = 'On';
-Options.Show_Progress = 'On';
-Options.Save_to_File = 'On';
-Options.Debug_Mode = 'On';
+% Set simulation options.
+Options.Quasi_Static_Simulation = 'On'; %'On','Off'
+Options.Dynamic_Simulation = 'On'; %'On','Off'
+Options.Driving_Line_Optimisation = 'On'; %'On','Off'
+Options.Driving_Line_Optimisation_Accuracy = 'Very Low'; %'Very High','High','Medium','Low','Very Low'
+Options.Rolling_Start = 'On'; %'On','Off'
+Options.Flip_Direction = 'Off'; %'On','Off'
+Options.Show_Progress = 'On'; %'On','Off'
+Options.Save_to_File = 'On'; %'On','Off'
+Options.Debug_Mode = 'On'; %'On','Off'
 
 %% User Plot Options
-% Set which results to plot using 'On' or 'Off'.
-Plots.Optimisation_Progress = 'On';
-Plots.Path_Velocity = 'On';
-Plots.Velocity = 'On';
-Plots.Pedal_Position = 'On';
-Plots.Steering_Angle = 'On';
+% Set which results to plot.
+Plots.Optimisation_Progress = 'On'; %'On','Off'
+Plots.Path_Velocity = 'On'; %'On','Off'
+Plots.Velocity = 'On'; %'On','Off'
+Plots.Pedal_Position = 'On'; %'On','Off'
+Plots.Steering_Angle = 'On'; %'On','Off'
 
 %% Run Simulation
+% Option_Checks();
 Results = Run_Program(Files,Options,Plots);
