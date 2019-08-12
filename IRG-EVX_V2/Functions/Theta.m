@@ -12,7 +12,7 @@ for i = 2:length(theta)
     end
 end
 
-oldn = linspace(1,length(theta),length(theta))';
-newn = linspace(1,length(theta),length(x))';
+oldn = linspace(0,length(theta)-0.5,length(theta))';
+newn = linspace(0,length(theta),length(x))';
 
 theta = interp1(oldn,theta,newn,'spline');

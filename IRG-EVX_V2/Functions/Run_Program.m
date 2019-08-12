@@ -23,7 +23,17 @@ end
 
 %% Load Files
 Car = feval(Files.Car_File);
+Environment = feval(Files.Environment_File);
 Track = Track_Gen(Files.Track_File,Car,Options);
+
+figure
+hold on
+plot(Track.x_right,Track.y_right,'k-')
+plot(Track.x_left,Track.y_left,'k-')
+plot(Track.Path.x_right,Track.Path.y_right,'b--')
+plot(Track.Path.x_left,Track.Path.y_left,'b--')
+plot(Track.Path.x,Track.Path.y,'b-')
+plot(Track.Path.x,Track.Path.y,'r-')
 
 %% Quasi-static Simulation
 if strcmpi(Options.Quasi_Static_Simulation,'On') == 1

@@ -1,4 +1,4 @@
-function [x,y] = Path_Optim(x,y,lb,ub,Options)
+function [x,y] = Path_Optim(x,y,lb,ub,x_left,y_left,x_right,y_right,Options)
 
 initial = [x,y];
 fun = @(z) sum((abs(Curvature(z)./min(Curvature(initial)))).^2);
@@ -6,7 +6,7 @@ A = [];
 b = [];
 Aeq = [];
 beq = [];
-nonlcon = @PathCon;
+nonlcon = @(z) PathCon(z,x_left,y_left,x_right,y_right);
 
 if strcmpi(Options.Driving_Line_Optimisation_Accuracy,'Very High') == 1
     Parallel = true;
@@ -15,7 +15,7 @@ elseif strcmpi(Options.Driving_Line_Optimisation_Accuracy,'High') == 1
 elseif strcmpi(Options.Driving_Line_Optimisation_Accuracy,'Medium') == 1
     Parallel = true;
 else
-    Parallel = false;
+    Parallel = true;
 end
 
 if strcmpi(Options.Debug_Mode,'On') == 1

@@ -49,8 +49,7 @@ if Gap <= 1
 end
 
 %% Caluclate Track Length
-Spacing = ((diff(x)).^2 + (diff(y)).^2).^0.5;    	%Magnitude distance between successive coordinates
-Distance = cumsum(Spacing);                       	%Cumulative segment/path length
+Distance = Track_Dist(x,y);
 
 %% Interpolate to Default Track Resolution
 
@@ -76,8 +75,6 @@ if strcmpi(Options.Driving_Line_Optimisation,'On') == 1
     elseif strcmpi(Options.Driving_Line_Optimisation_Accuracy,'Very Low') == 1
         Resolution = 0.25;
     else
-        disp('Driving Line Optimisation Accuracy setting invalid.');
-        disp('Terminating Simulation.');
     end
     
     % [x,y,z,w] = Track_Interp(x,y,z,w,Resolution);
@@ -85,9 +82,9 @@ if strcmpi(Options.Driving_Line_Optimisation,'On') == 1
     
     % Line Optimisation
     % Get Path Boundaries
-    [~,~,~,~,lb,ub] = Track_Boundary(x_low,y_low,w_low,Car);
+    [x_left_low,y_left_low,x_right_low,y_right_low,lb,ub] = Track_Boundary(x_low,y_low,w_low,Car);
     
-    [xnew,ynew] = Path_Optim(x_low,y_low,lb,ub,Options);
+    [xnew,ynew] = Path_Optim(x_low,y_low,lb,ub,x_left_low,y_left_low,x_right_low,y_right_low,Options);
     
     % Interpolate to Increase Path Resolution
     [Path.x_left,Path.y_left,Path.x_right,Path.y_right,~,~] = Track_Boundary(x,y,w,Car);
@@ -98,22 +95,37 @@ if strcmpi(Options.Driving_Line_Optimisation,'On') == 1
     w = zeros(length(w),1);
 end
 
-% Pass output variables to output structure
+%% Pass output variables to output structure
 Track.x = x;
 Track.y = y;
 Track.z = z;
 Track.w = w;
+Track.theta = Theta([x,y]);
+Track.radius = Radius(x,y);
 Track.x_left = x_left;
 Track.x_right = x_right;
 Track.y_left = y_left;
 Track.y_right = y_right;
-Track.Path.x = Path.x;
-Track.Path.y = Path.y;
-Track.Path.theta = Theta([Path.x,Path.y]);
-Track.Path.x_left = Path.x_left;
-Track.Path.x_right = Path.x_right;
-Track.Path.y_left = Path.y_left;
-Track.Path.y_right = Path.y_right;
+
+if strcmpi(Options.Driving_Line_Optimisation,'On') == 1
+    Track.Path.x = Path.x;
+    Track.Path.y = Path.y;
+    Track.Path.theta = Theta([Path.x,Path.y]);
+    Track.Path.radius = Radius(Path.x,Path.y);
+    Track.Path.x_left = Path.x_left;
+    Track.Path.x_right = Path.x_right;
+    Track.Path.y_left = Path.y_left;
+    Track.Path.y_right = Path.y_right;
+else
+    Track.Path.x = x;
+    Track.Path.y = y;
+    Track.Path.theta = Track.theta;
+    Track.Path.radius = Track.radius;
+    Track.Path.x_left = x_left;
+    Track.Path.x_right = x_right;
+    Track.Path.y_left = y_left;
+    Track.Path.y_right = y_right;
+end
 
 end
 
