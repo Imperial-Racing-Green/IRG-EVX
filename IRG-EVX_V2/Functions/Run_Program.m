@@ -9,7 +9,6 @@ if ispc == 1
     addpath([pwd '\Environment Files'])
     addpath([pwd '\Track Files'])
     addpath([pwd '\Functions'])
-    addpath([pwd '\Settings Files'])
 end
 
 % Add folders for MacOS systems
@@ -18,7 +17,6 @@ if ismac == 1
     addpath([pwd '/Environment Files'])
     addpath([pwd '/Track Files'])
     addpath([pwd '/Functions'])
-    addpath([pwd '/Settings Files'])
 end
 
 %% Load Files

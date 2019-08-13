@@ -1,0 +1,15 @@
+Adding directories to PATH:
+PATH += /mnt/data1/Projects/WebPlotDigitizer/app/thirdparty/emsdk
+PATH += /mnt/data1/Projects/WebPlotDigitizer/app/thirdparty/emsdk/clang/e1.38.30_64bit
+PATH += /mnt/data1/Projects/WebPlotDigitizer/app/thirdparty/emsdk/node/8.9.1_64bit/bin
+PATH += /mnt/data1/Projects/WebPlotDigitizer/app/thirdparty/emsdk/emscripten/1.38.30
+
+Setting environment variables:
+EMSDK = /mnt/data1/Projects/WebPlotDigitizer/app/thirdparty/emsdk
+EM_CONFIG = /home/arohatgi/.emscripten
+LLVM_ROOT = /mnt/data1/Projects/WebPlotDigitizer/app/thirdparty/emsdk/clang/e1.38.30_64bit
+EMSCRIPTEN_NATIVE_OPTIMIZER = /mnt/data1/Projects/WebPlotDigitizer/app/thirdparty/emsdk/clang/e1.38.30_64bit/optimizer
+BINARYEN_ROOT = /mnt/data1/Projects/WebPlotDigitizer/app/thirdparty/emsdk/clang/e1.38.30_64bit/binaryen
+EMSDK_NODE = /mnt/data1/Projects/WebPlotDigitizer/app/thirdparty/emsdk/node/8.9.1_64bit/bin/node
+EMSCRIPTEN = /mnt/data1/Projects/WebPlotDigitizer/app/thirdparty/emsdk/emscripten/1.38.30
+
