@@ -26,6 +26,7 @@ Track = Track_Gen(Files.Track_File,Car,Options);
 
 figure
 hold on
+axis equal
 plot(Track.x_right,Track.y_right,'k-')
 plot(Track.x_left,Track.y_left,'k-')
 plot(Track.Path.x_right,Track.Path.y_right,'b--')
@@ -35,7 +36,7 @@ plot(Track.Path.x,Track.Path.y,'r-')
 
 %% Quasi-static Simulation
 if strcmpi(Options.Quasi_Static_Simulation,'On') == 1
-    
+    Results.Quasi = Run_Quasi_Sim(Car,Environment,Track);
 end
 
 %% Dynamic Simulation
@@ -45,7 +46,7 @@ if strcmpi(Options.Dynamic_Simulation,'On') == 1
     Environment = 2;
     
     % SimOutputs = Run_Dynamic_Sim(Simulation,Car,Track,Environment,Options)
-    SimOutputs = Run_Dynamic_Sim('Dynamic_Simulation',Car,Track,Environment,Options);
+    Results.Dynamic = Run_Dynamic_Sim('Dynamic_Simulation',Car,Track,Environment,Options);
     
     Results = 1;
 end

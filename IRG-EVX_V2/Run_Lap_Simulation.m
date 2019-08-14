@@ -17,8 +17,8 @@ Files.Track_File = 'FSUK_Sprint.csv'; %XXX.csv
 % Set simulation options.
 Options.Quasi_Static_Simulation = 'On'; %'On','Off'
 Options.Dynamic_Simulation = 'On'; %'On','Off'
-Options.Driving_Line_Optimisation = 'On'; %'On','Off'
-Options.Driving_Line_Optimisation_Accuracy = 'Very Low'; %'Very High','High','Medium','Low','Very Low'
+Options.Driving_Line_Optimisation = 'Off'; %'On','Off'
+Options.Driving_Line_Optimisation_Accuracy = 'Low'; %'Very High','High','Medium','Low','Very Low'
 Options.Rolling_Start = 'On'; %'On','Off'
 Options.Flip_Direction = 'Off'; %'On','Off'
 Options.Show_Progress = 'On'; %'On','Off'
