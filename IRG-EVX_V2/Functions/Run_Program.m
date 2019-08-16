@@ -1,4 +1,4 @@
-function Results = Run_Program(Files,Options,Plots)
+function Results = Run_Program(Files,Options,Plots,Run)
 % Runs simulation using selected files and options.
 % William Foster - wjfoster@hotmail.co.uk - 2019
 
@@ -19,6 +19,12 @@ if ismac == 1
     addpath([pwd '/Functions'])
 end
 
+%% Check if okay to Run
+if Run == 0
+    Results = [];
+    return
+end
+
 %% Load Files
 Car = feval(Files.Car_File);
 Environment = feval(Files.Environment_File);
@@ -36,7 +42,7 @@ plot(Track.Path.x,Track.Path.y,'r-')
 
 %% Quasi-static Simulation
 if strcmpi(Options.Quasi_Static_Simulation,'On') == 1
-    Results.Quasi = Run_Quasi_Sim(Car,Environment,Track);
+    Results.Quasi = Run_Quasi_Sim(Car,Environment,Track,Options);
 end
 
 %% Dynamic Simulation

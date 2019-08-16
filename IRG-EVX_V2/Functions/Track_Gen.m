@@ -22,7 +22,7 @@ clear opts
 
 %% Change Direction
 
-if strcmpi(Options.Flip_Direction,'On') == 1
+if strcmpi(Options.Reverse_Direction,'On') == 1
     FSUK_Sprint = flip(FSUK_Sprint);
 end
 

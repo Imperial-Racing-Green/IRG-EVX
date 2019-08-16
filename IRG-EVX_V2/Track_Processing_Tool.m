@@ -1,3 +1,8 @@
+%% Track Processing Tool
+% Script to convert x-y track files from WebPlotDigitizer to full x-y-z-w track files for the Lap Simulation.
+% William Foster - wjfoster@hotmail.co.uk - 2019
+
+%% Initialisation
 clc
 clear all
 close all
@@ -14,9 +19,13 @@ if ismac == 1
     addpath([pwd '/Track Files'])
     addpath([pwd '/Functions'])
 end
+
+%% Display initial instructions
 disp('This tool will help process a track from the base .csv format from WebPlotDigitizer to a file set to the correct length, width, and height values...')
 disp('Please follow the instructions to complete track processing.')
 disp(' ');
+
+%% Get raw .csv file from user
 disp('Please locate the .csv file to be processed.');
 pause(1)
 input('Press "Enter" to continue...');
@@ -27,49 +36,56 @@ track = csvread(strcat(path,file));
 x = track(:,1);
 y = track(:,2);
 disp(' ')
-%% Adjust Start Finish
+
+%% Adjust Start Finish point
 disp('The start point must be determined...')
 disp('When the track map shows, click the start point.')
+disp('Press "+" to zoom in, "-" to zoom out.')
 pause(1)
 input('Press "Enter" to continue...');
+% Plot track
 plot(x,y,'r');
 title('Track Map');
 axis equal
 ax = gca;
 fig = ancestor(ax, 'figure');
 set(fig,'WindowState','maximized');
-
+% get user start finish point
 s=[];
 while isempty(s)
     s = ginput_zoom(1);
 end
-
+hold on
+scatter(s(1),s(2),'xb')
+pause(0.1)
 close all
+% find closest corresponding point on track
 dist = ((s(1)-x).^2 + (s(2)-y).^2).^0.5;
 [~,start] = min(dist);
-
+% shift points and re-zero on start
 x = circshift(x,length(x) - start + 1);
 y = circshift(y,length(y) - start + 1);
-
 x = x - x(1);
 y = y - y(1);
+
 disp(' ')
 
-%%
+%% Enter general track information and modify accordingly
 disp('Please enter the folowing basic track information...')
 Length = input('Enter track length (m): ');
-Width = input('Enter overall track width (m): ');
+Width = input('Enter general track width (m): ');
 
 distance = Track_Dist(x,y);
-
+% scale track to new distance
 x = (Length/max(distance)) .* x;
 y = (Length/max(distance)) .* y;
-
+% create width and height arrays
 w = Width * ones(length(x),1);
 z = zeros(length(x),1);
 
 disp(' ')
 
+%% Tuning track width
 disp('You will now tune the track width at each point of the track...')
 disp('Click the start and end points of a section then type the track width for this section in (m)...')
 disp('Press "+" to zoom in, "-" to zoom out and "Enter" when finished.')
@@ -94,9 +110,10 @@ while true
     while size(q,1) < 2
         c = ginput_zoom(1);
         if isempty(c); close all; break; end
-        scatter(c(1),c(2),'x');
+        scatter(c(1),c(2),'xb');
         q=[q;c];
     end
+    pause(0.1)
     close all
     if size(q,1) < 2; break; end
     new_w = input('Enter width for this section of track (m): ');
@@ -119,6 +136,7 @@ end
 disp(' ')
 disp('The width of the track has now been tuned...')
 disp(' ')
+%% Tuning track height
 disp('You will now tune the track heigth at each point of the track...')
 disp('Click a point on the track then type the track height in (m)...')
 disp('Press "+" to zoom in, "-" to zoom out and "Enter" when finished.')
@@ -150,9 +168,10 @@ while true
     while size(q,1) < 1
         c = ginput_zoom(1);
         if isempty(c); close all; break; end
-        scatter(c(1),c(2),'x');
+        scatter(c(1),c(2),'xb');
         q=[q;c];
     end
+    pause(0.1)
     close all
     if size(q,1) < 1; break; end
     new_z = input('Enter height for this section of track (m): ');
@@ -174,6 +193,8 @@ z = interp1(z_array(:,1),z_array(:,2),linspace(1,length(x),length(x)),'linear')'
 disp(' ')
 disp('The height of the track has now been tuned...')
 disp(' ')
+
+%% Saving finished track
 disp('The track processing is now complete...')
 disp(' ')
 disp('The new file must now be saved...')
