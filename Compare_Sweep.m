@@ -3,7 +3,7 @@ close all
 clear
 clc
 
-FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Final Sims\Test';
+FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Final Sims\Test2';
 full_weekend = 0;  % If selected point to folder of enclosing all weekend results
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%
@@ -59,7 +59,6 @@ for iTest = 1:length(FolderName)
     ylabel('vCar (m/s)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
-    ylim([0 50])
     % tDiff
     t = uitab(tabgp,'Title','tDiff');
     ax = axes(t,'Position',[0.1 0.12 0.8 0.85]);
@@ -78,7 +77,6 @@ for iTest = 1:length(FolderName)
     ylabel('vCar (m/s)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
-    ylim([0 50])
     yyaxis right
     for i = 1:length(filenames)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,tDiff(i,:),'LineWidth',1,'Color',col(i,:),'LineStyle','--','Marker','none')
@@ -123,6 +121,28 @@ for iTest = 1:length(FolderName)
     ylabel('aSteeringWheel (deg)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
+    % Engine inputs
+    t = uitab(tabgp,'Title','Engine inputs');
+    ax1 = axes(t,'Position',[0.05 0.55 0.9 0.4]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).NGear,'LineWidth',1)
+        hold on
+    end 
+    legend(listing.name)
+    ylabel('NGear')
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
+    ylim([-0.5 6.5])
+    ax2 = axes(t,'Position',[0.05 0.08 0.9 0.4]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).nEngine,'LineWidth',1)
+        hold on
+    end 
+    legend(listing.name)
+    xlabel('sLap (m)')
+    ylabel('nEngine (RPM)')
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
     % gLat
     t = uitab(tabgp,'Title','gLat');
     ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
@@ -149,6 +169,17 @@ for iTest = 1:length(FolderName)
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
     ylim([-2.5 2])
+    % G-G envelope
+    t = uitab(tabgp,'Title','g-g Envelope');
+    ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
+    for i = 1:length(filenames)
+        scatter(Results.(Test{iTest}).(['Sim' num2str(i)]).gLat,Results.(Test{iTest}).(['Sim' num2str(i)]).gLong,'filled')
+        hold on
+    end 
+    legend(listing.name)
+    xlabel('gLat (g)')
+    ylabel('gLong (g)')
+    grid minor
     % Drag
     t = uitab(tabgp,'Title','Drag');
     ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
@@ -397,9 +428,44 @@ for iTest = 1:length(FolderName)
     ymin = min([yl1(1) yl2(1) yl3(1) yl4(1)]);
     ymax = max([yl1(2) yl2(2) yl3(2) yl4(2)]);
     ax1.YLim = [ymin ymax];    ax2.YLim = [ymin ymax];    ax3.YLim = [ymin ymax];    ax4.YLim = [ymin ymax];
+    % Two/Three wheeling
+    t = uitab(tabgp,'Title','Two/Three Wheeling');
+    ax1 = axes(t,'Position',[0.05 0.55 0.9 0.4]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).vCar,'LineWidth',1)
+        hold on
+    end 
+    ylabel('vCar (m/s)')
+    for i = 1:length(filenames)
+        yyaxis right
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).bThreeWheeling,'LineWidth',1)
+        hold on
+    end 
+    ylabel('bThreeWheeling')
+    ylim([-0.05 1.05]);
+    legend(listing.name)
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
+    ax2 = axes(t,'Position',[0.05 0.08 0.9 0.4]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).vCar,'LineWidth',1)
+        hold on
+    end
+    ylabel('vCar (m/s)')
+    for i = 1:length(filenames)
+        yyaxis right
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).bTwoWheeling,'LineWidth',1)
+        hold on
+    end 
+    ylabel('bTwoWheeling')
+    ylim([-0.05 1.05]);
+    legend(listing.name)
+    xlabel('sLap (m)')
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
     % Rotations
     t = uitab(tabgp,'Title','Rotations');
-    ax1 = axes(t,'Position',[0.05 0.55 0.9 0.4]);
+    ax1 = axes(t,'Position',[0.05 0.68 0.9 0.27]);
     for i = 1:length(filenames)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).aPitch,'LineWidth',1)
         hold on
@@ -408,14 +474,24 @@ for iTest = 1:length(FolderName)
     ylabel('aPitch (deg)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
-    ax2 = axes(t,'Position',[0.05 0.08 0.9 0.4]);
+    ax2 = axes(t,'Position',[0.05 0.38 0.9 0.27]);
     for i = 1:length(filenames)
-        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).aRoll,'LineWidth',1)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).aRollF,'LineWidth',1)
         hold on
     end 
     legend(listing.name)
     xlabel('sLap (m)')
-    ylabel('aRoll (deg)')
+    ylabel('aRollF (deg)')
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
+    ax3 = axes(t,'Position',[0.05 0.08 0.9 0.27]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).aRollR,'LineWidth',1)
+        hold on
+    end 
+    legend(listing.name)
+    xlabel('sLap (m)')
+    ylabel('aRollR (deg)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
     % Stability
@@ -436,6 +512,20 @@ for iTest = 1:length(FolderName)
     legend(listing.name)
     ylabel('Dynamic eigenvalues')
     grid minor
+    % NVDA Corner States
+    t = uitab(tabgp,'Title','NVDACornerState');
+    ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).NVDACornerState.Timeseries,'LineWidth',1)
+        hold on
+    end 
+    legend(listing.name)
+    xlabel('sLap (m)')
+    ylabel('NVDACornerState')
+    title('1 - PowerLimited ; 2 - GripLimitedThrottle ; 3 - GripLimitedBrake ; 4 - BrakeLimited')
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
+    ylim([0.5 4.5])
     
 end
 

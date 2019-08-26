@@ -110,13 +110,18 @@ for iSweep = 1:nSweeps
     Force.Brakes.FR = Brake_Fx(2);
     Force.Brakes.RL = Brake_Fx(3);
     Force.Brakes.RR = Brake_Fx(4);
+    
+    NGear = ones(length(radius_d),1);
+    nEngine = ones(length(radius_d),1);
     for i = 1:length(vCar)
-        Engine_Fx = Engine_Torque(vCar(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Engine) ./ ...
-                        [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
-                        Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
-        Motor_Fx = Motor_Torque(vCar(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Motor) ./ ...
-                        [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
-                        Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+        
+        [Engine_T,Gear,nEngine(i)] = Engine_Torque(vCar(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Engine,Car.Gears,NGear(i));
+        Engine_Fx = Engine_T ./ [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+        NGear(i:end) = Gear;
+        
+        Motor_T = Motor_Torque(vCar(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Motor);
+        Motor_Fx = Motor_T ./ [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+        
         Powertrain_Fx = Engine_Fx + Motor_Fx;
         Force.Powertrain.Thrust.FL(i,1) = Powertrain_Fx(1);
         Force.Powertrain.Thrust.FR(i,1) = Powertrain_Fx(2);
@@ -163,15 +168,24 @@ for iSweep = 1:nSweeps
     hRideF = Car.AeroPerformance.hRideF + dhRideF;
     hRideR = Car.AeroPerformance.hRideR + dhRideR;
     theta_y = 0.5*(atan(dhRideF/(Car.Dimension.lWheelbase/2)) - atan(dhRideR/(Car.Dimension.lWheelbase/2)));
-    theta_x = 0.5*(atan((0.5*(dhRideFL - dhRideFR))/(Car.Dimension.Front_track/2)) - atan((0.5*(dhRideRL - dhRideRR))/(Car.Dimension.Rear_track/2)));
     aPitch = rad2deg(theta_y);
-    aRoll = rad2deg(theta_x);
-    % Calculate tyre camber changes from static position
-    Camber.FL = Car.Tyres.Camber.FL + (aRoll*Car.Tyres.CamberRollFactor.Front);
-    Camber.FR = Car.Tyres.Camber.FR - (aRoll*Car.Tyres.CamberRollFactor.Front);
-    Camber.RL = Car.Tyres.Camber.RL + (aRoll*Car.Tyres.CamberRollFactor.Rear);
-    Camber.RR = Car.Tyres.Camber.RR - (aRoll*Car.Tyres.CamberRollFactor.Rear);
+%     theta_x = 0.5*(atan((0.5*(dhRideFL - dhRideFR))/(Car.Dimension.Front_track/2)) - atan((0.5*(dhRideRL - dhRideRR))/(Car.Dimension.Rear_track/2)));
+    thetaF_x = atan((0.5*(dhRideFL - dhRideFR))/(Car.Dimension.Front_track/2));  
+    thetaR_x = atan((0.5*(dhRideRL - dhRideRR))/(Car.Dimension.Rear_track/2));    
+    aRollF = rad2deg(thetaF_x);
+    aRollR = rad2deg(thetaR_x);
+    dYaw = (a_y ./ vCar) * (180/pi);
+    dYaw(isnan(dYaw)) = 0; % Yaw rate
+    aYaw = cumtrapz(tLap,dYaw);
     
+
+    % Calculate tyre camber changes from static position
+    Camber.FL = Car.Tyres.Camber.FL + (aRollF*Car.Tyres.CamberRollFactor.Front);
+    Camber.FR = Car.Tyres.Camber.FR - (aRollF*Car.Tyres.CamberRollFactor.Front);
+    Camber.RL = Car.Tyres.Camber.RL + (aRollR*Car.Tyres.CamberRollFactor.Rear);
+    Camber.RR = Car.Tyres.Camber.RR - (aRollR*Car.Tyres.CamberRollFactor.Rear);
+    
+    % Tyre slips
 %     SlipAngle.Front = 0.5*(SA.FL + SA.FR);
 %     SlipAngle.Rear = 0.5*(SA.RL + SA.RR);
     A = [SA.FL; SA.FR];
@@ -183,6 +197,11 @@ for iSweep = 1:nSweeps
     aSteer = rad2deg((atan(Car.Dimension.lWheelbase ./ radius_d))) + (abs(SlipAngle.Front) - abs(SlipAngle.Rear));    % Tyre steer angle
     aSteeringWheel = aSteer * Car.Steering.Ratio;   % Steering wheel angle
     aUOSteer = abs(SlipAngle.Front) - abs(SlipAngle.Rear);    % Under/oversteer angle
+    vTyreSlipLong.FL = SL.FL' .* vCar;
+    vTyreSlipLong.FR = SL.FR' .* vCar;
+    vTyreSlipLong.RL = SL.RL' .* vCar;
+    vTyreSlipLong.RR = SL.RR' .* vCar;
+    
     gLat = a_y / abs(Environment.Gravity);
     gLong = a_x / abs(Environment.Gravity);
     tLap = [0; cumsum(tLap)];
@@ -201,6 +220,28 @@ for iSweep = 1:nSweeps
     Grip.FR.mu_total = sqrt((Grip.FR.mu_x.^2) + (Grip.FR.mu_y.^2));
     Grip.RL.mu_total = sqrt((Grip.RL.mu_x.^2) + (Grip.RL.mu_y.^2));
     Grip.RR.mu_total = sqrt((Grip.RR.mu_x.^2) + (Grip.RR.mu_y.^2));
+    
+    % Two/three wheeling
+    nTyresLifted = (Fz.FL == 0) + (Fz.FR == 0) + (Fz.RL == 0) + (Fz.RR == 0); 
+    bThreeWheeling = (nTyresLifted == 1);
+    tThreeWheeling = cumtrapz(tLap,bThreeWheeling);
+    bTwoWheeling = (nTyresLifted == 2);
+    tTwoWheeling = cumtrapz(tLap,bTwoWheeling);
+    
+    % NVDA Corner States
+    NVDACornerState.Timeseries = zeros(length(vCar),1);
+    NVDACornerState.Timeseries(rThrottle >= 0.9) = 1;    % Power limited
+    NVDACornerState.Timeseries(rThrottle < 0.9) = 2;     % Grip limited on throttle
+    NVDACornerState.Timeseries(rBrake > 0) = 3;          % Grip limited on brake
+    NVDACornerState.Timeseries(rBrake >= 0.9) = 4;       % Brake limited
+    bState = (NVDACornerState.Timeseries == 1);
+    NVDACornerState.tState.PowerLimited = trapz(tLap,bState);
+    bState = (NVDACornerState.Timeseries == 2);
+    NVDACornerState.tState.GripLimitedThrottle = trapz(tLap,bState);
+    bState = (NVDACornerState.Timeseries == 3);
+    NVDACornerState.tState.GripLimitedBrake = trapz(tLap,bState);
+    bState = (NVDACornerState.Timeseries == 4);
+    NVDACornerState.tState.BrakeLimited = trapz(tLap,bState);
     
     
     % Use throttle to find fuel/energy consumption
@@ -296,7 +337,8 @@ for iSweep = 1:nSweeps
            mkdir(yourFolder)
         end
         sim_output_vars = {'Car','Environment','vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle',...
-                           'rBrake','CO2_Usage','MotorPower','Stability','aUOSteer','hRideF','hRideR','aPitch','aRoll','Camber','Grip'};
+                           'rBrake','CO2_Usage','MotorPower','Stability','aUOSteer','hRideF','hRideR','aPitch','aRollF','aRollR','Camber','Grip',...
+                           'bThreeWheeling','bTwoWheeling','tThreeWheeling','tTwoWheeling','NGear','nEngine','vTyreSlipLong','NVDACornerState'};
         save([SaveLocation '\' FolderName '\' SimName{iSweep} '.mat'],sim_output_vars{:})
     end
 

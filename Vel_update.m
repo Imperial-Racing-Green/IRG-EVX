@@ -22,6 +22,13 @@ Fz_FR_static = Fz_FR_d;
 Fz_RL_static = Fz_RL_d;
 Fz_RR_static = Fz_RR_d;
 
+% Prepare dynamic zCoG position for load transfers
+zCoG_dyn = Car.Dimension.CoG(3)*ones(length(radius_d),1);
+
+% Prepare gears
+NGear = ones(length(radius_d),1);
+RPM_engine = ones(length(radius_d),1);
+
 eps = 1;
 eps_lim = 0.01;
 v_x_check = zeros(1,length(distanceTrack));
@@ -106,12 +113,13 @@ for i = 1:length(distanceTrack)
        
     Fy_real = (Car.Mass.Total * (v_x2(i)^2))/radius_d(i);
     
-    Engine_Fx = Engine_Torque(v_x2(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Engine) ./ ...
-                        [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
-                        Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
-    Motor_Fx = Motor_Torque(v_x2(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Motor) ./ ...
-                        [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
-                        Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+    [Engine_T,Gear,RPM_engine(i)] = Engine_Torque(v_x2(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Engine,Car.Gears,NGear(i));
+    Engine_Fx = Engine_T ./ [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+    NGear(i:end) = Gear;
+    
+    Motor_T = Motor_Torque(v_x2(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Motor);
+    Motor_Fx = Motor_T ./ [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+    
     Powertrain_Fx = Engine_Fx + Motor_Fx;
         
     eps = 1;
@@ -196,7 +204,7 @@ for i = 1:length(distanceTrack)
         a_y = (v_x2(i)^2) / radius_d(i);
         
         % Carry out mass transfer checks
-        [Fz_FL, Fz_FR, Fz_RL, Fz_RR] = WeightTransfer(Car,a_x,a_y);
+        [Fz_FL, Fz_FR, Fz_RL, Fz_RR] = WeightTransfer(Car,a_x,a_y,zCoG_dyn(i));
         Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2) + Fz_FL;
         Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2) + Fz_FR;
         Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.CoP(1)))/2) + Fz_RL;
@@ -216,14 +224,19 @@ for i = 1:length(distanceTrack)
         hRideF(i) = Car.AeroPerformance.hRideF + dhRideF(i);
         hRideR(i) = Car.AeroPerformance.hRideR + dhRideR(i);
         theta_y(i) = 0.5*(atan(dhRideF(i)/(Car.Dimension.lWheelbase/2)) - atan(dhRideR(i)/(Car.Dimension.lWheelbase/2)));
-        theta_x(i) = 0.5*(atan((0.5*(dhRideFL(i) - dhRideFR(i)))/(Car.Dimension.Front_track/2)) + atan((0.5*(dhRideRL(i) - dhRideRR(i)))/(Car.Dimension.Rear_track/2)));
+%         theta_x(i) = 0.5*(atan((0.5*(dhRideFL(i) - dhRideFR(i)))/(Car.Dimension.Front_track/2)) + atan((0.5*(dhRideRL(i) - dhRideRR(i)))/(Car.Dimension.Rear_track/2)));
         aPitch(i) = rad2deg(theta_y(i));
-        aRoll(i) = rad2deg(theta_x(i));
+        thetaF_x(i) = atan((0.5*(dhRideFL(i) - dhRideFR(i)))/(Car.Dimension.Front_track/2));
+        thetaR_x(i) = atan((0.5*(dhRideRL(i) - dhRideRR(i)))/(Car.Dimension.Rear_track/2));
+        aRollF(i) = rad2deg(thetaF_x(i));
+        aRollR(i) = rad2deg(thetaR_x(i));
+        % Update zCoG position for load transfers
+        zCoG_dyn(i) = Car.Dimension.CoG(3) + (dhRideF(i)*(1-Car.Balance.CoG(1))) + (dhRideR(i)*Car.Balance.CoG(1));
         % Calculate tyre camber changes from static position
-        Camber.FL(i) = Car.Tyres.Camber.FL + (aRoll(i)*Car.Tyres.CamberRollFactor.Front);
-        Camber.FR(i) = Car.Tyres.Camber.FR - (aRoll(i)*Car.Tyres.CamberRollFactor.Front);
-        Camber.RL(i) = Car.Tyres.Camber.RL + (aRoll(i)*Car.Tyres.CamberRollFactor.Rear);
-        Camber.RR(i) = Car.Tyres.Camber.RR - (aRoll(i)*Car.Tyres.CamberRollFactor.Rear);
+        Camber.FL(i) = Car.Tyres.Camber.FL + (aRollF(i)*Car.Tyres.CamberRollFactor.Front);
+        Camber.FR(i) = Car.Tyres.Camber.FR - (aRollF(i)*Car.Tyres.CamberRollFactor.Front);
+        Camber.RL(i) = Car.Tyres.Camber.RL + (aRollR(i)*Car.Tyres.CamberRollFactor.Rear);
+        Camber.RR(i) = Car.Tyres.Camber.RR - (aRollR(i)*Car.Tyres.CamberRollFactor.Rear);
         
         eps = max(abs((Fz_check - [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)])./Fz_check));
         Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
@@ -347,7 +360,7 @@ for i = length(distanceTrack):-1:1
         a_y = (v_x3(i)^2) / radius_d(i);
 
         % Carry out mass transfer checks
-        [Fz_FL, Fz_FR, Fz_RL, Fz_RR] = WeightTransfer(Car,a_x,a_y);
+        [Fz_FL, Fz_FR, Fz_RL, Fz_RR] = WeightTransfer(Car,a_x,a_y,zCoG_dyn(i));
         Fz_FL_d(i) = Fz_FL_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2) + Fz_FL;
         Fz_FR_d(i) = Fz_FR_static(i) - ((F_L * (1 - Car.Balance.CoP(1)))/2) + Fz_FR;
         Fz_RL_d(i) = Fz_RL_static(i) - ((F_L * (Car.Balance.CoP(1)))/2) + Fz_RL;
@@ -362,10 +375,24 @@ for i = length(distanceTrack):-1:1
         dhRideFR(i) = (Fz_FR_d(i) - Fz_FR_static(i)) / Car.Sus.Front.Stiffness.Vertical;
         dhRideRL(i) = (Fz_RL_d(i) - Fz_RL_static(i)) / Car.Sus.Rear.Stiffness.Vertical;
         dhRideRR(i) = (Fz_RR_d(i) - Fz_RR_static(i)) / Car.Sus.Rear.Stiffness.Vertical;
-        theta_y(i) = 0.5*(atan((0.5*(dhRideFL(i) + dhRideFR(i))) / (Car.Dimension.lWheelbase/2)) - ...
-            atan((0.5*(dhRideRL(i) + dhRideRR(i))) / (Car.Dimension.lWheelbase/2)));
-        theta_x(i) = 0.5*(atan((0.5*(dhRideFL(i) - dhRideFR(i))) / (Car.Dimension.Front_track/2)) + ...
-            atan((0.5*(dhRideRL(i) - dhRideRR(i))) / (Car.Dimension.Rear_track/2)));
+        dhRideF(i) = 0.5*(dhRideFL(i) + dhRideFR(i));
+        dhRideR(i) = 0.5*(dhRideRL(i) + dhRideRR(i));
+        hRideF(i) = Car.AeroPerformance.hRideF + dhRideF(i);
+        hRideR(i) = Car.AeroPerformance.hRideR + dhRideR(i);
+        theta_y(i) = 0.5*(atan(dhRideF(i)/(Car.Dimension.lWheelbase/2)) - atan(dhRideR(i)/(Car.Dimension.lWheelbase/2)));
+%         theta_x(i) = 0.5*(atan((0.5*(dhRideFL(i) - dhRideFR(i)))/(Car.Dimension.Front_track/2)) + atan((0.5*(dhRideRL(i) - dhRideRR(i)))/(Car.Dimension.Rear_track/2)));
+        aPitch(i) = rad2deg(theta_y(i));
+        thetaF_x(i) = atan((0.5*(dhRideFL(i) - dhRideFR(i)))/(Car.Dimension.Front_track/2));
+        thetaR_x(i) = atan((0.5*(dhRideRL(i) - dhRideRR(i)))/(Car.Dimension.Rear_track/2));
+        aRollF(i) = rad2deg(thetaF_x(i));
+        aRollR(i) = rad2deg(thetaR_x(i));
+        % Update zCoG position for load transfers
+        zCoG_dyn(i) = Car.Dimension.CoG(3) + (dhRideF(i)*(1-Car.Balance.CoG(1))) + (dhRideR(i)*Car.Balance.CoG(1));
+        % Calculate tyre camber changes from static position
+        Camber.FL(i) = Car.Tyres.Camber.FL + (aRollF(i)*Car.Tyres.CamberRollFactor.Front);
+        Camber.FR(i) = Car.Tyres.Camber.FR - (aRollF(i)*Car.Tyres.CamberRollFactor.Front);
+        Camber.RL(i) = Car.Tyres.Camber.RL + (aRollR(i)*Car.Tyres.CamberRollFactor.Rear);
+        Camber.RR(i) = Car.Tyres.Camber.RR - (aRollR(i)*Car.Tyres.CamberRollFactor.Rear);
         
         eps = max(abs((Fz_check - [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)])./Fz_check));
         Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];

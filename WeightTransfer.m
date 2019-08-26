@@ -1,8 +1,8 @@
-function [Fz_FL, Fz_FR, Fz_RL, Fz_RR] = WeightTransfer(Car,a_x,a_y)
+function [Fz_FL, Fz_FR, Fz_RL, Fz_RR] = WeightTransfer(Car,a_x,a_y,zCoG_dyn)
 
 %% Longitudinal
 % Clockwise moment about CoG
-M = Car.Mass.Total*a_x*Car.Dimension.CoG(3);
+M = Car.Mass.Total*a_x*zCoG_dyn;
 dF = M / Car.Dimension.lWheelbase;    % Weight transfer at each wheel (+ve upwards)
 Fz_Front = dF;
 Fz_Rear = - dF;

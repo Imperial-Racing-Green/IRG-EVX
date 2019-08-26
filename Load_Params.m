@@ -79,7 +79,7 @@ Car.Tyres.CamberRollFactor.Rear = 1.1;
 
 % Powertrain info
 % Engine
-Car.Powertrain.Engine.TransmissionRatio = 5.18;
+Car.Powertrain.Engine.FinalDriveRatio = 5.18;
 Car.Powertrain.Engine.RPM_Idle = 3000;                      % Idle RPM
 Car.Powertrain.Engine.T_Idle = 53.75;                       % Torque at idle RPM
 Car.Powertrain.Engine.RPM_Max_T = 9200;                      % RPM corresponding to max torque
@@ -96,6 +96,14 @@ Car.Powertrain.Motor.TransmissionRatio = 8;
 Car.Powertrain.Motor.Efficiencies.Motor = 0.87;
 Car.Powertrain.Motor.Efficiencies.Gears = 0.941;
 Car.Powertrain.Motor.Config = 'fwd';      % (fwd/rwd/4wd   front/rear/4 wheel drive)
+
+% Define gears
+Car.Gears = table([1; 2; 3; 4; 5; 6],...
+                  [NaN; 12.6443; 19.4528; 25.8860; 34.1266; 42.8187],...
+                  [10.4906; 18.6993; 28.7681; 38.2820; 50.4686; NaN],...
+                  [4.171; 2.340; 1.521; 1.143; 0.867; 0.691]);
+Car.Gears.Properties.VariableNames = {'NGear','vCar_ShiftDown','vCar_ShiftUp','Ratio'};
+% [15.39;19.17;22.75;26.39;28.75;31.33] Speeds for MaxPower at each gear
 
 % Brakes info
 Car.Brakes.FPedalMax = 1500;                                           % (N) 
@@ -131,7 +139,7 @@ Car.AeroPerformance.hRideR = 0.030; % (m)
 % Steering
 Car.Steering.Ratio = 5.8;
 
-% Environment condtions
+% Environment conditions
 Environment.Gravity = -9.81;                    % (m/s^2)
 Environment.Density = 1.2126;                     % (kg/m^3)
 Environment.Temperature.Air = 18 + 273.15;      % (K)
@@ -140,12 +148,12 @@ Environment.Pressure = 101325;                  % (Pa)
 
 load([pwd,'\kinematics\geometries\EV3 Front Hardpoints 13.01.19.mat']);
 Car.Sus.Front.Hardpoints = hardpoints_front;
-Car.Sus.Front.Stiffness.Vertical = 55000; %40000;
-Car.Sus.Front.Stiffness.Horizontal = 55000; %40000;
+Car.Sus.Front.Stiffness.Vertical = 60000; %40000;
+Car.Sus.Front.Stiffness.Horizontal = 60000; %40000;
 load([pwd,'\kinematics\geometries\Final rear Outboard 01.02.19.mat']);
 Car.Sus.Rear.Hardpoints = hardpoints_front;
-Car.Sus.Rear.Stiffness.Vertical = 40000; %40000;
-Car.Sus.Rear.Stiffness.Horizontal = 40000; %40000;
+Car.Sus.Rear.Stiffness.Vertical = 30000; %40000;
+Car.Sus.Rear.Stiffness.Horizontal = 30000; %40000;
 
 save('Baseline_Carfile','Car')
 save('Baseline_Weatherfile','Environment')

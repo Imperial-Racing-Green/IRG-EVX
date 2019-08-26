@@ -5,7 +5,7 @@ clc
 
 %% Save results location
 SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Final Sims';
-FolderName = 'Test';
+FolderName = 'Test2';
 SimName = {'Test'};
 
 %% Trackmap
@@ -14,29 +14,30 @@ SimName = {'Test'};
 % trackmap = 'DragRace_Track.mat';
 % trackmap = 'Trackmap_ClosedLoop_with_slalom.mat';
 
-% trackmap = 'Autocross_Track_800.mat';
+trackmap = 'Autocross_Track_800.mat';
 % trackmap = 'Autocross_Track_2018.mat';
 % trackmap = 'Endurance_Track.mat';
-trackmap = 'Endurance_Track_1000.mat';
+% trackmap = 'Endurance_Track_1000.mat';
+% trackmap = 'Endurance_Track_1000_new';
 % trackmap = 'Acceleration_Track.mat';
 % trackmap = 'SkidPad_Track.mat';
 % trackmap = 'Full_FS_Weekend';
 
 %% vCar boundary conditions
 % Racing_Line_ClosedLoop 
-BoundaryConditions.vCar_start = 26;
-BoundaryConditions.vCar_end = 26;
+% BoundaryConditions.vCar_start = 26;
+% BoundaryConditions.vCar_end = 26;
 % Acceleration_Track 
-% BoundaryConditions.vCar_start = 0;
-% BoundaryConditions.vCar_end = [];
+BoundaryConditions.vCar_start = 0;
+BoundaryConditions.vCar_end = [];
 % SkidPad_Track 
 % BoundaryConditions.vCar_start = 12.5;
 % BoundaryConditions.vCar_end = [];
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
 Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
-Sweep.Param = {'Car.Balance.CoP(1)'};             % Variable within car structure to be swept
-Sweep.Values = 0.2:0.1:0.7;
+Sweep.Param = {'Car.Powertrain.Engine.FinalDriveRatio'};             % Variable within car structure to be swept
+Sweep.Values = 2:1:6;
 Sweep.Choose_Carfile = 0;
 Sweep.Carfile = {'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\HEV1.mat',...
     'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\Baseline_Carfile'};
