@@ -72,16 +72,21 @@ disp(' ')
 
 %% Enter general track information and modify accordingly
 disp('Please enter the folowing basic track information...')
+Length = [];
+while isempty(Length)
 Length = input('Enter track length (m): ');
+end
+Width = [];
+while isempty(Width)
 Width = input('Enter general track width (m): ');
+end
 
 distance = Track_Dist(x,y);
 % scale track to new distance
 x = (Length/max(distance)) .* x;
 y = (Length/max(distance)) .* y;
-% create width and height arrays
+% create width array
 w = Width * ones(length(x),1);
-z = zeros(length(x),1);
 
 disp(' ')
 
@@ -137,7 +142,7 @@ disp(' ')
 disp('The width of the track has now been tuned...')
 disp(' ')
 %% Tuning track height
-disp('You will now tune the track heigth at each point of the track...')
+disp('You will now tune the track height at each point of the track...')
 disp('Click a point on the track then type the track height in (m)...')
 disp('Press "+" to zoom in, "-" to zoom out and "Enter" when finished.')
 pause(1)
@@ -189,17 +194,118 @@ while true
     clear q
 end
 z = interp1(z_array(:,1),z_array(:,2),linspace(1,length(x),length(x)),'linear')';
+z = z - min(z);
 
 disp(' ')
 disp('The height of the track has now been tuned...')
 disp(' ')
 
-%% Saving finished track
-disp('The track processing is now complete...')
-disp(' ')
-disp('The new file must now be saved...')
-output = table(x,y,z,w);
+%% Tuning track camber
+disp('You will now tune the track camber at each point of the track...')
+disp('Click a point on the track then type the camber angle in (deg)...')
+disp('Press "+" to zoom in, "-" to zoom out and "Enter" when finished.')
+pause(1)
+input('Press "Enter" to start...');
 
+t_array = [0,0;length(x),0];
+while true
+    q = [];
+    hold off
+    [x_left,y_left,x_right,y_right,~,~] = Track_Boundary(x,y,w);
+    subplot(2,1,1);
+    plot(x,y,'r');
+    title('Track Map');
+    axis equal
+    ax = gca;
+    fig = ancestor(ax, 'figure');
+    set(fig,'WindowState','maximized');
+    hold on
+    plot(x_left,y_left,'k');
+    plot(x_right,y_right,'k');
+    subplot(2,1,2);
+    
+    plot(t_array(:,1).*(Length/length(x)),t_array(:,2),'k');
+    title('Track Camber Angle');
+    xlabel('Distance (m)');
+    ylabel('Camber Angle (deg)');
+    subplot(2,1,1);
+    while size(q,1) < 1
+        c = ginput_zoom(1);
+        if isempty(c); close all; break; end
+        scatter(c(1),c(2),'xb');
+        q=[q;c];
+    end
+    pause(0.1)
+    close all
+    if size(q,1) < 1; break; end
+    new_t = input('Enter camber angle for this section of track (m): (tilt right positive) ');
+    if isempty(new_t)
+    else
+        [~,position] = min(((x-q(1)).^2 + (y-q(2)).^2).^0.5);
+        
+        if position == length(x)
+            t_array(end,2) = new_t;
+        else
+            t_array = [t_array;position,new_t];
+            t_array = sortrows(t_array,1);
+        end
+    end
+    clear q
+end
+t = interp1(t_array(:,1),t_array(:,2),linspace(1,length(x),length(x)),'linear')';
+
+disp(' ')
+disp('The camber of the track has now been tuned...')
+disp(' ')
+
+%% Plot result
+disp('The track processing is now complete...')
+disp('Check the finished track looks correct before saving...')
+pause(1)
+input('Press "Enter" to continue...');
+disp(' ')
+[x1,y1,x4,y4,~,~] = Track_Boundary(x,y,w);
+
+x1 = Interpolate(length(x1),Length,x1,'spline')';
+y1 = Interpolate(length(y1),Length,y1,'spline')';
+x4 = Interpolate(length(x4),Length,x4,'spline')';
+y4 = Interpolate(length(y4),Length,y4,'spline')';
+
+z1 = zeros(length(x1),1);
+z4 = zeros(length(x4),1);
+x2 = x1;
+y2 = y1;
+x3 = x4;
+y3 = y4;
+
+z2 = Interpolate(length(z),Length,z,'spline')' + (Interpolate(length(w),Length,w,'spline')'./2).*sind(Interpolate(length(t),Length,t,'spline')');
+z3 = Interpolate(length(z),Length,z,'spline')' - (Interpolate(length(w),Length,w,'spline')'./2).*sind(Interpolate(length(t),Length,t,'spline')');
+disp('Loading finished 3D track visualisation...')
+disp(' ')
+figure
+hold on
+for i = 1:length(x1)-1
+    fill3([x1(i:i+1);flip(x2(i:i+1))],[y1(i:i+1);flip(y2(i:i+1))],[z1(i:i+1);flip(z2(i:i+1))],'k',...
+    [x2(i:i+1);flip(x3(i:i+1))],[y2(i:i+1);flip(y3(i:i+1))],[z2(i:i+1);flip(z3(i:i+1))],[z2(i:i+1);flip(z3(i:i+1))],...
+    [x3(i:i+1);flip(x4(i:i+1))],[y3(i:i+1);flip(y4(i:i+1))],[z3(i:i+1);flip(z4(i:i+1))],'k','EdgeColor','none');
+end
+set(gca,'XColor', 'none','YColor','none')
+axis equal
+disp('Track visualisation loaded.')
+disp(' ')
+
+%% Saving finished track
+output = table(x,y,z,w,t);
+saveop = [];
+while 1
+saveop = input('Is the finished track correct and to be saved? (yes/no) ','s');
+if strcmpi(saveop,'yes') == 1
+    break
+elseif strcmpi(saveop,'no') == 1
+    break
+end
+end
+if strcmpi(saveop,'yes') == 1
 savename = [];
 while isempty(savename)
     savename = input('Enter name to save file: ','s');
@@ -209,4 +315,9 @@ writetable(output,strcat(savename,'.csv'));
 
 disp(' ')
 disp('Saving complete...')
+else
+    disp(' ')
+    disp('Track has not been saved.')
+    disp(' ')
+end
 disp('Track Processing Tool finished.')
