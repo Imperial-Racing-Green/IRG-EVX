@@ -1,10 +1,10 @@
 %% Track Processing Tool
-% Script to convert x-y track files from WebPlotDigitizer to full x-y-z-w track files for the Lap Simulation.
+% Script to convert x-y track files from WebPlotDigitizer to full x-y-z-w-t track files for the Lap Simulation.
 % William Foster - wjfoster@hotmail.co.uk - 2019
 
 %% Initialisation
 clc
-clear all
+clear
 close all
 
 %% Folder Set-Up
@@ -45,7 +45,7 @@ pause(1)
 input('Press "Enter" to continue...');
 % Plot track
 plot(x,y,'r');
-title('Track Map');
+title('Click the location of the start point of the track.');
 axis equal
 ax = gca;
 fig = ancestor(ax, 'figure');
@@ -58,7 +58,7 @@ end
 hold on
 scatter(s(1),s(2),'xb')
 pause(0.1)
-close all
+close
 % find closest corresponding point on track
 dist = ((s(1)-x).^2 + (s(2)-y).^2).^0.5;
 [~,start] = min(dist);
@@ -74,36 +74,92 @@ disp(' ')
 disp('Please enter the folowing basic track information...')
 Length = [];
 while isempty(Length)
-Length = input('Enter track length (m): ');
+    Length = input('Enter track length (m): ');
 end
 Width = [];
 while isempty(Width)
-Width = input('Enter general track width (m): ');
+    Width = input('Enter general track width (m): ');
 end
 
 distance = Track_Dist(x,y);
 % scale track to new distance
 x = (Length/max(distance)) .* x;
 y = (Length/max(distance)) .* y;
+distance = Track_Dist(x,y);
 % create width array
 w = Width * ones(length(x),1);
+z = zeros(length(x),1);
+t = zeros(length(x),1);
 
 disp(' ')
 
+% %% Tuning track width
+% disp('You will now tune the track width at each point of the track...')
+% disp('Click the start and end points of a section then type the track width for this section in (m)...')
+% disp('Press "+" to zoom in, "-" to zoom out and "Enter" when finished.')
+% pause(1)
+% input('Press "Enter" to start...');
+%
+% while true
+%     q = [];
+%     hold off
+%     [x_left,y_left,x_right,y_right,~,~] = Track_Boundary(x,y,w);
+%
+%     plot(x,y,'r');
+%     title('Track Map');
+%     axis equal
+%     ax = gca;
+%     fig = ancestor(ax, 'figure');
+%     set(fig,'WindowState','maximized');
+%     hold on
+%     plot(x_left,y_left,'k');
+%     plot(x_right,y_right,'k');
+%
+%     while size(q,1) < 2
+%         c = ginput_zoom(1);
+%         if isempty(c); close; break; end
+%         scatter(c(1),c(2),'xb');
+%         q=[q;c];
+%     end
+%     pause(0.1)
+%     close
+%     if size(q,1) < 2; break; end
+%     new_w = input('Enter width for this section of track (m): ');
+%     if isempty(new_w)
+%     else
+%         [~,start_row] = min(((x-q(1,1)).^2 + (y-q(1,2)).^2).^0.5);
+%         [~,end_row] = min(((x-q(2,1)).^2 + (y-q(2,2)).^2).^0.5);
+%
+%         if end_row < start_row
+%             temp = start_row;
+%             start_row = end_row;
+%             end_row = temp;
+%             clear temp
+%         end
+%
+%         w(start_row:end_row) = new_w;
+%     end
+%     clear q
+% end
+% disp(' ')
+% disp('The width of the track has now been tuned...')
+% disp(' ')
+
 %% Tuning track width
 disp('You will now tune the track width at each point of the track...')
-disp('Click the start and end points of a section then type the track width for this section in (m)...')
+disp('Click a point on the track then type the track width in (m)...')
 disp('Press "+" to zoom in, "-" to zoom out and "Enter" when finished.')
 pause(1)
 input('Press "Enter" to start...');
 
+w_array = [0,Width;length(x),Width];
 while true
     q = [];
     hold off
     [x_left,y_left,x_right,y_right,~,~] = Track_Boundary(x,y,w);
-    
     plot(x,y,'r');
-    title('Track Map');
+    title({'Click a point on the track to set the track width.'...
+        ;'Press "+" to zoom in, "-" to zoom out and "Enter" when finished.'});
     axis equal
     ax = gca;
     fig = ancestor(ax, 'figure');
@@ -111,36 +167,45 @@ while true
     hold on
     plot(x_left,y_left,'k');
     plot(x_right,y_right,'k');
-    
-    while size(q,1) < 2
+    scatter(x(1),y(1),'+r','LineWidth',0.5);
+    if length(w_array) > 2
+        for i = 2:length(w_array)-1
+            scatter(x(w_array(i,1)),y(w_array(i,1)),'xb');
+            text(x(w_array(i,1)),y(w_array(i,1)),[num2str(w_array(i,2)),'m'],'FontSize',20);
+        end
+    end
+    while size(q,1) < 1
         c = ginput_zoom(1);
-        if isempty(c); close all; break; end
+        if isempty(c); close; break; end
         scatter(c(1),c(2),'xb');
         q=[q;c];
     end
     pause(0.1)
-    close all
-    if size(q,1) < 2; break; end
-    new_w = input('Enter width for this section of track (m): ');
+    close
+    if size(q,1) < 1; break; end
+    new_w = input('Enter width for this point on the track (m): ');
     if isempty(new_w)
     else
-        [~,start_row] = min(((x-q(1,1)).^2 + (y-q(1,2)).^2).^0.5);
-        [~,end_row] = min(((x-q(2,1)).^2 + (y-q(2,2)).^2).^0.5);
+        [~,position] = min(((x-q(1)).^2 + (y-q(2)).^2).^0.5);
         
-        if end_row < start_row
-            temp = start_row;
-            start_row = end_row;
-            end_row = temp;
-            clear temp
+        if position == length(x)
+            w_array(end,2) = new_w;
+        elseif position == 1
+            w_array(1,2) = new_w;
+        else
+            w_array = [w_array;position,new_w];
+            w_array = sortrows(w_array,1);
         end
-        
-        w(start_row:end_row) = new_w;
     end
+    w = interp1(w_array(:,1),w_array(:,2),linspace(1,length(x),length(x)),'linear')';
     clear q
 end
+
 disp(' ')
-disp('The width of the track has now been tuned...')
+disp('The track width of the track has now been tuned...')
 disp(' ')
+
+
 %% Tuning track height
 disp('You will now tune the track height at each point of the track...')
 disp('Click a point on the track then type the track height in (m)...')
@@ -155,7 +220,8 @@ while true
     [x_left,y_left,x_right,y_right,~,~] = Track_Boundary(x,y,w);
     subplot(2,1,1);
     plot(x,y,'r');
-    title('Track Map');
+    title({'Click a point on the track to set the track heigth.'...
+        ;'Press "+" to zoom in, "-" to zoom out and "Enter" when finished.'});
     axis equal
     ax = gca;
     fig = ancestor(ax, 'figure');
@@ -163,37 +229,48 @@ while true
     hold on
     plot(x_left,y_left,'k');
     plot(x_right,y_right,'k');
+    scatter(x(1),y(1),'+r','LineWidth',0.5);
+    if length(z_array) > 2
+        for i = 2:length(z_array)-1
+            scatter(x(z_array(i,1)),y(z_array(i,1)),'xb');
+            text(x(z_array(i,1)),y(z_array(i,1)),[num2str(z_array(i,2)),'m'],'FontSize',20);
+        end
+    end
+    
     subplot(2,1,2);
     
-    plot(z_array(:,1).*(Length/length(x)),z_array(:,2),'k');
+    plot(polyshape(distance,z,'Simplify',0),'FaceColor','k','FaceAlpha',0.75);
+    xlim([0,max(distance)]);
     title('Track z Height');
     xlabel('Distance (m)');
     ylabel('Track z height (m)');
     subplot(2,1,1);
     while size(q,1) < 1
         c = ginput_zoom(1);
-        if isempty(c); close all; break; end
+        if isempty(c); close; break; end
         scatter(c(1),c(2),'xb');
         q=[q;c];
     end
     pause(0.1)
-    close all
+    close
     if size(q,1) < 1; break; end
-    new_z = input('Enter height for this section of track (m): ');
+    new_z = input('Enter height for this point on the track (m): ');
     if isempty(new_z)
     else
         [~,position] = min(((x-q(1)).^2 + (y-q(2)).^2).^0.5);
         
         if position == length(x)
             z_array(end,2) = new_z;
+        elseif position == 1
+            z_array(1,2) = new_z;
         else
             z_array = [z_array;position,new_z];
             z_array = sortrows(z_array,1);
         end
     end
+    [~,z] = SmoothFit(z_array(:,1),z_array(:,2),length(x),2,'pchip');
     clear q
 end
-z = interp1(z_array(:,1),z_array(:,2),linspace(1,length(x),length(x)),'linear')';
 z = z - min(z);
 
 disp(' ')
@@ -214,7 +291,8 @@ while true
     [x_left,y_left,x_right,y_right,~,~] = Track_Boundary(x,y,w);
     subplot(2,1,1);
     plot(x,y,'r');
-    title('Track Map');
+    title({'Click a point on the track to set the track camber.'...
+        ;'Press "+" to zoom in, "-" to zoom out and "Enter" when finished.'});
     axis equal
     ax = gca;
     fig = ancestor(ax, 'figure');
@@ -222,45 +300,57 @@ while true
     hold on
     plot(x_left,y_left,'k');
     plot(x_right,y_right,'k');
+    scatter(x(1),y(1),'+r','LineWidth',0.5);
+    if length(t_array) > 2
+        for i = 2:length(t_array)-1
+            scatter(x(t_array(i,1)),y(t_array(i,1)),'xb');
+            text(x(t_array(i,1)),y(t_array(i,1)),[num2str(t_array(i,2)),'deg'],'FontSize',20);
+        end
+    end
+    
     subplot(2,1,2);
     
-    plot(t_array(:,1).*(Length/length(x)),t_array(:,2),'k');
+    plot(polyshape(distance,t,'Simplify',0),'FaceColor','k','FaceAlpha',0.75);
+    xlim([0,max(distance)]);
     title('Track Camber Angle');
     xlabel('Distance (m)');
     ylabel('Camber Angle (deg)');
     subplot(2,1,1);
     while size(q,1) < 1
         c = ginput_zoom(1);
-        if isempty(c); close all; break; end
+        if isempty(c); close; break; end
         scatter(c(1),c(2),'xb');
         q=[q;c];
     end
     pause(0.1)
-    close all
+    close
     if size(q,1) < 1; break; end
-    new_t = input('Enter camber angle for this section of track (m): (tilt right positive) ');
+    new_t = input('Enter camber angle for this point on the track (deg) (tilting right is positive): ');
     if isempty(new_t)
     else
         [~,position] = min(((x-q(1)).^2 + (y-q(2)).^2).^0.5);
         
         if position == length(x)
             t_array(end,2) = new_t;
+        elseif position == 1
+            t_array(1,2) = new_t;
         else
             t_array = [t_array;position,new_t];
             t_array = sortrows(t_array,1);
         end
     end
+    [~,t] = SmoothFit(t_array(:,1),t_array(:,2),length(x),2,'pchip');
     clear q
 end
-t = interp1(t_array(:,1),t_array(:,2),linspace(1,length(x),length(x)),'linear')';
 
 disp(' ')
 disp('The camber of the track has now been tuned...')
 disp(' ')
 
 %% Plot result
-disp('The track processing is now complete...')
+disp('The track processing is now complete.')
 disp('Check the finished track looks correct before saving...')
+disp('Press "Enter" to close the figure.')
 pause(1)
 input('Press "Enter" to continue...');
 disp(' ')
@@ -286,38 +376,51 @@ figure
 hold on
 for i = 1:length(x1)-1
     fill3([x1(i:i+1);flip(x2(i:i+1))],[y1(i:i+1);flip(y2(i:i+1))],[z1(i:i+1);flip(z2(i:i+1))],'k',...
-    [x2(i:i+1);flip(x3(i:i+1))],[y2(i:i+1);flip(y3(i:i+1))],[z2(i:i+1);flip(z3(i:i+1))],[z2(i:i+1);flip(z3(i:i+1))],...
-    [x3(i:i+1);flip(x4(i:i+1))],[y3(i:i+1);flip(y4(i:i+1))],[z3(i:i+1);flip(z4(i:i+1))],'k','EdgeColor','none');
+        [x2(i:i+1);flip(x3(i:i+1))],[y2(i:i+1);flip(y3(i:i+1))],[z2(i:i+1);flip(z3(i:i+1))],[z2(i:i+1);flip(z3(i:i+1))],...
+        [x3(i:i+1);flip(x4(i:i+1))],[y3(i:i+1);flip(y4(i:i+1))],[z3(i:i+1);flip(z4(i:i+1))],'k','EdgeColor','none');
 end
-set(gca,'XColor', 'none','YColor','none')
-axis equal
+set(gca,'XColor', 'none','YColor','none','ZColor','none')
+daspect([1 1 (max(z)*10)/max(x)])
+title('Press "Enter" to close the figure.')
+c = colorbar;
+c.Label.String = 'z height (m)';
+ax = gca;
+fig = ancestor(ax, 'figure');
+set(fig,'WindowState','maximized');
+view(0,45)
 disp('Track visualisation loaded.')
 disp(' ')
-
+button = 0;
+while button == 0
+    button = waitforbuttonpress;
+    zlim([min([min(z1),min(z2),min(z3),min(z4)]) max([max(z1),max(z2),max(z3),max(z4)])]);
+end
+close
 %% Saving finished track
 output = table(x,y,z,w,t);
 saveop = [];
 while 1
-saveop = input('Is the finished track correct and to be saved? (yes/no) ','s');
+    saveop = input('Is the finished track correct and to be saved? (yes/no) ','s');
+    if strcmpi(saveop,'yes') == 1
+        break
+    elseif strcmpi(saveop,'no') == 1
+        break
+    end
+end
 if strcmpi(saveop,'yes') == 1
-    break
-elseif strcmpi(saveop,'no') == 1
-    break
-end
-end
-if strcmpi(saveop,'yes') == 1
-savename = [];
-while isempty(savename)
-    savename = input('Enter name to save file: ','s');
-end
-
-writetable(output,strcat(savename,'.csv'));
-
-disp(' ')
-disp('Saving complete...')
+    savename = [];
+    while isempty(savename)
+        savename = input('Enter name to save file: ','s');
+    end
+    
+    writetable(output,strcat(savename,'.csv'));
+    
+    disp(' ')
+    disp('Saving complete...')
 else
     disp(' ')
     disp('Track has not been saved.')
     disp(' ')
 end
 disp('Track Processing Tool finished.')
+%% End
