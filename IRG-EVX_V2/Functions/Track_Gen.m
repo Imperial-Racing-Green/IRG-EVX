@@ -10,8 +10,8 @@ opts.DataLines = [2, Inf];
 opts.Delimiter = ",";
 
 % Specify column names and types
-opts.VariableNames = ["x", "y", "z", "w"];
-opts.VariableTypes = ["double", "double", "double", "double"];
+opts.VariableNames = ["x", "y", "z", "w", "t"];
+opts.VariableTypes = ["double", "double", "double", "double", "double"];
 opts.ExtraColumnsRule = "ignore";
 opts.EmptyLineRule = "read";
 
@@ -34,6 +34,7 @@ x = circshift(FSUK_Sprint.x,length(FSUK_Sprint.x) - start + 1);
 y = circshift(FSUK_Sprint.y,length(FSUK_Sprint.y) - start + 1);
 z = circshift(FSUK_Sprint.z,length(FSUK_Sprint.z) - start + 1);
 w = circshift(FSUK_Sprint.w,length(FSUK_Sprint.w) - start + 1);
+t = circshift(FSUK_Sprint.t,length(FSUK_Sprint.t) - start + 1);
 x = x - x(1);
 y = y - y(1);
 z = z - min(z);
@@ -46,6 +47,7 @@ if Gap <= 1
     y = [y;y(1)];
     z = [z;z(1)];
     w = [w;w(1)];
+    t = [t;t(1)];
 end
 
 %% Caluclate Track Length
@@ -54,7 +56,7 @@ Distance = Track_Dist(x,y);
 %% Interpolate to Default Track Resolution
 
 DefaultRes = 2;
-[x,y,z,w] = Track_Interp(x,y,z,w,max(Distance)*DefaultRes);
+[x,y,z,w,t] = Track_Interp(x,y,z,w,t,max(Distance)*DefaultRes);
 
 %% Get Track Boundaries
 [x_left,y_left,x_right,y_right,~,~] = Track_Boundary(x,y,w);
@@ -78,13 +80,13 @@ if strcmpi(Options.Driving_Line_Optimisation,'On') == 1
     end
     
     % [x,y,z,w] = Track_Interp(x,y,z,w,Resolution);
-    [x_low,y_low,~,w_low] = Track_Interp(x,y,z,w,Resolution * max(Distance));
+    [x_low,y_low,z_low,w_low,t_low] = Track_Interp(x,y,z,w,t,Resolution * max(Distance));
     
     % Line Optimisation
     % Get Path Boundaries
     [x_left_low,y_left_low,x_right_low,y_right_low,lb,ub] = Track_Boundary(x_low,y_low,w_low,Car);
     
-    [xnew,ynew] = Path_Optim(x_low,y_low,lb,ub,x_left_low,y_left_low,x_right_low,y_right_low,Options);
+    [xnew,ynew] = Path_Optim(x_low,y_low,z_low,w_low,t_low,lb,ub,x_left_low,y_left_low,x_right_low,y_right_low,Options);
     
     % Interpolate to Increase Path Resolution
     [Path.x_left,Path.y_left,Path.x_right,Path.y_right,~,~] = Track_Boundary(x,y,w,Car);
@@ -92,7 +94,16 @@ if strcmpi(Options.Driving_Line_Optimisation,'On') == 1
     Path.y = Interpolate(length(ynew),round(max(Distance)*DefaultRes),ynew,'spline')';
     
     % Erase Track Width Data
-    w = zeros(length(w),1);
+    Path.w = zeros(length(w),1);
+end
+
+%% Find z height of optimised path
+if strcmpi(Options.Driving_Line_Optimisation,'On') == 1
+    Deviation_C = ((x-Path.x).^2+(y-Path.y).^2).^0.5;
+    Deviation_L = ((x_left-Path.x).^2+(y_left-Path.y).^2).^0.5;
+    Deviation_R = ((x_right-Path.x).^2+(y_right-Path.y).^2).^0.5;
+    Side = sign(abs(Deviation_R-Deviation_C)-abs(Deviation_L-Deviation_C));
+    Path.z = z + Side.*Deviation_C.*sind(t);
 end
 
 %% Pass output variables to output structure
@@ -100,6 +111,7 @@ Track.x = x;
 Track.y = y;
 Track.z = z;
 Track.w = w;
+Track.t = t;
 Track.theta = Theta([x,y]);
 Track.radius = Radius(x,y);
 Track.x_left = x_left;
@@ -110,6 +122,8 @@ Track.y_right = y_right;
 if strcmpi(Options.Driving_Line_Optimisation,'On') == 1
     Track.Path.x = Path.x;
     Track.Path.y = Path.y;
+    Track.Path.z = Path.z;
+    Track.Path.w = Path.w;
     Track.Path.theta = Theta([Path.x,Path.y]);
     Track.Path.radius = Radius(Path.x,Path.y);
     Track.Path.x_left = Path.x_left;
@@ -119,6 +133,8 @@ if strcmpi(Options.Driving_Line_Optimisation,'On') == 1
 else
     Track.Path.x = x;
     Track.Path.y = y;
+    Track.Path.z = z;
+    Track.Path.w = w;
     Track.Path.theta = Track.theta;
     Track.Path.radius = Track.radius;
     Track.Path.x_left = x_left;

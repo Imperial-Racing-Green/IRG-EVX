@@ -409,11 +409,22 @@ while 1
 end
 if strcmpi(saveop,'yes') == 1
     savename = [];
+    disp(' ')
+    disp('Please select location to save file...')
+    input('Press "Enter" to continue...');
+    disp(' ')
+    location = uigetdir;
     while isempty(savename)
         savename = input('Enter name to save file: ','s');
     end
     
-    writetable(output,strcat(savename,'.csv'));
+    if ispc == 1
+        writetable(output,strcat([location,'\',savename],'.csv'));
+    end
+    
+    if ismac == 1
+        writetable(output,strcat([location,'/',savename],'.csv'));
+    end
     
     disp(' ')
     disp('Saving complete...')

@@ -11,7 +11,7 @@ clc
 % Choose car, track and environment files for the simulation.
 Files.Car_File = 'EV3_FSUK2019';
 Files.Environment_File = 'Silverstone_Dry';
-Files.Track_File = 'FSUK_Endurance.csv'; %XXX.csv
+Files.Track_File = 'FSUK_Endurance_Test.csv'; %XXX.csv
 
 %% User Simulation Options
 % Set simulation options.

@@ -1,13 +1,15 @@
-function [x,y] = Path_Optim(x,y,lb,ub,x_left,y_left,x_right,y_right,Options)
+function [x,y] = Path_Optim(x,y,z,w,t,lb,ub,x_left,y_left,x_right,y_right,Options)
 
-initial = [x,y];
-if abs(sum(Curvature(initial))) > 0
-    fun = @(z) sum((abs(Curvature(z)./min(Curvature(initial)))).^2);
+init = [x,y];
+% if abs(sum(Curvature(initial))) > 0
+if PathFun(init,z,w,t,init,x_left,y_left,x_right,y_right) > 0
+%     fun = @(v) sum((abs(Curvature(v)./min(Curvature(init)))).^2);
+    fun = @(v) PathFun(v,z,w,t,init,x_left,y_left,x_right,y_right);   
     A = [];
     b = [];
     Aeq = [];
     beq = [];
-    nonlcon = @(z) PathCon(z,x_left,y_left,x_right,y_right,Options);
+    nonlcon = @(v) PathCon(v,x_left,y_left,x_right,y_right,Options);
     
     if strcmpi(Options.Driving_Line_Optimisation_Accuracy,'Very High') == 1
         Parallel = true;
@@ -26,9 +28,9 @@ if abs(sum(Curvature(initial))) > 0
     end
     
     opts = optimset('Display',Display,'Algorithm','interior-point', 'MaxIter', Inf, 'MaxFunEvals', Inf...
-        ,'TolCon',1e-100,'TolX',1e-100,'TolFun',1e-100,'UseParallel',Parallel);
+        ,'TolCon',1e-10,'TolX',1e-10,'TolFun',1e-10,'UseParallel',Parallel);
     
-    new = fmincon(fun,initial,A,b,Aeq,beq,lb,ub,nonlcon,opts);
+    new = fmincon(fun,init,A,b,Aeq,beq,lb,ub,nonlcon,opts);
     
     x = new(:,1);
     y = new(:,2);
