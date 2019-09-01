@@ -15,7 +15,7 @@ Files.Track_File = 'FSUK_Endurance_Test.csv'; %XXX.csv
 
 %% User Simulation Options
 % Set simulation options.
-Options.Quasi_Static_Simulation = 'On'; %'On','Off'
+Options.Quasi_Static_Simulation = 'Off'; %'On','Off'
 Options.Dynamic_Simulation = 'On'; %'On','Off'
 Options.Driving_Line_Optimisation = 'On'; %'On','Off'
 Options.Driving_Line_Optimisation_Accuracy = 'Low'; %'Very High','High','Medium','Low','Very Low'

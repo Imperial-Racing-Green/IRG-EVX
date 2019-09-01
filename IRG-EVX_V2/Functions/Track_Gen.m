@@ -112,6 +112,7 @@ Track.y = y;
 Track.z = z;
 Track.w = w;
 Track.t = t;
+Track.dist = Track_Dist(x,y);
 Track.theta = Theta([x,y]);
 Track.radius = Radius(x,y);
 Track.x_left = x_left;
@@ -124,6 +125,8 @@ if strcmpi(Options.Driving_Line_Optimisation,'On') == 1
     Track.Path.y = Path.y;
     Track.Path.z = Path.z;
     Track.Path.w = Path.w;
+    Track.Path.t = t;
+    Track.Path.dist = Track_Dist(Path.x,Path.y);
     Track.Path.theta = Theta([Path.x,Path.y]);
     Track.Path.radius = Radius(Path.x,Path.y);
     Track.Path.x_left = Path.x_left;
@@ -135,6 +138,8 @@ else
     Track.Path.y = y;
     Track.Path.z = z;
     Track.Path.w = w;
+    Track.Path.t = t;
+    Track.Path.dist = Track.dist;
     Track.Path.theta = Track.theta;
     Track.Path.radius = Track.radius;
     Track.Path.x_left = x_left;

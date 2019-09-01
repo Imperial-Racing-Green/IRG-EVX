@@ -48,12 +48,12 @@ end
 %% Dynamic Simulation
 
 if strcmpi(Options.Dynamic_Simulation,'On') == 1
-    Track = 1;
-    Environment = 2;
+    Environment.g = -9.81;
     
     % SimOutputs = Run_Dynamic_Sim(Simulation,Car,Track,Environment,Options)
-    Results.Dynamic = Run_Dynamic_Sim('Dynamic_Simulation',Car,Track,Environment,Options);
-    
+    SimSettings = Dynamic_Sim_Settings(Options);
+    Results.Dynamic = Run_Dynamic_Sim('Dynamic_Simulation',Car,Track,Environment,Options,SimSettings);
+
     Results = 1;
 end
 
