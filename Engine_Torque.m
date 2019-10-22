@@ -1,4 +1,4 @@
-function [T,NGear,RPM_engine] = Engine_Torque(velocity,radius,Engine_Info,Gears,NGear)
+function [T,NGear,RPM_engine] = Engine_Torque(vWheels,radius,Engine_Info,Gears,NGear)
 
 FinalDriveRatio = Engine_Info.FinalDriveRatio;
 Config = Engine_Info.Config;
@@ -9,16 +9,25 @@ T_Max = Engine_Info.T_Max;
 RPM_Limit = Engine_Info.RPM_Limit;
 T_Limit = Engine_Info.T_Limit;
 
+% Get wheel speed
+if strcmp(Config,'fwd') == 1
+   vWheel = mean(vWheels(1:2)); 
+elseif strcmp(Config,'rwd') == 1
+    vWheel = mean(vWheels(3:4)); 
+else % 4wd
+    vWheel = mean(vWheels); 
+end
+
 % Assign gears
-if (NGear < 6) && (velocity >= Gears.vCar_ShiftUp(NGear))
+if (NGear < 6) && (vWheel >= Gears.vCar_ShiftUp(NGear))
     NGear = NGear + 1;
-elseif (NGear > 1) && (velocity < Gears.vCar_ShiftDown(NGear))
+elseif (NGear > 1) && (vWheel < Gears.vCar_ShiftDown(NGear))
     NGear = NGear - 1;
 end
 GearRatio = Gears.Ratio(NGear);
 
-% wheel_rad = velocity / radius;
-wheel_RPM = (velocity / radius) * (30/pi);
+% wheel_rad = vWheel / radius;
+wheel_RPM = (vWheel / radius) * (30/pi);
 
 RPM_engine = wheel_RPM * (FinalDriveRatio * Engine_Info.Efficiencies.Gears * GearRatio); 
 

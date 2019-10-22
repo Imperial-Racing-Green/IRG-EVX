@@ -1,4 +1,4 @@
-function [Laptime, CO2_Usage] = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation)
+function [Laptime, CO2_Usage] = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation,bUseAeromap)
 
 if Sweep.Choose_Param == 1
     nSweeps = length(Sweep.Values);
@@ -94,7 +94,7 @@ for iSweep = 1:nSweeps
     dist_log.Data = distanceTrack;
     dist_log.Time = linspace(0,120,length(distanceTrack))';
     %% Main simulation for tyre forces and velocity trace
-    [vCar, Fx, Fy, Fz, SA, SL] = Vel_update(Fz_log,distanceTrack,dist_log,radius_d,Environment,Car,BoundaryConditions);
+    [vCar, Fx, Fy, Fz, SA, SL] = Vel_update(Fz_log,distanceTrack,dist_log,radius_d,Environment,Car,BoundaryConditions,bUseAeromap);
     
     %% Post-processing (simulation is over)
     sLap = distanceTrack;
@@ -102,6 +102,27 @@ for iSweep = 1:nSweeps
     for i = 1:(length(vCar)-1)
         tLap(i,1) = 2*(sLap(i+1)-sLap(i))/(vCar(i)+vCar(i+1));
     end
+    tLap = [0; cumsum(tLap)];
+    Laptime = tLap(end);
+    % Get accelerations
+    a_x = diff(vCar)./diff(tLap);
+    a_x = [a_x; a_x(end)];
+    Fx_real = Car.Mass.Total * a_x;
+    Fy_real = (Car.Mass.Total * (vCar.^2))./radius_d';
+    a_y = Fy_real / Car.Mass.Total;
+    % Get vehicle dynamics
+    dhRideFL = (Fz.FL - Fz_log.Data(:,1)) / Car.Sus.Front.Stiffness.Vertical;
+    dhRideFR = (Fz.FR - Fz_log.Data(:,2)) / Car.Sus.Front.Stiffness.Vertical;
+    dhRideRL = (Fz.RL - Fz_log.Data(:,3)) / Car.Sus.Rear.Stiffness.Vertical;
+    dhRideRR = (Fz.RR - Fz_log.Data(:,4)) / Car.Sus.Rear.Stiffness.Vertical;
+    dhRideF = 0.5*(dhRideFL + dhRideFR);
+    dhRideR = 0.5*(dhRideRL + dhRideRR);
+    hRideF = Car.AeroPerformance.hRideF + dhRideF;
+    hRideR = Car.AeroPerformance.hRideR + dhRideR;
+    aPitch = 0.5*(atand(dhRideF/(Car.Dimension.lWheelbase/2)) - atand(dhRideR/(Car.Dimension.lWheelbase/2)));
+    aRollF = atand((0.5*(dhRideFL - dhRideFR))/(Car.Dimension.Front_track/2));  
+    aRollR = atand((0.5*(dhRideRL - dhRideRR))/(Car.Dimension.Rear_track/2));    
+    aYaw = mean([SA.RL', SA.RR'],2);
     % Find maximum braking and powertrain forces
     Brake_Fx = Brake_Model(Car.Brakes) ./ ...
                     [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
@@ -115,11 +136,17 @@ for iSweep = 1:nSweeps
     nEngine = ones(length(radius_d),1);
     for i = 1:length(vCar)
         
-        [Engine_T,Gear,nEngine(i)] = Engine_Torque(vCar(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Engine,Car.Gears,NGear(i));
+        vWheel.FL(i) = (SL.FL(i)*vCar(i)) + vCar(i);
+        vWheel.FR(i) = (SL.FR(i)*vCar(i)) + vCar(i);
+        vWheel.RL(i) = (SL.RL(i)*vCar(i)) + vCar(i);
+        vWheel.RR(i) = (SL.RR(i)*vCar(i)) + vCar(i);
+        vWheels = [vWheel.FL(i); vWheel.FR(i); vWheel.RL(i); vWheel.RR(i)];
+        
+        [Engine_T,Gear,nEngine(i)] = Engine_Torque(vWheels,Car.Dimension.WheelRL.Radius,Car.Powertrain.Engine,Car.Gears,NGear(i));
         Engine_Fx = Engine_T ./ [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
         NGear(i:end) = Gear;
         
-        Motor_T = Motor_Torque(vCar(i),Car.Dimension.WheelRL.Radius,Car.Powertrain.Motor);
+        Motor_T = Motor_Torque(vWheels,Car.Dimension.WheelRL.Radius,Car.Powertrain.Motor);
         Motor_Fx = Motor_T ./ [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
         
         Powertrain_Fx = Engine_Fx + Motor_Fx;
@@ -127,16 +154,11 @@ for iSweep = 1:nSweeps
         Force.Powertrain.Thrust.FR(i,1) = Powertrain_Fx(2);
         Force.Powertrain.Thrust.RL(i,1) = Powertrain_Fx(3);
         Force.Powertrain.Thrust.RR(i,1) = Powertrain_Fx(4);
-        [Force.Aero.Downforce(i,1), Force.Aero.Drag(i,1)] = Aero_Forces(vCar(i),Environment,Car);
+        [Force.Aero.Downforce(i,1), Force.Aero.Drag(i,1), Aerobalance(i,1)] = Aero_Forces(vCar(i),Environment,Car,bUseAeromap,hRideF(i),hRideR(i),aRollF(i),aRollR(i),aYaw(i));
     end
     Force.Powertrain.Thrust.Total = Force.Powertrain.Thrust.FL + Force.Powertrain.Thrust.FR + Force.Powertrain.Thrust.RL + Force.Powertrain.Thrust.RR;
     Force.Brakes.Total = -(Force.Brakes.FL + Force.Brakes.FR + Force.Brakes.RL + Force.Brakes.RR);
     % Find throttle and brake traces
-    a_x = diff(vCar)./tLap;
-    a_x = [a_x; a_x(end)];
-    Fx_real = Car.Mass.Total * a_x;
-    Fy_real = (Car.Mass.Total * (vCar.^2))./radius_d';
-    a_y = Fy_real / Car.Mass.Total;
     Fx_rollres = -(Fz.FL+ Fz.FR + Fz.RL + Fz.RR) * Car.Tyres.Coefficients.RollingResistance;
     Fx_mechanical = Fx_real + Force.Aero.Drag + Fx_rollres;
     fwd_T = Fx_mechanical;
@@ -158,32 +180,12 @@ for iSweep = 1:nSweeps
     Force.Wheel.Fz.FR = Fz.FR;
     Force.Wheel.Fz.RL = Fz.RL;
     Force.Wheel.Fz.RR = Fz.RR;
-    % Calculate suspension effects (ride height, pitch and roll)
-    dhRideFL = (Fz.FL - Fz_log.Data(:,1)) / Car.Sus.Front.Stiffness.Vertical;
-    dhRideFR = (Fz.FR - Fz_log.Data(:,2)) / Car.Sus.Front.Stiffness.Vertical;
-    dhRideRL = (Fz.RL - Fz_log.Data(:,3)) / Car.Sus.Rear.Stiffness.Vertical;
-    dhRideRR = (Fz.RR - Fz_log.Data(:,4)) / Car.Sus.Rear.Stiffness.Vertical;
-    dhRideF = 0.5*(dhRideFL + dhRideFR);
-    dhRideR = 0.5*(dhRideRL + dhRideRR);
-    hRideF = Car.AeroPerformance.hRideF + dhRideF;
-    hRideR = Car.AeroPerformance.hRideR + dhRideR;
-    theta_y = 0.5*(atan(dhRideF/(Car.Dimension.lWheelbase/2)) - atan(dhRideR/(Car.Dimension.lWheelbase/2)));
-    aPitch = rad2deg(theta_y);
-%     theta_x = 0.5*(atan((0.5*(dhRideFL - dhRideFR))/(Car.Dimension.Front_track/2)) - atan((0.5*(dhRideRL - dhRideRR))/(Car.Dimension.Rear_track/2)));
-    thetaF_x = atan((0.5*(dhRideFL - dhRideFR))/(Car.Dimension.Front_track/2));  
-    thetaR_x = atan((0.5*(dhRideRL - dhRideRR))/(Car.Dimension.Rear_track/2));    
-    aRollF = rad2deg(thetaF_x);
-    aRollR = rad2deg(thetaR_x);
-    dYaw = (a_y ./ vCar) * (180/pi);
-    dYaw(isnan(dYaw)) = 0; % Yaw rate
-    aYaw = cumtrapz(tLap,dYaw);
     
-
     % Calculate tyre camber changes from static position
-    Camber.FL = Car.Tyres.Camber.FL + (aRollF*Car.Tyres.CamberRollFactor.Front);
-    Camber.FR = Car.Tyres.Camber.FR - (aRollF*Car.Tyres.CamberRollFactor.Front);
-    Camber.RL = Car.Tyres.Camber.RL + (aRollR*Car.Tyres.CamberRollFactor.Rear);
-    Camber.RR = Car.Tyres.Camber.RR - (aRollR*Car.Tyres.CamberRollFactor.Rear);
+    Camber.FL = Car.Tyres.Camber.FL + (aRollF*Car.Tyres.CamberRollFactor.Front) + (dhRideF(i)*Car.Tyres.CamberRideFactor.Front);
+    Camber.FR = Car.Tyres.Camber.FR - (aRollF*Car.Tyres.CamberRollFactor.Front) + (dhRideF(i)*Car.Tyres.CamberRideFactor.Front);
+    Camber.RL = Car.Tyres.Camber.RL + (aRollR*Car.Tyres.CamberRollFactor.Rear) + (dhRideR(i)*Car.Tyres.CamberRideFactor.Rear);
+    Camber.RR = Car.Tyres.Camber.RR - (aRollR*Car.Tyres.CamberRollFactor.Rear) + (dhRideR(i)*Car.Tyres.CamberRideFactor.Rear);
     
     % Tyre slips
 %     SlipAngle.Front = 0.5*(SA.FL + SA.FR);
@@ -197,15 +199,13 @@ for iSweep = 1:nSweeps
     aSteer = rad2deg((atan(Car.Dimension.lWheelbase ./ radius_d))) + (abs(SlipAngle.Front) - abs(SlipAngle.Rear));    % Tyre steer angle
     aSteeringWheel = aSteer * Car.Steering.Ratio;   % Steering wheel angle
     aUOSteer = abs(SlipAngle.Front) - abs(SlipAngle.Rear);    % Under/oversteer angle
-    vTyreSlipLong.FL = SL.FL' .* vCar;
-    vTyreSlipLong.FR = SL.FR' .* vCar;
-    vTyreSlipLong.RL = SL.RL' .* vCar;
-    vTyreSlipLong.RR = SL.RR' .* vCar;
+    vTyreSlipLong.FL = vWheel.FL' - vCar;
+    vTyreSlipLong.FR = vWheel.FR' - vCar;
+    vTyreSlipLong.RL = vWheel.RL' - vCar;
+    vTyreSlipLong.RR = vWheel.RR' - vCar;
     
     gLat = a_y / abs(Environment.Gravity);
     gLong = a_x / abs(Environment.Gravity);
-    tLap = [0; cumsum(tLap)];
-    Laptime = tLap(end);
     
     % Find tyre grip info
     Grip.FL.mu_x = Force.Wheel.Fx.FL ./ (-Force.Wheel.Fz.FL);
@@ -337,8 +337,9 @@ for iSweep = 1:nSweeps
            mkdir(yourFolder)
         end
         sim_output_vars = {'Car','Environment','vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle',...
-                           'rBrake','CO2_Usage','MotorPower','Stability','aUOSteer','hRideF','hRideR','aPitch','aRollF','aRollR','Camber','Grip',...
-                           'bThreeWheeling','bTwoWheeling','tThreeWheeling','tTwoWheeling','NGear','nEngine','vTyreSlipLong','NVDACornerState'};
+                           'rBrake','CO2_Usage','MotorPower','Stability','aUOSteer','hRideF','hRideR','aPitch','aRollF','aRollR',...
+                           'Camber','Grip','bThreeWheeling','bTwoWheeling','tThreeWheeling','tTwoWheeling','NGear','nEngine',...
+                           'vTyreSlipLong','NVDACornerState','Aerobalance'};
         save([SaveLocation '\' FolderName '\' SimName{iSweep} '.mat'],sim_output_vars{:})
     end
 

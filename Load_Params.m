@@ -70,16 +70,18 @@ Car.Balance.CoP = [0.341, 0, Car.Dimension.CoP(3)/Car.Dimension.Height]; %[Car.D
 
 % Tyre info
 Car.Tyres.Coefficients.RollingResistance = 0.020; % Need updated number for Hoosier tyres
-Car.Tyres.Camber.FL = -0.4;
-Car.Tyres.Camber.FR = -0.4;
-Car.Tyres.Camber.RL = -1.2;
-Car.Tyres.Camber.RR = -1.2;
-Car.Tyres.CamberRollFactor.Front = 0.325;
-Car.Tyres.CamberRollFactor.Rear = 1.1;
+Car.Tyres.Camber.FL = -0.65; %-0.4;
+Car.Tyres.Camber.FR = -0.65; %-0.4;
+Car.Tyres.Camber.RL = -0.40; %-1.2;
+Car.Tyres.Camber.RR = -0.40; %-1.2;
+Car.Tyres.CamberRollFactor.Front = 0.4; %0.325;     (deg/deg)
+Car.Tyres.CamberRollFactor.Rear = 0.13; %1.1;       (deg/deg)
+Car.Tyres.CamberRideFactor.Front = -41.0;         % (deg/m)
+Car.Tyres.CamberRideFactor.Rear = -11.0;          % (deg/m)
 
 % Powertrain info
 % Engine
-Car.Powertrain.Engine.FinalDriveRatio = 5.18;
+Car.Powertrain.Engine.FinalDriveRatio = 3.56; % 5.18;
 Car.Powertrain.Engine.RPM_Idle = 3000;                      % Idle RPM
 Car.Powertrain.Engine.T_Idle = 53.75;                       % Torque at idle RPM
 Car.Powertrain.Engine.RPM_Max_T = 9200;                      % RPM corresponding to max torque
@@ -106,7 +108,7 @@ Car.Gears.Properties.VariableNames = {'NGear','vCar_ShiftDown','vCar_ShiftUp','R
 % [15.39;19.17;22.75;26.39;28.75;31.33] Speeds for MaxPower at each gear
 
 % Brakes info
-Car.Brakes.FPedalMax = 1500;                                           % (N) 
+Car.Brakes.FPedalMax = 1800;                                           % (N) 
 Car.Brakes.BrakeBias = 0.57; %0.6757;                                                        % > 0.5 is biased towards front - might change with weight / CG
 Car.Brakes.PedalMotionRatio = 205.8/51.5;
 Car.Brakes.Front.wPad = 0.040894; %25.4e-3                                          % Pad width (m) 
@@ -135,6 +137,7 @@ Car.AeroPerformance.SC_L = 3.0;
 Car.AeroPerformance.SC_D = 1.5;
 Car.AeroPerformance.hRideF = 0.030; % (m) (Static ride height under the weight of the car)
 Car.AeroPerformance.hRideR = 0.030; % (m)
+Car.AeroPerformance.Aeromap = GenerateAeromap();
 
 % Steering
 Car.Steering.Ratio = 5.8;

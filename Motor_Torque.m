@@ -1,4 +1,4 @@
-function [T] = Motor_Torque(velocity,radius,Motor_Info)
+function [T] = Motor_Torque(vWheels,radius,Motor_Info)
 
 Ratio = Motor_Info.TransmissionRatio;
 P_max = Motor_Info.P_max;
@@ -6,8 +6,17 @@ Kv = Motor_Info.Kv;
 rated_voltage = Motor_Info.RatedVoltage;
 Config = Motor_Info.Config;
 
+% Get wheel speed
+if strcmp(Config,'fwd') == 1
+   vWheel = mean(vWheels(1:2)); 
+elseif strcmp(Config,'rwd') == 1
+    vWheel = mean(vWheels(3:4)); 
+else % 4wd
+    vWheel = mean(vWheels); 
+end
+
 % wheel_rad = (velocity / radius)
-wheel_rad = (velocity / radius) * (30/pi); % wheel speed in RPM
+wheel_rad = (vWheel / radius) * (30/pi); % wheel speed in RPM
 
 % motorspeed = wheel_rad * Ratio;
 motorspeed = wheel_rad * (Ratio * Motor_Info.Efficiencies.Gears);

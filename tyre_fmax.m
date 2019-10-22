@@ -1,10 +1,10 @@
 function [F_x,F_y,F_xmax,F_ymax,F_xmin,F_ymin,SA_xmax,SA_xmin,SL_xmax,SL_xmin,SA_ymax,SA_ymin,SL_ymax,SL_ymin] = tyre_fmax(Fz,points)
 
 % Slip ratio
-SL = linspace(-1,1,points);
+SL = linspace(-0.5,0.5,points);
 
 % Slip angle
-SA = linspace(-20,20,points);
+SA = linspace(-15,15,points);
 
 [SA,SL] = meshgrid(SA,SL);
 
@@ -81,6 +81,8 @@ k_xmax = k(Fx >= 0);
 k_xmin = k(Fx <= 0);
 k_ymax = k(Fy >= 0);
 k_ymin = k(Fy <= 0);
+
+% scatter(Fy,Fx,50,Slip.Angle,'filled'); colorbar
 
 if abs(Fz) == 0
     F_xmax = 0;
