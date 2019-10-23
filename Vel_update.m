@@ -142,12 +142,19 @@ for i = 1:length(distanceTrack)
         vWheels = [vWheel.FL(i); vWheel.FR(i); vWheel.RL(i); vWheel.RR(i)];
         
         % Use wheel speeds to get powertrain outputs
-        [Engine_T,Gear,RPM_engine(i)] = Engine_Torque(vWheels,Car.Dimension.WheelRL.Radius,Car.Powertrain.Engine,Car.Gears,NGear(i));
-        Engine_Fx = Engine_T ./ [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
-        NGear(i:end) = Gear;
-
-        Motor_T = Motor_Torque(vWheels,Car.Dimension.WheelRL.Radius,Car.Powertrain.Motor);
-        Motor_Fx = Motor_T ./ [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+        if strcmp(Car.Category,'Hybrid') || strcmp(Car.Category,'ICE')
+            [Engine_T,Gear,RPM_engine(i)] = Engine_Torque(vWheels,Car.Dimension.WheelRL.Radius,Car.Powertrain.Engine,Car.Gears,NGear(i));
+            Engine_Fx = Engine_T ./ [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+            NGear(i:end) = Gear;
+        else
+            Engine_Fx = [0; 0; 0; 0];
+        end
+        if strcmp(Car.Category,'Hybrid') || strcmp(Car.Category,'EV')
+            Motor_T = Motor_Torque(vWheels,Car.Dimension.WheelRL.Radius,Car.Powertrain.Motor);
+            Motor_Fx = Motor_T ./ [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
+        else
+            Motor_Fx = [0; 0; 0; 0];
+        end
 
         Powertrain_Fx = Engine_Fx + Motor_Fx;
         

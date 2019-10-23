@@ -15,7 +15,7 @@ else % 4wd
     vWheel = mean(vWheels); 
 end
 
-% wheel_rad = (velocity / radius)
+% Wheel rotational speed in RPM
 wheel_rad = (vWheel / radius) * (30/pi); % wheel speed in RPM
 
 % motorspeed = wheel_rad * Ratio;
