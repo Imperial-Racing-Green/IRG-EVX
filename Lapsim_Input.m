@@ -9,18 +9,11 @@ FolderName = 'Test';
 SimName = {'Test'};
 
 %% Trackmap
-% trackmap = 'Autocross_Track.mat';
+trackmap = 'Autocross_Track.mat';
 % trackmap = 'Endurance_Track_1000_new';
-trackmap = 'Acceleration_Track.mat';
+% trackmap = 'Acceleration_Track.mat';
 % trackmap = 'SkidPad_Track.mat';
 % trackmap = 'Full_FS_Weekend';
-% trackmap = 'DragRace_Track.mat';
-
-%% vCar boundary conditions
-% BoundaryConditions.vCar_start = [];
-% BoundaryConditions.vCar_end = [];
-BoundaryConditions.vCar_start = 0;
-BoundaryConditions.vCar_end = [];
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
 Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
@@ -54,33 +47,31 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         SimName = {'Acceleration_Test'};
         BoundaryConditions.vCar_start = 0;
         BoundaryConditions.vCar_end = [];
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation,bUseAeromap);
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,Sweep,SaveResults,Validation,bUseAeromap);
         % Skid-pad test
         disp('Simulating sweep of Skid-Pad Test...')
         trackmap = 'SkidPad_Track.mat';
         FolderSection = [FolderName '\SkidPad_Test'];
         SimName = {'SkidPad_Test'};
-        BoundaryConditions.vCar_start = 12.5;
+        BoundaryConditions.vCar_start = [];
         BoundaryConditions.vCar_end = [];
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation,bUseAeromap);
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,Sweep,SaveResults,Validation,bUseAeromap);
         % Full lap (stationary start)
         disp('Simulating sweep of Autocross Test...')
-%         trackmap = 'Autocross_Track_2018.mat';
         trackmap = 'Autocross_Track.mat';
         FolderSection = [FolderName '\Autocross_Test'];
         SimName = {'Autocross_Test'};
         BoundaryConditions.vCar_start = 0;
         BoundaryConditions.vCar_end = [];
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation,bUseAeromap);
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,Sweep,SaveResults,Validation,bUseAeromap);
         % Full lap (steady state)
         disp('Simulating steady state lap of Endurance Test...')
-%         trackmap = 'Endurance_Track.mat';
         trackmap = 'Endurance_Track_1000.mat';
         FolderSection = [FolderName '\Endurance_Test'];
         SimName = {'Endurance_Test'};
-        BoundaryConditions.vCar_start = 26;
-        BoundaryConditions.vCar_end = 26;
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation,bUseAeromap);        
+        BoundaryConditions.vCar_start = [];
+        BoundaryConditions.vCar_end = [];
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,Sweep,SaveResults,Validation,bUseAeromap);        
     else
         % Dynamic solve for full FS weekend
         
@@ -89,7 +80,7 @@ else
     if Solver.Steady_state == 1
         SaveResults = 1;
     	% Steady state solve for single track
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation,bUseAeromap);
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,Sweep,SaveResults,Validation,bUseAeromap);
     else
         % Dynamic solve for single track
         

@@ -1,6 +1,6 @@
 function [velocity_d, Fx, Fy, Fz, SA, SL, zCoG_dyn] = Vel_update(Fz_log,distanceTrack,dist_log,radius_d,Environment,Car,BoundaryConditions,bUseAeromap)
 
-TyrePoints = 12;
+TyrePoints = 15;
 TyreInterpMethod = 'linear';
 
 %% Finding max velocity at each curvature
@@ -40,7 +40,7 @@ vWheel.FR = zeros(length(radius_d),1);
 vWheel.RL = zeros(length(radius_d),1);
 vWheel.RR = zeros(length(radius_d),1);
 
-eps = 1;
+eps = Inf;
 eps_lim = 0.01;
 v_x_check = zeros(1,length(distanceTrack));
 while eps >= eps_lim
@@ -119,10 +119,11 @@ for i = 1:length(distanceTrack)
        
     Fy_real = (Car.Mass.Total * (v_x2(i)^2))/radius_d(i);
         
-    eps = Inf;
+    eps_prev = Inf;
     Fz_check = [0 0 0 0];
     eps_lim = 0.01;
-    while eps > eps_lim
+    bSkip = 0;
+    while bSkip ~= 1
      
         [F_L,F_D,AB] = Aero_Forces(v_x2(i),Environment,Car,bUseAeromap,hRideF(i),hRideR(i),aRollF(i),aRollR(i),aYaw(i));
         % Recalculate downforce
@@ -172,7 +173,7 @@ for i = 1:length(distanceTrack)
         else
             Fx_FLreal = interp1(F_xFLmax(:,2,i),F_xFLmax(:,1,i),Fy_FLreal(i),TyreInterpMethod,'extrap');
             SA.FL(i) = interp1(F_xFLmax(:,2,i),SA_FL_xmax(:,i),Fy_FLreal(i),TyreInterpMethod,'extrap');
-            SL.FL(i:end) = interp1(F_xFLmax(:,2,i),SL_FL_xmax(:,i),Fy_FLreal(i),TyreInterpMethod,'extrap');
+            SL.FL(i:end) = max([interp1(F_xFLmax(:,2,i),SL_FL_xmax(:,i),Fy_FLreal(i),TyreInterpMethod,'extrap'), 0]);
         end
 
         Fy_FRreal(i) = (Fz_FR_d(i) / Fz_sum(i)) * Fy_real;
@@ -183,7 +184,7 @@ for i = 1:length(distanceTrack)
         else
             Fx_FRreal = interp1(F_xFRmax(:,2,i),F_xFRmax(:,1,i),Fy_FRreal(i),TyreInterpMethod,'extrap');
             SA.FR(i) = interp1(F_xFRmax(:,2,i),SA_FR_xmax(:,i),Fy_FRreal(i),TyreInterpMethod,'extrap');
-            SL.FR(i:end) = interp1(F_xFRmax(:,2,i),SL_FR_xmax(:,i),Fy_FRreal(i),TyreInterpMethod,'extrap');
+            SL.FR(i:end) = max([interp1(F_xFRmax(:,2,i),SL_FR_xmax(:,i),Fy_FRreal(i),TyreInterpMethod,'extrap'), 0]);
         end
 
         Fy_RLreal(i) = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
@@ -194,7 +195,7 @@ for i = 1:length(distanceTrack)
         else
             Fx_RLreal = interp1(F_xRLmax(:,2,i),F_xRLmax(:,1,i),Fy_RLreal(i),TyreInterpMethod,'extrap');
             SA.RL(i) = interp1(F_xRLmax(:,2,i),SA_RL_xmax(:,i),Fy_RLreal(i),TyreInterpMethod,'extrap');
-            SL.RL(i:end) = interp1(F_xRLmax(:,2,i),SL_RL_xmax(:,i),Fy_RLreal(i),TyreInterpMethod,'extrap');
+            SL.RL(i:end) = max([interp1(F_xRLmax(:,2,i),SL_RL_xmax(:,i),Fy_RLreal(i),TyreInterpMethod,'extrap'), 0]);
         end
 
         Fy_RRreal(i) = (Fz_RR_d(i) / Fz_sum(i)) * Fy_real;
@@ -205,7 +206,7 @@ for i = 1:length(distanceTrack)
         else
             Fx_RRreal = interp1(F_xRRmax(:,2,i),F_xRRmax(:,1,i),Fy_RRreal(i),TyreInterpMethod,'extrap');
             SA.RR(i) = interp1(F_xRRmax(:,2,i),SA_RR_xmax(:,i),Fy_RRreal(i),TyreInterpMethod,'extrap');
-            SL.RR(i:end) = interp1(F_xRRmax(:,2,i),SL_RR_xmax(:,i),Fy_RRreal(i),TyreInterpMethod,'extrap');
+            SL.RR(i:end) = max([interp1(F_xRRmax(:,2,i),SL_RR_xmax(:,i),Fy_RRreal(i),TyreInterpMethod,'extrap'), 0]);
         end
         Fx_traction = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
         
@@ -259,14 +260,16 @@ for i = 1:length(distanceTrack)
         Camber.RL(i) = Car.Tyres.Camber.RL + (aRollR(i)*Car.Tyres.CamberRollFactor.Rear) + (dhRideR(i)*Car.Tyres.CamberRideFactor.Rear);
         Camber.RR(i) = Car.Tyres.Camber.RR - (aRollR(i)*Car.Tyres.CamberRollFactor.Rear) + (dhRideR(i)*Car.Tyres.CamberRideFactor.Rear);
         
-        eps_prev = eps;
         eps = max(abs((Fz_check - [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)])./Fz_check));
         if eps > eps_prev
-            % Lower velocity to perturb away from stuck point
-            v_x2(i) = v_x2(i) - 0.05;
-            Fy_real = (Car.Mass.Total * (v_x2(i)^2))/radius_d(i);
-        end
-        Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
+            bSkip = bSkip + 0.25; % Give it a chance to try and re-converge (this is getting depserate...)
+        else
+            eps_prev = eps;
+            Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
+            if eps < eps_lim
+                bSkip = 1;
+            end
+        end         
         
     end   
     if i ~= length(distanceTrack)
@@ -301,10 +304,11 @@ for i = length(distanceTrack):-1:1
                     [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; ...
                     Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius]; 
     
-    eps = Inf;
+    eps_prev = Inf;
     Fz_check = [0 0 0 0];
     eps_lim = 0.01;
-    while eps > eps_lim
+    bSkip = 0;
+    while bSkip ~= 1
                 
         [F_L,F_D,AB] = Aero_Forces(v_x3(i),Environment,Car,bUseAeromap,hRideF(i),hRideR(i),aRollF(i),aRollR(i),aYaw(i));
         % Recalculate downforce
@@ -337,7 +341,7 @@ for i = length(distanceTrack):-1:1
         else
             Fx_FLreal = interp1(F_xFLmin(:,2,i),F_xFLmin(:,1,i),Fy_FLreal(i),TyreInterpMethod,'extrap');
             SA_FL = interp1(F_xFLmin(:,2,i),SA_FL_xmin(:,i),Fy_FLreal(i),TyreInterpMethod,'extrap');
-            SL_FL = interp1(F_xFLmin(:,2,i),SL_FL_xmin(:,i),Fy_FLreal(i),TyreInterpMethod,'extrap');
+            SL_FL = min([interp1(F_xFLmin(:,2,i),SL_FL_xmin(:,i),Fy_FLreal(i),TyreInterpMethod,'extrap'), 0]);
         end
 
         Fy_FRreal(i) = (Fz_FR_d(i) / Fz_sum(i)) * Fy_real;
@@ -348,7 +352,7 @@ for i = length(distanceTrack):-1:1
         else
             Fx_FRreal = interp1(F_xFRmin(:,2,i),F_xFRmin(:,1,i),Fy_FRreal(i),TyreInterpMethod,'extrap');
             SA_FR = interp1(F_xFRmin(:,2,i),SA_FR_xmin(:,i),Fy_FRreal(i),TyreInterpMethod,'extrap');
-            SL_FR = interp1(F_xFRmin(:,2,i),SL_FR_xmin(:,i),Fy_FRreal(i),TyreInterpMethod,'extrap');
+            SL_FR = min([interp1(F_xFRmin(:,2,i),SL_FR_xmin(:,i),Fy_FRreal(i),TyreInterpMethod,'extrap'), 0]);
         end
 
         Fy_RLreal(i) = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
@@ -359,7 +363,7 @@ for i = length(distanceTrack):-1:1
         else
             Fx_RLreal = interp1(F_xRLmin(:,2,i),F_xRLmin(:,1,i),Fy_RLreal(i),TyreInterpMethod,'extrap');
             SA_RL = interp1(F_xRLmin(:,2,i),SA_RL_xmin(:,i),Fy_RLreal(i),TyreInterpMethod,'extrap');
-            SL_RL = interp1(F_xRLmin(:,2,i),SL_RL_xmin(:,i),Fy_RLreal(i),TyreInterpMethod,'extrap');
+            SL_RL = min([interp1(F_xRLmin(:,2,i),SL_RL_xmin(:,i),Fy_RLreal(i),TyreInterpMethod,'extrap'), 0]);
         end
 
         Fy_RRreal(i) = (Fz_RR_d(i) / Fz_sum(i)) * Fy_real;
@@ -370,7 +374,7 @@ for i = length(distanceTrack):-1:1
         else
             Fx_RRreal = interp1(F_xRRmin(:,2,i),F_xRRmin(:,1,i),Fy_RRreal(i),TyreInterpMethod,'extrap');
             SA_RR = interp1(F_xRRmin(:,2,i),SA_RR_xmin(:,i),Fy_RRreal(i),TyreInterpMethod,'extrap');
-            SL_RR = interp1(F_xRRmin(:,2,i),SL_RR_xmin(:,i),Fy_RRreal(i),TyreInterpMethod,'extrap');
+            SL_RR = min([interp1(F_xRRmin(:,2,i),SL_RR_xmin(:,i),Fy_RRreal(i),TyreInterpMethod,'extrap'), 0]);
         end
 
         Fx_traction = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
@@ -421,21 +425,22 @@ for i = length(distanceTrack):-1:1
         Camber.RL(i) = Car.Tyres.Camber.RL + (aRollR(i)*Car.Tyres.CamberRollFactor.Rear) + (dhRideR(i)*Car.Tyres.CamberRideFactor.Rear);
         Camber.RR(i) = Car.Tyres.Camber.RR - (aRollR(i)*Car.Tyres.CamberRollFactor.Rear) + (dhRideR(i)*Car.Tyres.CamberRideFactor.Rear);
         
-        eps_prev = eps;
         eps = max(abs((Fz_check - [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)])./Fz_check));
         if eps > eps_prev
-            % Lower velocity to perturb away from stuck point
-            v_x2(i) = v_x2(i) - 0.05;
-            Fy_real = (Car.Mass.Total * (v_x2(i)^2))/radius_d(i);
-        end
-        Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
+            bSkip = bSkip + 0.25; % Give it a chance to try and re-converge (this is getting depserate...)
+        else
+            eps_prev = eps;
+            Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
+            if eps < eps_lim
+                bSkip = 1;
+            end
+        end  
         
     end
     if i ~= 1
+        
         v_x3(i-1) = ((v_x3(i)^2) - (2*a_x*(distanceTrack(i) - distanceTrack(i-1))))^0.5;
-        if ~isreal(v_x3(i-1))
-            a = 1;
-        end
+
         if v_x3(i-1) < v_x2(i-1)
             % Override tyre forces if brake limits is applied
             Fx.FL(i) = Fx_real(1);

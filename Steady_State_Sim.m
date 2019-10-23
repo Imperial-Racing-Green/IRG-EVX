@@ -1,4 +1,4 @@
-function [Laptime, CO2_Usage] = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,BoundaryConditions,Sweep,SaveResults,Validation,bUseAeromap)
+function [Laptime, CO2_Usage] = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,Sweep,SaveResults,Validation,bUseAeromap)
 
 if Sweep.Choose_Param == 1
     nSweeps = length(Sweep.Values);
@@ -57,14 +57,14 @@ for iSweep = 1:nSweeps
     load('PowertrainData.mat');
 
     %% Loading Track
-
-    Track_Dist = 1200; %track distance in metres
-    Track_Width = 4; %track width in meteres
+% 
+%     Track_Dist = 1200; %track distance in metres
+%     Track_Width = 4; %track width in meteres
     % Max_Track_Resolution = 1; %track points per metre
-    Steps = 1; %steps in optmisation smoothness
+%     Steps = 1; %steps in optmisation smoothness
     % Resolutions = linspace(0.5,Max_Track_Resolution,Steps);
-    Resolution = 0.5;
-    Iterations = 5000; %max iterations for optmisation
+%     Resolution = 0.5;
+%     Iterations = 5000; %max iterations for optmisation
 
     %[x,y,theta,curvature,radius,Distance] = Track_Gen(filename,Interpolation,Length,Smoothing,Line_Optim,Track_Width,Optim_Iterations)
     % %     [x,y,theta_d,curve_d,radius_d,distanceTrack] = Track_Gen('FSUK Track Endurance.csv',Track_Dist*Resolution,Track_Dist,'On','On',Track_Width,Iterations);
@@ -78,11 +78,20 @@ for iSweep = 1:nSweeps
     for i = 1:length(idx)
         radius_d(idx(i)) = radius_d(idx(i)-1);
     end
+    % vCar boundary conditions based on trackmap
+    if strcmp(trackmap,'Autocross_Track.mat') || strcmp(trackmap,'Acceleration_Track.mat')
+        BoundaryConditions.vCar_start = 0;
+        BoundaryConditions.vCar_end = [];
+    else
+        BoundaryConditions.vCar_start = [];
+        BoundaryConditions.vCar_end = [];
+    end
+    
 
     %% Running Sim
-    ControlSystemDriverModel = Simulink.Variant('Driver_Model == 1');
-    InputDefinedDriverModel = Simulink.Variant('Driver_Model == 2');
-    Driver_Model = 1;
+%     ControlSystemDriverModel = Simulink.Variant('Driver_Model == 1');
+%     InputDefinedDriverModel = Simulink.Variant('Driver_Model == 2');
+%     Driver_Model = 1;
 
     % Distribute mass based on CoG location
     Fz_log = [];
