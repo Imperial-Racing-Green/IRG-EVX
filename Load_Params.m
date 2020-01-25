@@ -2,54 +2,8 @@ function [Car,Environment] = Load_Params()
 
 Car.Category = 'Hybrid';        % ICE/EV/Hybrid
 
-% Car component masses (kg)
-% Wheels (tyre + rim + upright)
-Car.Mass.WheelFL = 3.63 + 1.66 + 0.37;
-Car.Mass.WheelFR = 3.63 + 1.66 + 0.37;
-Car.Mass.WheelRL = 3.63 + 1.66 + 0.52;
-Car.Mass.WheelRR = 3.63 + 1.66 + 0.52;
-% Driver
-Car.Mass.Driver = 68;
-% Suspension
-Car.Mass.Suspension = 11;
-% Chassis (plus anti-intrusion plate, impact attenuator and jackoing bar)
-Car.Mass.Chassis = 24.1 + 2.14;
-% Battery (plus controller)
-Car.Mass.Battery = 33.75;
-% Engine
-Car.Mass.Engine = 70;
-% Motors (plus controllers)
-Car.Mass.Motors = 2.93*2;
-Car.Mass.MotorControllers = 6.8*2;
-Car.Mass.MotorGears = 3.86*2;
-% Steering 
-Car.Mass.Steering = 3.97;
-% Pedals
-Car.Mass.Pedals = 2.5;
-% Seat (plus headrest)
-Car.Mass.Seat = 5;
-% Firewall
-Car.Mass.FireWall = 2.547;
-% Cooling (including radiator)
-Car.Mass.Cooling = 5;
-% Aero
-Car.Mass.FrontWing = 9.32; 
-Car.Mass.RearWing = 6.45;
-Car.Mass.Floor = 6.65; % Including diffuser
-Car.Mass.Bodywork = 0; % Sidepods/bargeboards
-% Brakes
-Car.Mass.Brakes = 4*1.103;
-% Fuel tank (plus some fuel)
-Car.Mass.Fueltank = 5;
-% Misc (random mass in order to reach actual weight)
-Car.Mass.Misc = 5.5;
-% Total
-Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
-                 Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
-                 Car.Mass.Engine + Car.Mass.Motors + Car.Mass.MotorControllers + Car.Mass.MotorGears + ...
-                 Car.Mass.Steering + Car.Mass.Pedals + Car.Mass.Seat + Car.Mass.FireWall + ...
-                 Car.Mass.Cooling + Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Floor + ...
-                 Car.Mass.Bodywork + Car.Mass.Brakes + Car.Mass.Fueltank + Car.Mass.Misc;
+% Car mass (including 70kg driver) (kg)
+Car.Mass.Total = 315.459;
 
 % Car dimensions (m)
 Car.Dimension.WheelFL.Radius = 0.2032; % Rim radius + tyre thickness
@@ -62,6 +16,8 @@ Car.Dimension.Height = 1.4;
 Car.Dimension.lWheelbase = 1.55;
 Car.Dimension.CoG = [0.73315, 0, 0.309]; % Behind front axle
 Car.Dimension.CoP = [0.9300, 0, 0.37]; % Behind front axle
+Car.Dimension.zRollCentreF = 28.6/1000;
+Car.Dimension.zRollCentreR = 25.7/1000;
 
 % Percentage of axle separation length from front axles 
 Car.Balance.CoG = [Car.Dimension.CoG(1)/Car.Dimension.lWheelbase, 0, Car.Dimension.CoG(3)/Car.Dimension.Height]; %[Car.Dimension.xCoG/Car.Dimension.lWheelbase, 0, Car.Dimension.zCoG/Car.Dimension.Height]; 
@@ -69,6 +25,7 @@ Car.Balance.CoG = [Car.Dimension.CoG(1)/Car.Dimension.lWheelbase, 0, Car.Dimensi
 Car.Balance.CoP = [0.341, 0, Car.Dimension.CoP(3)/Car.Dimension.Height]; %[Car.Dimension.xCoP/Car.Dimension.lWheelbase, 0, Car.Dimension.zCoP/Car.Dimension.Height];
 
 % Tyre info
+Car.Tyres = load('TyreMap.mat'); % Load in tyre map for pacejka coefficent for Hoosier tyres
 Car.Tyres.Coefficients.RollingResistance = 0.020; % Need updated number for Hoosier tyres
 Car.Tyres.Camber.FL = -0.65; %-0.4;
 Car.Tyres.Camber.FR = -0.65; %-0.4;
@@ -151,12 +108,14 @@ Environment.Pressure = 101325;                  % (Pa)
 
 load([pwd,'\kinematics\geometries\EV3 Front Hardpoints 13.01.19.mat']);
 Car.Sus.Front.Hardpoints = hardpoints_front;
-Car.Sus.Front.Stiffness.Vertical = 60000; %40000;
-Car.Sus.Front.Stiffness.Horizontal = 60000; %40000;
+Car.Sus.Front.Stiffness.Vertical = 60000; 
+Car.Sus.Front.Stiffness.Horizontal = 60000;
+Car.Sus.Front.MotionRatio = 0.83;
 load([pwd,'\kinematics\geometries\Final rear Outboard 01.02.19.mat']);
 Car.Sus.Rear.Hardpoints = hardpoints_front;
-Car.Sus.Rear.Stiffness.Vertical = 30000; %40000;
-Car.Sus.Rear.Stiffness.Horizontal = 30000; %40000;
+Car.Sus.Rear.Stiffness.Vertical = 40000;
+Car.Sus.Rear.Stiffness.Horizontal = 40000;
+Car.Sus.Rear.MotionRatio = 0.83;
 
 save('Baseline_Carfile','Car')
 save('Baseline_Weatherfile','Environment')
