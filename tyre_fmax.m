@@ -1,4 +1,4 @@
-function [F_x,F_y,F_xmax,F_ymax,F_xmin,F_ymin,SA_xmax,SA_xmin,SL_xmax,SL_xmin,SA_ymax,SA_ymin,SL_ymax,SL_ymin] = tyre_fmax(Fz,points)
+function [F_x,F_y,F_xmax,F_ymax,F_xmin,F_ymin,SA_xmax,SA_xmin,SL_xmax,SL_xmin,SA_ymax,SA_ymin,SL_ymax,SL_ymin] = tyre_fmax(Car,Fz,IA,points)
 
 % Slip ratio
 SL = linspace(-0.5,0.5,points);
@@ -8,7 +8,7 @@ SA = linspace(-15,15,points);
 
 [SA,SL] = meshgrid(SA,SL);
 
-[F_x,F_y,~] = PacejkaTest(SA,SL,Fz);
+[F_x,F_y,~] = PacejkaTest(Car,SA,SL,Fz,IA);
 % Columns of F_x are the the lateral loading capability of a tyre under a
 % set Fz. Each row is at a different slip ratio. Same format for F_y
 % F_x = rmmissing(F_x);
@@ -24,13 +24,16 @@ F_y(isnan(F_y)) = 0;
 Force = [];
 SlipAngle = [];
 SlipRatio = [];
-for i = 1:length(F_x)
-    for j = 1:length(F_x)
+for i = 1:size(F_x,1)
+    for j = 1:size(F_x,2)
 %         scatter(F_x(i,j),F_y(i,j))
-        Force(j + (length(F_x)*(i-1)),1) = F_x(i,j);
-        Force(j + (length(F_x)*(i-1)),2) = F_y(i,j);
-        SlipAngle(j + (length(F_x)*(i-1)),1) = SA(i,j);
-        SlipRatio(j + (length(F_x)*(i-1)),1) = SL(i,j);
+%         Force(j + (length(F_x)*(i-1)),1) = F_x(i,j);
+%         Force(j + (length(F_x)*(i-1)),2) = F_y(i,j);
+%         SlipAngle(j + (length(F_x)*(i-1)),1) = SA(i,j);
+%         SlipRatio(j + (length(F_x)*(i-1)),1) = SL(i,j);
+        Force = [Force; F_x(i,j), F_y(i,j)];
+        SlipAngle = [SlipAngle; SA(i,j)];
+        SlipRatio = [SlipRatio; SL(i,j)];
     end
 end
 % xlabel('Fx')
@@ -41,46 +44,58 @@ k = boundary(Force(:,1),Force(:,2),0);
 % Remove repeated point
 k = k(1:end-1);
 
-% xmin = 1;
-% xmax = 1;
-% ymin = 1;
-% ymax = 1;
-% % k_xmax = zeros(length(k),1);
-% % k_xmin = zeros(length(k),1);
-% % k_ymax = zeros(length(k),1);
-% % k_ymin = zeros(length(k),1);
-% for i = 1:length(k)
-%     Fx = Force(k(i),1);
-%     Fy = Force(k(i),2);
-%     if Fx >= 0
-% %         F_xmax(xmax) = Force(k(i),1);
-%         k_xmax(xmax) = k(i);
-%         xmax = xmax + 1;
-%     end
-%     if Fx <= 0
-% %         F_xmin(xmin) = Force(k(i),1);
-%         k_xmin(xmin) = k(i);
-%         xmin = xmin + 1;
-%     end
-%     if Fy >= 0
-% %         F_ymax(ymax) = Force(k(i),2);
-%         k_ymax(ymax) = k(i);
-%         ymax = ymax + 1;
-%     end
-%     if Fy <= 0
-% %         F_ymin(ymin) = Force(k(i),2);
-%         k_ymin(ymin) = k(i);
-%         ymin = ymin + 1;
-%     end
-% end
 Fx = Force(k,1);
 Fy = Force(k,2);
 Slip.Angle = SlipAngle(k);
 Slip.Ratio = SlipRatio(k);
-k_xmax = k(Fx >= 0);
-k_xmin = k(Fx <= 0);
-k_ymax = k(Fy >= 0);
-k_ymin = k(Fy <= 0);
+
+% Fit ellipse to data points to define friction 'circle' and define a set
+% number of points on this circle for consistency
+% ay² + bxy + cx + dy + e = x²
+x = Fy;
+y = Fx;
+coeffs = [y.^2,x.*y,x,y,ones(numel(x),1)]\x.^2;
+% Solve for r in polar coordinate form
+i = 1;
+for theta = 0:2.5:180
+    a = (coeffs(1)*((sind(theta))^2)) + (coeffs(2)*cosd(theta)*sind(theta)) - ((cosd(theta))^2);
+    b = (coeffs(3)*cosd(theta)) + (coeffs(4)*sind(theta));
+    c = coeffs(5);
+    theta1(i) = theta; 
+    r1(i) = (- b + sqrt((b^2) - (4*a*c)))/(2*a);
+    theta2(i) = theta;
+    r2(i) = (- b - sqrt((b^2) - (4*a*c)))/(2*a);
+    i = i + 1;
+end
+Fx_interp = [r1.*sind(theta1), r2.*sind(theta2)]';
+Fy_interp = [r1.*cosd(theta1), r2.*cosd(theta2)]';
+temp = unique([Fy_interp,Fx_interp],'rows','stable');
+Fy_interp = temp(:,1);
+Fx_interp = temp(:,2);
+[~, idx] = unique(Fx);
+SL_interp = interp1(Fx(idx),Slip.Ratio(idx)',Fx_interp,'nearest','extrap');
+[~, idx] = unique(Fy);
+SA_interp = interp1(Fy(idx),Slip.Angle(idx)',Fy_interp,'nearest','extrap');
+% Clean up SA and SL with some sketchy curve fitting
+coeff = polyfit(Fx_interp,SL_interp,1);
+SL_interp = polyval(coeff,Fx_interp);
+coeff = polyfit(Fy_interp,SA_interp,1);
+SA_interp = polyval(coeff,Fy_interp);
+% Find outer edge boundary of tyre potential forces
+k = boundary(Fy_interp,Fx_interp,0);
+% Remove repeated point
+k = k(1:end-1);
+% Separate into four quadrants
+k_xmax = k(Fx_interp >= 0);
+k_xmin = k(Fx_interp <= 0);
+k_ymax = k(Fy_interp >= 0);
+k_ymin = k(Fy_interp <= 0);
+
+% % Separate into four quadrants
+% k_xmax = k(Fx >= 0);
+% k_xmin = k(Fx <= 0);
+% k_ymax = k(Fy >= 0);
+% k_ymin = k(Fy <= 0);
 
 % scatter(Fy,Fx,50,Slip.Angle,'filled'); colorbar
 
@@ -98,37 +113,31 @@ if abs(Fz) == 0
     SL_ymax = 0;
     SL_ymin = 0;
 else
-    F_xmax = [Force(k_xmax,1),Force(k_xmax,2)];
-    F_xmin = [Force(k_xmin,1),Force(k_xmin,2)];
-    SA_xmax = SlipAngle(k_xmax);
-    SA_xmin = SlipAngle(k_xmin);
-    SL_xmax = SlipRatio(k_xmax);
-    SL_xmin = SlipRatio(k_xmin);
-    F_ymax = [Force(k_ymax,1),Force(k_ymax,2)];
-    F_ymin = [Force(k_ymin,1),Force(k_ymin,2)];
-    SA_ymax = SlipAngle(k_ymax);
-    SA_ymin = SlipAngle(k_ymin);
-    SL_ymax = SlipRatio(k_ymax);
-    SL_ymin = SlipRatio(k_ymin);
+%     F_xmax = [Force(k_xmax,1),Force(k_xmax,2)];
+%     F_xmin = [Force(k_xmin,1),Force(k_xmin,2)];
+%     SA_xmax = SlipAngle(k_xmax);
+%     SA_xmin = SlipAngle(k_xmin);
+%     SL_xmax = SlipRatio(k_xmax);
+%     SL_xmin = SlipRatio(k_xmin);
+%     F_ymax = [Force(k_ymax,1),Force(k_ymax,2)];
+%     F_ymin = [Force(k_ymin,1),Force(k_ymin,2)];
+%     SA_ymax = SlipAngle(k_ymax);
+%     SA_ymin = SlipAngle(k_ymin);
+%     SL_ymax = SlipRatio(k_ymax);
+%     SL_ymin = SlipRatio(k_ymin);
+    F_xmax = [Fx_interp(k_xmax), Fy_interp(k_xmax)];
+    F_xmin = [Fx_interp(k_xmin), Fy_interp(k_xmin)];
+    SA_xmax = SA_interp(k_xmax);
+    SA_xmin = SA_interp(k_xmin);
+    SL_xmax = SL_interp(k_xmax);
+    SL_xmin = SL_interp(k_xmin);
+    F_ymax = [Fx_interp(k_ymax), Fy_interp(k_ymax)];
+    F_ymin = [Fx_interp(k_ymin), Fy_interp(k_ymin)];
+    SA_ymax = SA_interp(k_ymax);
+    SA_ymin = SA_interp(k_ymin);
+    SL_ymax = SL_interp(k_ymax);
+    SL_ymin = SL_interp(k_ymin);
 end
-
-% for i = 1:length(F_x)
-%     [Fmax,pos] = max(F_x(:,i));
-%     F_xmax(i,1) = Fmax;
-%     F_xmax(i,2) = F_y(pos,i);
-%     [Fmin,pos] = min(F_x(:,i));
-%     F_xmin(i,1) = Fmin;
-%     F_xmin(i,2) = F_y(pos,i);
-% end
-% 
-% for i = 1:length(F_y)
-%     [Fmax,pos] = max(F_y(i,:));
-%     F_ymax(i,1) = F_x(i,pos);
-%     F_ymax(i,2) = Fmax;
-%     [Fmin,pos] = min(F_y(i,:));
-%     F_ymin(i,1) = F_x(i,pos);
-%     F_ymin(i,2) = Fmin;
-% end
 
 % figure
 % hold on;
