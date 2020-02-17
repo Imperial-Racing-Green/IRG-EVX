@@ -5,6 +5,7 @@ P_max = Motor_Info.P_max;
 Kv = Motor_Info.Kv;
 rated_voltage = Motor_Info.RatedVoltage;
 Config = Motor_Info.Config;
+nMotors = Motor_Info.nMotors;
 
 % Get wheel speed
 if strcmp(Config,'fwd') == 1
@@ -56,21 +57,53 @@ if isnan(T_motor)
     T_motor = 0;
 end
 
-if strcmp(Config,'fwd') == 1
-    T_FL = (T_motor * Ratio);
-    T_FR = T_FL;
+% Distribute torque onto the wheels depending on drivetrain and motor
+% configuration
+if strcmp(Config,'fwd')
+    if nMotors == 1 
+       % One motor on the axle
+       T_FL = (T_motor * Ratio)/2;
+       T_FR = T_FL; 
+    elseif nMotors == 2  
+       % In-hub motors
+       T_FL = (T_motor * Ratio);
+       T_FR = T_FL; 
+    else
+        error('Incorrect number of motors inputted for this drivetrain configuration')
+    end
     T_RL = 0;
     T_RR = T_RL;    
-elseif strcmp(Config,'rwd') == 1
+elseif strcmp(Config,'rwd')
+    % One motor on the axle
     T_FL = 0;
     T_FR = T_FL;
-    T_RL = (T_motor * Ratio);
-    T_RR = T_RL;
-else % 4wd
-    T_FL = (T_motor * Ratio);  % Need to find torque distribution across axles
-    T_FR = T_FL;
-    T_RL = T_FL;
-    T_RR = T_FL;
+    if nMotors == 1
+        T_RL = (T_motor * Ratio)/2;
+        T_RR = T_RL;
+    elseif nMotors == 2 
+        % In-hub motors
+        T_RL = (T_motor * Ratio);
+        T_RR = T_RL;
+    else
+        error('Incorrect number of motors inputted for this drivetrain configuration')
+    end   
+elseif strcmp(Config,'4wd')
+    % May be a torque distribution across axles?
+    if nMotors == 2
+        % One motor on the axle
+        T_FL = (T_motor * Ratio)/2;
+        T_FR = T_FL;
+        T_RL = T_FL;
+        T_RR = T_FL;
+    elseif nMotors == 4
+         % In-hub motors
+         T_FL = (T_motor * Ratio);
+         T_FR = T_FL;
+         T_RL = T_FL;
+         T_RR = T_FL;
+    else
+        error('Incorrect number of motors inputted for this drivetrain configuration')
+    end
 end
 
 T = [T_FL;T_FR;T_RL;T_RR];
