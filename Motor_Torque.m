@@ -1,4 +1,4 @@
-function [T] = Motor_Torque(vWheels,radius,Motor_Info)
+function [T,RPM_motor,pMotor] = Motor_Torque(vWheels,radius,Motor_Info)
 
 Ratio = Motor_Info.TransmissionRatio;
 P_max = Motor_Info.P_max;
@@ -44,13 +44,13 @@ T_cap = 0.5 * T_stall;
 T_motor =  T_stall - ((RPM_motor/RPM_no_load)*T_stall);
 
 % Apply torque cap
-T_motor = min(T_motor,T_cap);
+T_motor = min(T_motor,T_cap)*Motor_Info.Efficiencies.Motor;
 
-% Make sure motor power is not exceeding 30kW limit in regulations
-p_Motor = (T_motor * RPM_motor) / 9.5488;
-if p_Motor > (30000*Motor_Info.Efficiencies.Motor)
-    p_Motor = (30000*Motor_Info.Efficiencies.Motor);
-    T_motor = (9.5488 * p_Motor) / RPM_motor;
+% Make sure motor power is not exceeding 80kW limit in regulations
+pMotor = (T_motor * RPM_motor) / 9.5488;
+if pMotor > 80000
+    pMotor = 80000;
+    T_motor = (9.5488 * pMotor * Motor_Info.Efficiencies.Motor) / RPM_motor;
 end
 
 if isnan(T_motor)
