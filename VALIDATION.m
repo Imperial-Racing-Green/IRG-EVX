@@ -5,7 +5,7 @@ close all
 clear
 clc
 
-SaveCarfiles2();
+SaveCarfiles();
 
 %% Save Results
 SaveLocation = 'C:\Users\gregj\OneDrive\Documents\GitHub\GDP_2017_Lapsim';
@@ -14,7 +14,6 @@ FolderName = 'Validation';
 % carfiles = {'cata.mat'};
 % teams = {'cata'};
 
-% Cars we know work!
 carfiles = {'Delft_15.mat','Bath_15.mat','aachen.mat','cata.mat','Bath_16.mat',...
             'CTU_Prague_16.mat','Paderborn_16.mat','Bath_18.mat','Karlsruhe_16.mat',...
             'Loughborough_16.mat','Loughborough_18.mat','Sussex_18.mat'};

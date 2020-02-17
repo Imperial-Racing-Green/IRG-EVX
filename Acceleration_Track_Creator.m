@@ -1,16 +1,19 @@
 clear
 clc
 
-x = zeros(601,1);
-y = [0:(75/600):75]';
+nPoints = 100;
+Distance = 75;
 
-dist = y;  
+x = zeros(nPoints,1);
+y = [0:(Distance/(nPoints-1)):Distance]';
 
-radius_d = 1e20*ones(601,1);
+distanceTrack = y;  
+
+radius_d = 1e100*ones(601,1);
 curve_d = 1./radius_d;
 theta_d = x;
 
-% save('Acceleration_Track','x','y','radius_d','curve_d','theta_d','dist')
+save('Acceleration_Track','x','y','radius_d','curve_d','theta_d','distanceTrack')
 
 % theta_d = atan2(diff(y),diff(x));
 
