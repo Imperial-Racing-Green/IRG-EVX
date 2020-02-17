@@ -1,4 +1,4 @@
-function [F_x,F_y,F_xmax,F_ymax,F_xmin,F_ymin,SA_xmax,SA_xmin,SL_xmax,SL_xmin,SA_ymax,SA_ymin,SL_ymax,SL_ymin] = tyre_fmax(Car,Fz,IA,points)
+function [F_x,F_y,F_xmax,F_ymax,F_xmin,F_ymin,SA_xmax,SA_xmin,SL_xmax,SL_xmin,SA_ymax,SA_ymin,SL_ymax,SL_ymin] = tyre_fmax(Car,Environment,Fz,IA,points,corner)
 
 % Slip ratio
 SL = linspace(-0.5,0.5,points);
@@ -8,7 +8,46 @@ SA = linspace(-15,15,points);
 
 [SA,SL] = meshgrid(SA,SL);
 
-[F_x,F_y,~] = PacejkaTest(Car,SA,SL,Fz,IA);
+%% Combined slip additions based on Pacejka's 'Tyre and Vehicle Dynamics 4.2.2)
+S_x = SL./(1+SL);
+S_y = tand(SA)./(1+SL); % Alpha should be equal to alpha + Sh_y
+S = sqrt((S_x.^2) + (S_y.^2));
+if strcmp(corner,'FL') || strcmp(corner,'FR')
+    [F_x0,F_y0,M_z0] = Pacejka_Tyre_Model(-Fz,S_x,S_y,deg2rad(IA),Car.Tyres.Front,Environment.track_conditions);
+else
+    [F_x0,F_y0,M_z0] = Pacejka_Tyre_Model(-Fz,S_x,S_y,deg2rad(IA),Car.Tyres.Rear,Environment.track_conditions);
+end
+F_x = F_x0.*(abs(S_x)./S);
+F_y = F_y0.*(abs(S_y)./S);
+M_z = M_z0;
+
+% [F_x,F_y,~] = PacejkaTest(Car,SA,SL,Fz,IA);
+
+% % Slip ratio
+% figure
+% for i = 1:size(F_x,1)
+%     scatter(SL(:,i),F_x(:,i))
+%     hold on
+% end
+% % Slip angle
+% figure
+% for i = 1:size(F_x,1)
+%     scatter(SA(i,:),F_y(i,:))
+%     hold on
+% end
+% % Self-aligning torque
+% figure
+% for i = 1:size(F_x,1)
+%     scatter(SA(i,:),M_z(i,:))
+%     hold on
+% end
+% % Friction ellipse
+% figure
+% for i = 1:size(F_x,1)
+%     scatter(F_y(:,i),F_x(:,i))
+%     hold on
+% end
+
 % Columns of F_x are the the lateral loading capability of a tyre under a
 % set Fz. Each row is at a different slip ratio. Same format for F_y
 % F_x = rmmissing(F_x);
