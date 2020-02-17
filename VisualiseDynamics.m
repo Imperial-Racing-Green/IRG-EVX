@@ -3,7 +3,7 @@ close all
 clear
 clc
 
-SimPath = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Final Sims\Test2\Sim1.mat';
+SimPath = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Fomula Student\EV1 Sims\Test\Sim1.mat';
 
 Results = load(SimPath);
 

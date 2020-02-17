@@ -3,8 +3,9 @@ close all
 clear
 clc
 
-FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Fomula Student\EV1 Sims\BrakeBias_Sweep';
+FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Fomula Student\EV1 Sims\Test';
 full_weekend = 0;  % If selected point to folder of enclosing all weekend results
+bFindSweptVariable = 0; % Only set to 1 if its a single swept numeric values...
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%
 
@@ -34,46 +35,50 @@ for iTest = 1:length(FolderName)
         sim = listing.name{i};
         SimNames{i} = sim(1:end-4);
     end
-    % Find swept paramater
-    id =  regexp(SimNames{1},'\d');
-    Param = SimNames{1};
-    Param = Param(1:id-1);
-%     Param = regexprep(SimNames{1}, '\d[0-9_]+\d', '');
-    if strcmp(Param(end),'_')
-        Param = Param(1:end-1);
-    end
-    Param = strrep(Param,'_','.');
-    Param = strrep(Param,'SC.L','SC_L');
-    Param = strrep(Param,'SC.D','SC_D');
-    idx = strfind(Param,'.');
-    if ~isempty(idx)
-        SweptParam = Param(idx(end)+1:end);
-        SweptValues = zeros(1,length(SimNames));
-        for i = 1:length(SimNames)
-            j = strfind(SimNames{i},SweptParam);
-            sim = SimNames{i};
-            SimNames{i} = sim(j:end);
-            if any(strfind(Param,'CoGx')) || any(strfind(Param,'CoPx'))
-                Param = strrep(Param,'x','(1)');
-            elseif any(strfind(Param,'CoGy')) || any(strfind(Param,'CoPy'))
-                Param = strrep(Param,'y','(2)');
-            elseif any(strfind(Param,'CoGz')) || any(strfind(Param,'CoPz'))
-                Param = strrep(Param,'z','(3)');
-            else
-                % Do nothing
+    if bFindSweptVariable
+        % Find swept paramater
+        id =  regexp(SimNames{1},'\d');
+        Param = SimNames{1};
+        Param = Param(1:id-1);
+    %     Param = regexprep(SimNames{1}, '\d[0-9_]+\d', '');
+        if strcmp(Param(end),'_')
+            Param = Param(1:end-1);
+        end
+        Param = strrep(Param,'_','.');
+        Param = strrep(Param,'SC.L','SC_L');
+        Param = strrep(Param,'SC.D','SC_D');
+        idx = strfind(Param,'.');
+        if ~isempty(idx)
+            SweptParam = Param(idx(end)+1:end);
+            SweptValues = zeros(1,length(SimNames));
+            for i = 1:length(SimNames)
+                j = strfind(SimNames{i},SweptParam);
+                sim = SimNames{i};
+                SimNames{i} = sim(j:end);
+                if any(strfind(Param,'CoGx')) || any(strfind(Param,'CoPx'))
+                    Param = strrep(Param,'x','(1)');
+                elseif any(strfind(Param,'CoGy')) || any(strfind(Param,'CoPy'))
+                    Param = strrep(Param,'y','(2)');
+                elseif any(strfind(Param,'CoGz')) || any(strfind(Param,'CoPz'))
+                    Param = strrep(Param,'z','(3)');
+                else
+                    % Do nothing
+                end
+                SweptValues(i) = eval(['Results.' (Test{iTest}) '.' (['Sim' num2str(i)]) '.' Param]);
             end
-            SweptValues(i) = eval(['Results.' (Test{iTest}) '.' (['Sim' num2str(i)]) '.' Param]);
+        else
+            SweptParam = 'Sim';
+            SweptValues = 1:length(SimNames);
         end
     else
         SweptParam = 'Sim';
         SweptValues = 1:length(SimNames);
-    end
-    
+    end    
 
     SimViewer = figure('Name',Name{iTest},'NumberTitle','off');
     tabgp = uitabgroup(SimViewer,'Position',[0 0 1 1]);
     % Laptime sensitivity
-    t = uitab(tabgp,'Title','Laptime sensitivity');
+    t = uitab(tabgp,'Title','Laptimes');
     ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
     for i = 1:length(filenames)
         sims(i) = i;
@@ -163,22 +168,19 @@ for iTest = 1:length(FolderName)
         hold on
     end
     ylabel('tDiff')
-    % rThrottle
-    t = uitab(tabgp,'Title','rThrottle');
-    ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
+    % Pedal inputs
+    t = uitab(tabgp,'Title','Pedal inputs');
+    ax1 = axes(t,'Position',[0.05 0.55 0.9 0.4]);
     for i = 1:length(filenames)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).rThrottle*100,'LineWidth',1)
         hold on
     end 
     legend(SimNames,'Interpreter','none')
-    xlabel('sLap (m)')
     ylabel('rThrottle (%)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
     ylim([-5 105])
-    % rBrake
-    t = uitab(tabgp,'Title','rBrake');
-    ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
+    ax2 = axes(t,'Position',[0.05 0.08 0.9 0.4]);
     for i = 1:length(filenames)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).rBrake*100,'LineWidth',1)
         hold on
@@ -189,19 +191,28 @@ for iTest = 1:length(FolderName)
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
     ylim([-5 105])
-    % Steering wheel
-    t = uitab(tabgp,'Title','Steering angle');
-    ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
+    % Steering    
+    t = uitab(tabgp,'Title','Steering inputs');
+    ax1 = axes(t,'Position',[0.05 0.55 0.9 0.4]);
     for i = 1:length(filenames)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).aSteeringWheel,'LineWidth',1)
         hold on
     end 
     legend(SimNames,'Interpreter','none')
-    xlabel('sLap (m)')
     ylabel('aSteeringWheel (deg)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
     ylim([-180 180])
+    ax2 = axes(t,'Position',[0.05 0.08 0.9 0.4]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).aUOSteer,'LineWidth',1)
+        hold on
+    end 
+    legend(SimNames,'Interpreter','none')
+    xlabel('sLap (m)')
+    ylabel('aUOSteer (deg)')
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])    
     % Engine inputs
     t = uitab(tabgp,'Title','Engine inputs');
     ax1 = axes(t,'Position',[0.05 0.55 0.9 0.4]);
@@ -224,22 +235,42 @@ for iTest = 1:length(FolderName)
     ylabel('nEngine (RPM)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
-    % gLat
-    t = uitab(tabgp,'Title','gLat');
-    ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
+    % Motor inputs
+    t = uitab(tabgp,'Title','Motor inputs');
+    ax1 = axes(t,'Position',[0.05 0.55 0.9 0.4]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).pMotor/1000,'LineWidth',1)
+        hold on
+    end 
+    plot([0, Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)],[80, 80],'r--','LineWidth',1)
+    legend(SimNames,'Interpreter','none')
+    ylabel('Power (kW) (per motor)')
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
+    ylim([0 85])
+    ax2 = axes(t,'Position',[0.05 0.08 0.9 0.4]);
+    for i = 1:length(filenames)
+        plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).nMotor,'LineWidth',1)
+        hold on
+    end 
+    legend(SimNames,'Interpreter','none')
+    xlabel('sLap (m)')
+    ylabel('nMotor (RPM) (per motor)')
+    grid minor
+    xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
+    % Accelerations
+    t = uitab(tabgp,'Title','Accelerations');
+    ax1 = axes(t,'Position',[0.05 0.55 0.9 0.4]);
     for i = 1:length(filenames)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).gLat,'LineWidth',1)
         hold on
     end 
     legend(SimNames,'Interpreter','none')
-    xlabel('sLap (m)')
     ylabel('gLat (g)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
-    ylim([-3.5 3.5])
-    % gLong
-    t = uitab(tabgp,'Title','gLong');
-    ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
+    ylim([-3 3])
+    ax2 = axes(t,'Position',[0.05 0.08 0.9 0.4]);
     for i = 1:length(filenames)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).gLong,'LineWidth',1)
         hold on
@@ -249,7 +280,7 @@ for iTest = 1:length(FolderName)
     ylabel('gLong (g)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
-    ylim([-2.5 2])
+    ylim([-2.5 1.5])
     % G-G envelope
     t = uitab(tabgp,'Title','g-g Envelope');
     ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
@@ -263,21 +294,18 @@ for iTest = 1:length(FolderName)
     grid minor
     xlim([-3.5 3.5])
     ylim([-2.5 2])
-    % Drag
-    t = uitab(tabgp,'Title','Drag');
-    ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
+    % Aero forces
+    t = uitab(tabgp,'Title','Aero');
+    ax1 = axes(t,'Position',[0.05 0.55 0.9 0.4]);
     for i = 1:length(filenames)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).Force.Aero.Drag,'LineWidth',1)
         hold on
     end 
     legend(SimNames,'Interpreter','none')
-    xlabel('sLap (m)')
     ylabel('Drag (N)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
-    % Downforce
-    t = uitab(tabgp,'Title','Downforce');
-    ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
+    ax2 = axes(t,'Position',[0.05 0.08 0.9 0.4]);
     for i = 1:length(filenames)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).Force.Aero.Downforce,'LineWidth',1)
         hold on
