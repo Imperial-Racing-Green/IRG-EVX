@@ -1,4 +1,4 @@
-function [Laptime, CO2_Usage] = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,Sweep,SaveResults,Validation,bUseAeromap)
+function [Laptime, CO2_Usage] = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,Sweep,SaveResults,bUseAeromap)
 
 if Sweep.Choose_Param == 1
     nSweeps = length(Sweep.Values);
@@ -11,6 +11,19 @@ else
 end
 if length(SimName) == length(Sweep.Values)
     SimName = SimName;
+elseif Sweep.Choose_Param == 1
+    for i = 1:nSweeps
+        if isnumeric(Sweep.Values(i))
+            name = [Sweep.Param{1} '_' num2str(Sweep.Values(i))];
+        else
+            name = [Sweep.Param{1} '_' Sweep.Values{i}];
+        end
+        name = strrep(name,'.','_');
+        name = strrep(name,'(1)','x');
+        name = strrep(name,'(2)','y');
+        name = strrep(name,'(3)','z');
+        SimName{i} = name;
+    end
 else
     for i = 1:nSweeps
         SimName{i} = ['Sim' num2str(i)];
@@ -24,24 +37,19 @@ for iSweep = 1:nSweeps
 
     % Check which variables (if any) to change
     if Sweep.Choose_Param == 1
-%         if ~exist(Sweep.Param{1})
-%             error('Parameter being swept does not exist. Check carfile for sweepable parameters')
-%         else
-            % Override car param
+        if isnumeric(Sweep.Values(iSweep))
             eval([Sweep.Param{1},'=',num2str(Sweep.Values(iSweep)),';']);
-%         end
+        else
+            eval([Sweep.Param{1},'=','"' Sweep.Values{iSweep} '"',';']);
+        end
+        % If change of tyres make extra requried changes
+        if strcmp(Sweep.Param{1},'Car.Tyres.Front.Name')
+            Car = fnSelectTyres(Car);
+        end
     elseif Sweep.Choose_Carfile == 1
         % Load in a new carfile
         clear Car
         load(Sweep.Carfile{iSweep});
-        if Validation ~= 1  % Only recheck mass for our own car (where we have component masses)
-            Car.Mass.Total = Car.Mass.WheelFL + Car.Mass.WheelFR + Car.Mass.WheelRL + Car.Mass.WheelRR + ...
-                 Car.Mass.Driver + Car.Mass.Suspension + Car.Mass.Chassis + Car.Mass.Battery + ...
-                 Car.Mass.Engine + Car.Mass.Motors + Car.Mass.MotorControllers + Car.Mass.MotorGears + ...
-                 Car.Mass.Steering + Car.Mass.Pedals + Car.Mass.Seat + Car.Mass.FireWall + ...
-                 Car.Mass.Cooling + Car.Mass.FrontWing + Car.Mass.RearWing + Car.Mass.Floor + ...
-                 Car.Mass.Bodywork + Car.Mass.Brakes + Car.Mass.Fueltank + Car.Mass.Misc;            
-        end
     elseif Sweep.Choose_Weatherfile == 1
         clear Environment
         load(Sweep.Weatherfile{iSweep});
@@ -53,8 +61,7 @@ for iSweep = 1:nSweeps
     % Rear_kine = run_kine_sim('Kinematics_Model',Car.Sus.Rear.Hardpoints);
 
     %% Powertrain Setup
-
-    load('PowertrainData.mat');
+    % load('PowertrainData.mat');
 
     %% Loading Track
 % 
@@ -143,6 +150,8 @@ for iSweep = 1:nSweeps
     
     NGear = ones(length(radius_d),1);
     nEngine = ones(length(radius_d),1);
+    nMotor = ones(length(radius_d),1);
+    pMotor = ones(length(radius_d),1);
     for i = 1:length(vCar)
         
         vWheel.FL(i) = (SL.FL(i)*vCar(i)) + vCar(i);
@@ -158,8 +167,8 @@ for iSweep = 1:nSweeps
         else
             Engine_Fx = [0; 0; 0; 0];
         end
-        if strcmp(Car.Category,'Hybrid') || strcmp(Car.Category,'ICE')
-            Motor_T = Motor_Torque(vWheels,Car.Dimension.WheelRL.Radius,Car.Powertrain.Motor);
+        if strcmp(Car.Category,'Hybrid') || strcmp(Car.Category,'EV')
+            [Motor_T,nMotor(i),pMotor(i)] = Motor_Torque(vWheels,Car.Dimension.WheelRL.Radius,Car.Powertrain.Motor);
             Motor_Fx = Motor_T ./ [Car.Dimension.WheelFL.Radius; Car.Dimension.WheelFR.Radius; Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius];
         else
             Motor_Fx = [0; 0; 0; 0];
@@ -175,7 +184,7 @@ for iSweep = 1:nSweeps
     Force.Powertrain.Thrust.Total = Force.Powertrain.Thrust.FL + Force.Powertrain.Thrust.FR + Force.Powertrain.Thrust.RL + Force.Powertrain.Thrust.RR;
     Force.Brakes.Total = -(Force.Brakes.FL + Force.Brakes.FR + Force.Brakes.RL + Force.Brakes.RR);
     % Find throttle and brake traces
-    Fx_rollres = -(Fz.FL+ Fz.FR + Fz.RL + Fz.RR) * Car.Tyres.Coefficients.RollingResistance;
+    Fx_rollres = ((-Fz.FL-Fz.FR)*Car.Tyres.Front.Coefficients.RollingResistance) + ((-Fz.RL-Fz.RR)*Car.Tyres.Rear.Coefficients.RollingResistance);
     Fx_mechanical = Fx_real + Force.Aero.Drag + Fx_rollres;
     fwd_T = Fx_mechanical;
     fwd_T(fwd_T <= 0) = 0;
@@ -184,10 +193,10 @@ for iSweep = 1:nSweeps
     rThrottle = fwd_T ./ Force.Powertrain.Thrust.Total;
     rBrake = bkd_T ./ Force.Brakes.Total;
     % Wheel forces (include drag and rolling resistance)
-    Force.Wheel.Fx.FL = Fx.FL' - (Force.Aero.Drag/4)  + (Fz.FL*Car.Tyres.Coefficients.RollingResistance);
-    Force.Wheel.Fx.FR = Fx.FR' - (Force.Aero.Drag/4)  + (Fz.FR*Car.Tyres.Coefficients.RollingResistance);
-    Force.Wheel.Fx.RL = Fx.RL' - (Force.Aero.Drag/4)  + (Fz.RL*Car.Tyres.Coefficients.RollingResistance);
-    Force.Wheel.Fx.RR = Fx.RR' - (Force.Aero.Drag/4)  + (Fz.RR*Car.Tyres.Coefficients.RollingResistance);
+    Force.Wheel.Fx.FL = Fx.FL' - (Force.Aero.Drag/4)  + (Fz.FL*Car.Tyres.Front.Coefficients.RollingResistance);
+    Force.Wheel.Fx.FR = Fx.FR' - (Force.Aero.Drag/4)  + (Fz.FR*Car.Tyres.Front.Coefficients.RollingResistance);
+    Force.Wheel.Fx.RL = Fx.RL' - (Force.Aero.Drag/4)  + (Fz.RL*Car.Tyres.Rear.Coefficients.RollingResistance);
+    Force.Wheel.Fx.RR = Fx.RR' - (Force.Aero.Drag/4)  + (Fz.RR*Car.Tyres.Rear.Coefficients.RollingResistance);
     Force.Wheel.Fy.FL = Fy.FL';
     Force.Wheel.Fy.FR = Fy.FR';
     Force.Wheel.Fy.RL = Fy.RL';
@@ -257,8 +266,7 @@ for iSweep = 1:nSweeps
     bState = (NVDACornerState.Timeseries == 3);
     NVDACornerState.tState.GripLimitedBrake = trapz(tLap,bState);
     bState = (NVDACornerState.Timeseries == 4);
-    NVDACornerState.tState.BrakeLimited = trapz(tLap,bState);
-    
+    NVDACornerState.tState.BrakeLimited = trapz(tLap,bState);    
     
     % Use throttle to find fuel/energy consumption
     if strcmp(Car.Category,'ICE') == 1
@@ -271,25 +279,8 @@ for iSweep = 1:nSweeps
         MotorPower = zeros(1,length(vCar));
     elseif strcmp(Car.Category,'EV') == 1
         % Get power from motors
-        if strcmp(Car.Powertrain.Motor.Config,'fwd') == 1
-            CombinedMotorThrust = Force.Wheel.Fx.FL + Force.Wheel.Fx.FR;    
-            MotorPower = CombinedMotorThrust .* vCar; % (W)
-            MotorPower(MotorPower < 0) = 0; % No motor power when tyres have negative thrust (under braking)
-            MotorPower(MotorPower > (2*Car.Powertrain.Motor.P_max)) = Car.Powertrain.Motor.P_max * 2;
-        elseif strcmp(Car.Powertrain.Motor.Config,'rwd') == 1
-            CombinedMotorThrust = Force.Wheel.Fx.RL + Force.Wheel.Fx.RR;    
-            MotorPower = CombinedMotorThrust .* vCar; % (W)
-            MotorPower(MotorPower < 0) = 0; % No motor power when tyres have negative thrust (under braking)
-            MotorPower(MotorPower > (2*Car.Powertrain.Motor.P_max)) = Car.Powertrain.Motor.P_max * 2;
-        elseif strcmp(Car.Powertrain.Motor.Config,'4wd') == 1
-            CombinedMotorThrust = Force.Wheel.Fx.FL + Force.Wheel.Fx.FR + Force.Wheel.Fx.RL + Force.Wheel.Fx.RR; 
-            MotorPower = CombinedMotorThrust .* vCar; % (W)
-            MotorPower(MotorPower < 0) = 0; % No motor power when tyres have negative thrust (under braking)
-            MotorPower(MotorPower > (4*Car.Powertrain.Motor.P_max)) = Car.Powertrain.Motor.P_max * 4;
-        else
-            error('Incorrect motor configuration! How has the sim got this far???')
-        end
-        EPower_avg = (trapz(tLap,MotorPower)) / Laptime;
+        pMotor = pMotor*Car.Powertrain.Motor.nMotors;
+        EPower_avg = (trapz(tLap,pMotor)) / Laptime;
         E_kwh = EPower_avg*(Laptime/3600)/1000;
         CO2_Usage = (0.65*E_kwh);
     elseif strcmp(Car.Category,'Hybrid') == 1
@@ -300,25 +291,8 @@ for iSweep = 1:nSweeps
         vFuelBurn = (mFuelBurn / 719.7) * 1000; % (litres)
         CO2_Usage = 2.31 * vFuelBurn;
         % Get power from motors
-        if strcmp(Car.Powertrain.Motor.Config,'fwd') == 1
-            CombinedMotorThrust = Force.Wheel.Fx.FL + Force.Wheel.Fx.FR;    
-            MotorPower = CombinedMotorThrust .* vCar; % (W)
-            MotorPower(MotorPower < 0) = 0; % No motor power when tyres have negative thrust (under braking)
-            MotorPower(MotorPower > (2*Car.Powertrain.Motor.P_max)) = Car.Powertrain.Motor.P_max * 2;
-        elseif strcmp(Car.Powertrain.Motor.Config,'rwd') == 1
-            CombinedMotorThrust = Force.Wheel.Fx.RL + Force.Wheel.Fx.RR;    
-            MotorPower = CombinedMotorThrust .* vCar; % (W)
-            MotorPower(MotorPower < 0) = 0; % No motor power when tyres have negative thrust (under braking)
-            MotorPower(MotorPower > (2*Car.Powertrain.Motor.P_max)) = Car.Powertrain.Motor.P_max * 2;
-        elseif strcmp(Car.Powertrain.Motor.Config,'4wd') == 1
-            CombinedMotorThrust = Force.Wheel.Fx.FL + Force.Wheel.Fx.FR + Force.Wheel.Fx.RL + Force.Wheel.Fx.RR; 
-            MotorPower = CombinedMotorThrust .* vCar; % (W)
-            MotorPower(MotorPower < 0) = 0; % No motor power when tyres have negative thrust (under braking)
-            MotorPower(MotorPower > (4*Car.Powertrain.Motor.P_max)) = Car.Powertrain.Motor.P_max * 4;
-        else
-            error('Incorrect motor configuration! How has the sim got this far???')
-        end
-        EPower_avg = (trapz(tLap,MotorPower)) / Laptime;
+        pMotor = pMotor*Car.Powertrain.Motor.nMotors;
+        EPower_avg = (trapz(tLap,pMotor)) / Laptime;
         E_kwh = EPower_avg*(Laptime/3600)/1000;
         CO2_Usage = CO2_Usage + (0.65*E_kwh);
     end
@@ -353,9 +327,9 @@ for iSweep = 1:nSweeps
            mkdir(yourFolder)
         end
         sim_output_vars = {'Car','Environment','vCar','sLap','tLap','Force','Laptime','gLong','gLat','aSteeringWheel','rThrottle',...
-                           'rBrake','CO2_Usage','MotorPower','Stability','aUOSteer','hRideF','hRideR','aPitch','aRollF','aRollR',...
+                           'rBrake','CO2_Usage','Stability','aUOSteer','hRideF','hRideR','aPitch','aRollF','aRollR',...
                            'Camber','Grip','bThreeWheeling','bTwoWheeling','tThreeWheeling','tTwoWheeling','NGear','nEngine',...
-                           'vTyreSlipLong','NVDACornerState','Aerobalance'};
+                           'vTyreSlipLong','NVDACornerState','Aerobalance','pMotor','nMotor'};
         save([SaveLocation '\' FolderName '\' SimName{iSweep} '.mat'],sim_output_vars{:})
     end
 
