@@ -4,21 +4,21 @@ close all
 clc
 
 %% Save results location
-SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Final Sims';
+SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Fomula Student\EV1 Sims';
 FolderName = 'Test';
 SimName = {'Test'};
 
 %% Trackmap
-trackmap = 'Autocross_Track.mat';
-% trackmap = 'Endurance_Track_1000_new';
+% trackmap = 'Autocross_Track.mat';
+trackmap = 'Endurance_Track_1000_new';
 % trackmap = 'Acceleration_Track.mat';
 % trackmap = 'SkidPad_Track.mat';
 % trackmap = 'Full_FS_Weekend';
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
 Sweep.Choose_Param = 0;                                % Choose whether to sweep anything or not
-Sweep.Param = {'Car.Brakes.BrakeBias'};             % Variable within car structure to be swept
-Sweep.Values = 0.65:0.01:0.69;
+Sweep.Param = {'Car.Tyres.Front.Name'};             % Variable within car structure to be swept
+Sweep.Values = {'Hoosier_16.0x7.5-10_R25B','Hoosier_20.0x6.0-13','Hoosier_20.5x7.0-13','Hoosier_20.0x7.0-13','Avon_20.0x6.2-13'};
 Sweep.Choose_Carfile = 0;
 Sweep.Carfile = {'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\HEV1.mat',...
     'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\Baseline_Carfile'};
@@ -30,8 +30,7 @@ Sweep.Weatherfile = {'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\Baseline_
 Solver.Steady_state = 1;    % (Pre-sim only)
 Solver.Dynamic_state = 0;   % (Includes steady state-solver in pre-sim)
 
-Validation = 0;
-bUseAeromap = 1;
+bUseAeromap = 0;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -47,7 +46,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         SimName = {'Acceleration_Test'};
         BoundaryConditions.vCar_start = 0;
         BoundaryConditions.vCar_end = [];
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,Sweep,SaveResults,Validation,bUseAeromap);
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,Sweep,SaveResults,bUseAeromap);
         % Skid-pad test
         disp('Simulating sweep of Skid-Pad Test...')
         trackmap = 'SkidPad_Track.mat';
@@ -55,7 +54,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         SimName = {'SkidPad_Test'};
         BoundaryConditions.vCar_start = [];
         BoundaryConditions.vCar_end = [];
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,Sweep,SaveResults,Validation,bUseAeromap);
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,Sweep,SaveResults,bUseAeromap);
         % Full lap (stationary start)
         disp('Simulating sweep of Autocross Test...')
         trackmap = 'Autocross_Track.mat';
@@ -63,7 +62,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         SimName = {'Autocross_Test'};
         BoundaryConditions.vCar_start = 0;
         BoundaryConditions.vCar_end = [];
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,Sweep,SaveResults,Validation,bUseAeromap);
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,Sweep,SaveResults,bUseAeromap);
         % Full lap (steady state)
         disp('Simulating steady state lap of Endurance Test...')
         trackmap = 'Endurance_Track_1000.mat';
@@ -71,7 +70,7 @@ if strcmp(trackmap,'Full_FS_Weekend') == 1
         SimName = {'Endurance_Test'};
         BoundaryConditions.vCar_start = [];
         BoundaryConditions.vCar_end = [];
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,Sweep,SaveResults,Validation,bUseAeromap);        
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderSection,SimName,trackmap,Sweep,SaveResults,bUseAeromap);        
     else
         % Dynamic solve for full FS weekend
         
@@ -80,7 +79,7 @@ else
     if Solver.Steady_state == 1
         SaveResults = 1;
     	% Steady state solve for single track
-        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,Sweep,SaveResults,Validation,bUseAeromap);
+        [Laptime, ~] = Steady_State_Sim(SaveLocation,FolderName,SimName,trackmap,Sweep,SaveResults,bUseAeromap);
     else
         % Dynamic solve for single track
         
