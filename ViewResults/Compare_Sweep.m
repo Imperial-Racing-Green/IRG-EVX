@@ -3,7 +3,7 @@ close all
 clear
 clc
 
-FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Year 3\GDP\Final Sims\BrakeBias';
+FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Fomula Student\EV1 Sims\BrakeBias_Sweep';
 full_weekend = 0;  % If selected point to folder of enclosing all weekend results
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%
@@ -31,7 +31,44 @@ for iTest = 1:length(FolderName)
     for i = 1:height(listing)
         filenames{i} = [listing.folder{i} '\' listing.name{i}];
         Results.(Test{iTest}).(['Sim' num2str(i)]) = load(filenames{i});
+        sim = listing.name{i};
+        SimNames{i} = sim(1:end-4);
     end
+    % Find swept paramater
+    id =  regexp(SimNames{1},'\d');
+    Param = SimNames{1};
+    Param = Param(1:id-1);
+%     Param = regexprep(SimNames{1}, '\d[0-9_]+\d', '');
+    if strcmp(Param(end),'_')
+        Param = Param(1:end-1);
+    end
+    Param = strrep(Param,'_','.');
+    Param = strrep(Param,'SC.L','SC_L');
+    Param = strrep(Param,'SC.D','SC_D');
+    idx = strfind(Param,'.');
+    if ~isempty(idx)
+        SweptParam = Param(idx(end)+1:end);
+        SweptValues = zeros(1,length(SimNames));
+        for i = 1:length(SimNames)
+            j = strfind(SimNames{i},SweptParam);
+            sim = SimNames{i};
+            SimNames{i} = sim(j:end);
+            if any(strfind(Param,'CoGx')) || any(strfind(Param,'CoPx'))
+                Param = strrep(Param,'x','(1)');
+            elseif any(strfind(Param,'CoGy')) || any(strfind(Param,'CoPy'))
+                Param = strrep(Param,'y','(2)');
+            elseif any(strfind(Param,'CoGz')) || any(strfind(Param,'CoPz'))
+                Param = strrep(Param,'z','(3)');
+            else
+                % Do nothing
+            end
+            SweptValues(i) = eval(['Results.' (Test{iTest}) '.' (['Sim' num2str(i)]) '.' Param]);
+        end
+    else
+        SweptParam = 'Sim';
+        SweptValues = 1:length(SimNames);
+    end
+    
 
     SimViewer = figure('Name',Name{iTest},'NumberTitle','off');
     tabgp = uitabgroup(SimViewer,'Position',[0 0 1 1]);
@@ -44,9 +81,52 @@ for iTest = 1:length(FolderName)
     end
     plot(ax,sims,laptimes,'b-o','LineWidth',1.2)
     hold on
-    xlabel('Sim number')
+    xlabel(SweptParam)
     ylabel('Laptime (s)')
     grid minor
+    ax.XTick = 1:length(filenames);
+    ax.XTickLabel = SweptValues;
+    % Limits
+    t = uitab(tabgp,'Title','Limits');
+    for i = 1:length(filenames)
+        sims(i) = i;
+        pctPowerLimited(i) = (Results.(Test{iTest}).(['Sim' num2str(i)]).NVDACornerState.tState.PowerLimited/Results.(Test{iTest}).(['Sim' num2str(i)]).Laptime)*100;
+        pctGripLimitedThrottle(i) = (Results.(Test{iTest}).(['Sim' num2str(i)]).NVDACornerState.tState.GripLimitedThrottle/Results.(Test{iTest}).(['Sim' num2str(i)]).Laptime)*100;
+        pctGripLimitedBrake(i) = (Results.(Test{iTest}).(['Sim' num2str(i)]).NVDACornerState.tState.GripLimitedBrake/Results.(Test{iTest}).(['Sim' num2str(i)]).Laptime)*100;
+        pctBrakeLimited(i) = (Results.(Test{iTest}).(['Sim' num2str(i)]).NVDACornerState.tState.BrakeLimited/Results.(Test{iTest}).(['Sim' num2str(i)]).Laptime)*100;
+    end
+    ax1 = axes(t,'Position',[0.11 0.55 0.35 0.35]);
+    plot(sims,pctPowerLimited,'b-o','LineWidth',1)
+    grid minor
+    title('Power Limited')
+    ylabel('Time (%)')
+    xlabel(SweptParam)
+    ax1.XTick = 1:length(filenames);
+    ax1.XTickLabel = SweptValues;
+    ax2 = axes(t,'Position',[0.55 0.55 0.35 0.35]);
+    plot(sims,pctBrakeLimited,'b-o','LineWidth',1)
+    grid minor
+    title('Brake Limited')
+    ylabel('Time (%)')
+    xlabel(SweptParam)
+    ax2.XTick = 1:length(filenames);
+    ax2.XTickLabel = SweptValues;
+    ax3 = axes(t,'Position',[0.12 0.08 0.35 0.35]);
+    plot(sims,pctGripLimitedThrottle,'b-o','LineWidth',1)
+    grid minor
+    title('Grip Limited (Throttle)')
+    ylabel('Time (%)')
+    xlabel(SweptParam)
+    ax3.XTick = 1:length(filenames);
+    ax3.XTickLabel = SweptValues;
+    ax4 = axes(t,'Position',[0.55 0.08 0.35 0.35]);
+    plot(sims,pctGripLimitedBrake,'b-o','LineWidth',1)
+    grid minor
+    title('Grip Limited (Brake)')
+    ylabel('Time (%)')
+    xlabel(SweptParam)
+    ax4.XTick = 1:length(filenames);
+    ax4.XTickLabel = SweptValues;
     % vCar
     t = uitab(tabgp,'Title','vCar');
     ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
@@ -54,7 +134,7 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).vCar,'LineWidth',1)
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     xlabel('sLap (m)')
     ylabel('vCar (m/s)')
     grid minor
@@ -72,7 +152,7 @@ for iTest = 1:length(FolderName)
         temp = gca;
         col(i,:) = temp.Children(1).Color;
     end
-    legend(listing.name,'AutoUpdate','off')
+    legend(SimNames,'Interpreter','none','AutoUpdate','off')
     xlabel('sLap (m)')
     ylabel('vCar (m/s)')
     grid minor
@@ -90,7 +170,7 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).rThrottle*100,'LineWidth',1)
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     xlabel('sLap (m)')
     ylabel('rThrottle (%)')
     grid minor
@@ -103,7 +183,7 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).rBrake*100,'LineWidth',1)
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     xlabel('sLap (m)')
     ylabel('rBrake (%)')
     grid minor
@@ -116,11 +196,12 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).aSteeringWheel,'LineWidth',1)
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     xlabel('sLap (m)')
     ylabel('aSteeringWheel (deg)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
+    ylim([-180 180])
     % Engine inputs
     t = uitab(tabgp,'Title','Engine inputs');
     ax1 = axes(t,'Position',[0.05 0.55 0.9 0.4]);
@@ -128,7 +209,7 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).NGear,'LineWidth',1)
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     ylabel('NGear')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
@@ -138,7 +219,7 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).nEngine,'LineWidth',1)
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     xlabel('sLap (m)')
     ylabel('nEngine (RPM)')
     grid minor
@@ -150,12 +231,12 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).gLat,'LineWidth',1)
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     xlabel('sLap (m)')
     ylabel('gLat (g)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
-    ylim([-4.5 4.5])
+    ylim([-3.5 3.5])
     % gLong
     t = uitab(tabgp,'Title','gLong');
     ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
@@ -163,7 +244,7 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).gLong,'LineWidth',1)
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     xlabel('sLap (m)')
     ylabel('gLong (g)')
     grid minor
@@ -176,10 +257,12 @@ for iTest = 1:length(FolderName)
         scatter(Results.(Test{iTest}).(['Sim' num2str(i)]).gLat,Results.(Test{iTest}).(['Sim' num2str(i)]).gLong,'filled')
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     xlabel('gLat (g)')
     ylabel('gLong (g)')
     grid minor
+    xlim([-3.5 3.5])
+    ylim([-2.5 2])
     % Drag
     t = uitab(tabgp,'Title','Drag');
     ax = axes(t,'Position',[0.1 0.12 0.85 0.85]);
@@ -187,7 +270,7 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).Force.Aero.Drag,'LineWidth',1)
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     xlabel('sLap (m)')
     ylabel('Drag (N)')
     grid minor
@@ -199,7 +282,7 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).Force.Aero.Downforce,'LineWidth',1)
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     xlabel('sLap (m)')
     ylabel('Downforce (N)')
     grid minor
@@ -211,7 +294,7 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).hRideF*1000,'LineWidth',1)
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     ylabel('hRideF (mm)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
@@ -220,7 +303,7 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).hRideR*1000,'LineWidth',1)
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     xlabel('sLap (m)')
     ylabel('hRideR (mm)')
     grid minor
@@ -281,7 +364,7 @@ for iTest = 1:length(FolderName)
             abs(Results.(Test{iTest}).(['Sim' num2str(i)]).Grip.RR.mu_x)],10,'filled')
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     ylabel('Grip mu_x')
     xlabel('gLong (g)')
     ylim([0 3])
@@ -298,7 +381,7 @@ for iTest = 1:length(FolderName)
             abs(Results.(Test{iTest}).(['Sim' num2str(i)]).Grip.RR.mu_y)],10,'filled')
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     ylabel('Grip mu_y')
     xlabel('gLat (g)')
     grid minor
@@ -443,7 +526,7 @@ for iTest = 1:length(FolderName)
     end 
     ylabel('bThreeWheeling')
     ylim([-0.05 1.05]);
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
     ax2 = axes(t,'Position',[0.05 0.08 0.9 0.4]);
@@ -459,7 +542,7 @@ for iTest = 1:length(FolderName)
     end 
     ylabel('bTwoWheeling')
     ylim([-0.05 1.05]);
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     xlabel('sLap (m)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
@@ -470,7 +553,7 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).aPitch,'LineWidth',1)
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     ylabel('aPitch (deg)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
@@ -479,7 +562,7 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).aRollF,'LineWidth',1)
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     xlabel('sLap (m)')
     ylabel('aRollF (deg)')
     grid minor
@@ -489,7 +572,7 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).aRollR,'LineWidth',1)
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     xlabel('sLap (m)')
     ylabel('aRollR (deg)')
     grid minor
@@ -501,7 +584,7 @@ for iTest = 1:length(FolderName)
         scatter(1,Results.(Test{iTest}).(['Sim' num2str(i)]).Stability.Static.SM*100,'filled')
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     ylabel('Static margin (%)')
     grid minor
     ax2 = axes(t,'Position',[0.05 0.08 0.9 0.4]);
@@ -509,7 +592,7 @@ for iTest = 1:length(FolderName)
         scatter(real(Results.(Test{iTest}).(['Sim' num2str(i)]).Stability.Dynamic.E_Values),imag(Results.(Test{iTest}).(['Sim' num2str(i)]).Stability.Dynamic.E_Values),'filled')
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     ylabel('Dynamic eigenvalues')
     grid minor
     % NVDA Corner States
@@ -519,14 +602,14 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).NVDACornerState.Timeseries,'LineWidth',1)
         hold on
     end 
-    legend(listing.name)
+    legend(SimNames,'Interpreter','none')
     xlabel('sLap (m)')
     ylabel('NVDACornerState')
     title('1 - PowerLimited ; 2 - GripLimitedThrottle ; 3 - GripLimitedBrake ; 4 - BrakeLimited')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
     ylim([0.5 4.5])
-    
+        
 end
 
 % Calculate scores
@@ -559,15 +642,19 @@ if full_weekend == 1
     lap_min = 57.775;
     CO2_min = 0.1169*22;
     % Calculate sim times for specific tests
-    Times.SkidPad_Test.Sims = Times.SkidPad_Test.Sims; 
     Times.Endurance_Test.Sims = (22*(Times.Endurance_Test.Sims)) + 180 + 1.5;
-    Times.Autocross_Test.Sims = Times.Autocross_Test.Sims;
-    % Calculate fuel efficiency    
-    mFuelPitstop = 180*5.2842e-5;
-    vFuelPitstop = (mFuelPitstop/719.7) * 1000; % (litres)
-    CO2_pitstop = 2.31*vFuelPitstop;
+    % Calculate fuel efficiency  
+    for iSim = 1:length(sims)
+        if strcmp(Results.Endurance_Test.(Sims{iSim}).Car.Category,'Hybrid') | strcmp(Results.Endurance_Test.(Sims{iSim}).Car.Category,'ICE')
+            mFuelPitstop = 180*5.2842e-5;
+            vFuelPitstop = (mFuelPitstop/719.7) * 1000; % (litres)
+            CO2_pitstop(i) = 2.31*vFuelPitstop;
+        else
+            CO2_pitstop(i) = 0;
+        end
+    end
     CO2_Usage_Total = (22*CO2_Usage.(Test{iTest}).Sims) + CO2_pitstop;
-    FuelEfficiencyFactors = (lap_min./( Times.Endurance_Test.Sims/22)).*(CO2_min./CO2_Usage_Total);
+    FuelEfficiencyFactors = (lap_min./( (Times.Endurance_Test.Sims-180)/22)).*(CO2_min./CO2_Usage_Total);
     
     % Calculate other points
     Points.Sim = [1:length(FuelEfficiencyFactors)]';
@@ -589,13 +676,68 @@ if full_weekend == 1
     Points.Efficiency(Points.Efficiency > 100) = 100;
     Points.Total = Points.Acceleration + Points.Skidpad + Points.Autocross + Points.Endurance + Points.Efficiency;
     Points = struct2table(Points);
-    figure()
+    
+    Summary = figure('Name',' Events Summary','NumberTitle','off');
+    tabgp = uitabgroup(Summary,'Position',[0 0 1 1]);
+    t = uitab(tabgp,'Title','Times');
+    axes('parent',t);
+    subplot(2,3,1);
+    plot(Times.Acceleration_Test.Sims,'b-o','LineWidth',1.2)
+    title('Acceleration')
+    ylabel('Time (s)')
+    xlabel(SweptParam)
+    ax = gca;
+    ax.XTick = 1:length(filenames);
+    ax.XTickLabel = SweptValues;
+    grid on
+    subplot(2,3,2)
+    plot(Times.SkidPad_Test.Sims,'b-o','LineWidth',1.2)
+    title('Skidpad')
+    ylabel('Time (s)')
+    xlabel(SweptParam)
+    ax = gca;
+    ax.XTick = 1:length(filenames);
+    ax.XTickLabel = SweptValues;
+    grid on
+    subplot(2,3,3)
+    plot(Times.Autocross_Test.Sims,'b-o','LineWidth',1.2)
+    title('Autocross')
+    ylabel('Tine (s)')
+    xlabel(SweptParam)
+    ax = gca;
+    ax.XTick = 1:length(filenames);
+    ax.XTickLabel = SweptValues;
+    grid on
+    subplot(2,3,4)
+    plot(Times.Endurance_Test.Sims,'b-o','LineWidth',1.2)
+    title('Endurance')
+    ylabel('Time (s)')
+    xlabel(SweptParam)
+    ax = gca;
+    ax.XTick = 1:length(filenames);
+    ax.XTickLabel = SweptValues;
+    grid on
+    subplot(2,3,5)
+    plot(CO2_Usage_Total,'b-o','LineWidth',1.2)
+    title('Efficiency')
+    ylabel('CO_{2} produced (kg)')
+    xlabel(SweptParam)
+    ax = gca;
+    ax.XTick = 1:length(filenames);
+    ax.XTickLabel = SweptValues;
+    grid on
+        
+    t = uitab(tabgp,'Title','Points');
+    axes('parent',t);
     subplot(2,3,1)
     y = table2array(Points(:,2))';
     plot(y,'b-o','LineWidth',1.2)
     title('Acceleration (75pts)')
     ylabel('Points')
-    xlabel('Sim')
+    xlabel(SweptParam)
+    ax = gca;
+    ax.XTick = 1:length(filenames);
+    ax.XTickLabel = SweptValues;
     grid on
     subplot(2,3,2)
     y = table2array(Points(:,3))';
@@ -603,7 +745,10 @@ if full_weekend == 1
 %     title('Skidpad (50pts)')
     title('Skidpad (75pts)')
     ylabel('Points')
-    xlabel('Sim')
+    xlabel(SweptParam)
+    ax = gca;
+    ax.XTick = 1:length(filenames);
+    ax.XTickLabel = SweptValues;
     grid on
     subplot(2,3,3)
     y = table2array(Points(:,4))';
@@ -611,7 +756,10 @@ if full_weekend == 1
 %     title('Autocross (150pts)')
     title('Autocross (100pts)')
     ylabel('Points')
-    xlabel('Sim')
+    xlabel(SweptParam)
+    ax = gca;
+    ax.XTick = 1:length(filenames);
+    ax.XTickLabel = SweptValues;
     grid on
     subplot(2,3,4)
     y = table2array(Points(:,5))';
@@ -619,23 +767,31 @@ if full_weekend == 1
 %     title('Endurance (300pts)')
     title('Endurance (325pts)')
     ylabel('Points')
-    xlabel('Sim')
+    xlabel(SweptParam)
+    ax = gca;
+    ax.XTick = 1:length(filenames);
+    ax.XTickLabel = SweptValues;
     grid on
     subplot(2,3,5)
     y = table2array(Points(:,6))';
     plot(y,'b-o','LineWidth',1.2)
     title('Efficiency (100 pts)')
     ylabel('Points')
-    xlabel('Sim')
+    xlabel(SweptParam)
+    ax = gca;
+    ax.XTick = 1:length(filenames);
+    ax.XTickLabel = SweptValues;
     grid on
     subplot(2,3,6)
     y = table2array(Points(:,7))';
     plot(y,'b-o','LineWidth',1.2)
     title('Total (675pts)')
     ylabel('Points')
-    xlabel('Sim')
+    xlabel(SweptParam)
     grid on
-
+    ax = gca;
+    ax.XTick = 1:length(filenames);
+    ax.XTickLabel = SweptValues;
 end
 
 
