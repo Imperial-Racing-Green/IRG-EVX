@@ -11,10 +11,12 @@ end
 %% Fronts
 if strcmp(Car.Tyres.Front.Name,'Hoosier_16.0x7.5-10_R25B') && (Car.Tyres.Front.Pressure == 12)
     % These numbers need fixing!
-    Car.Tyres.Front.Coefficients.Pacejka = Hoosier_43131;
+%     Car.Tyres.Front.Coefficients.Pacejka = Hoosier_43131;
     Car.Tyres.Front.Coefficients.RollingResistance = 0.020;
     Car.Dimension.WheelFL.Radius = 0.2032; % Rim radius + tyre thickness
     Car.Dimension.WheelFR.Radius = 0.2032;
+    load('TyreMap.mat'); % Load in tyre map for pacejka coefficent for Hoosier tyres
+    Car.Tyres.Front.Coefficients.Pacejka = TyreMap; 
 elseif strcmp(Car.Tyres.Front.Name,'Hoosier_20.0x6.0-13') && (Car.Tyres.Front.Pressure == 12)
     Car.Tyres.Front.Coefficients.Pacejka = Hoosier_43131;
     Car.Tyres.Front.Coefficients.RollingResistance = 0.020;
@@ -42,10 +44,12 @@ end
 %% Rears
 if strcmp(Car.Tyres.Rear.Name,'Hoosier_16.0x7.5-10_R25B') && (Car.Tyres.Rear.Pressure == 12)
     % These numbers need fixing!
-    Car.Tyres.Rear.Coefficients.Pacejka = Hoosier_43131;
+%     Car.Tyres.Rear.Coefficients.Pacejka = Hoosier_43131;
     Car.Tyres.Rear.Coefficients.RollingResistance = 0.020;
     Car.Dimension.WheelRL.Radius = 0.2032; % Rim radius + tyre thickness
     Car.Dimension.WheelRR.Radius = 0.2032;
+    load('TyreMap.mat'); % Load in tyre map for pacejka coefficent for Hoosier tyres
+    Car.Tyres.Rear.Coefficients.Pacejka = TyreMap; 
 elseif strcmp(Car.Tyres.Rear.Name,'Hoosier_20.0x6.0-13') && (Car.Tyres.Rear.Pressure == 12)
     Car.Tyres.Rear.Coefficients.Pacejka = Hoosier_43131;
     Car.Tyres.Rear.Coefficients.RollingResistance = 0.020;

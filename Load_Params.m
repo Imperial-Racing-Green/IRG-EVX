@@ -20,7 +20,6 @@ Car.Balance.CoG = [Car.Dimension.CoG(1)/Car.Dimension.lWheelbase, 0, Car.Dimensi
 Car.Balance.CoP = [Car.Dimension.CoP(1)/Car.Dimension.lWheelbase, 0, Car.Dimension.CoP(3)/Car.Dimension.Height]; 
 
 %% Tyre info
-% Car.Tyres = load('TyreMap.mat'); % Load in tyre map for pacejka coefficent for Hoosier tyres
 Car.Tyres.Camber.FL = -0.65;
 Car.Tyres.Camber.FR = -0.65;
 Car.Tyres.Camber.RL = -0.40;
