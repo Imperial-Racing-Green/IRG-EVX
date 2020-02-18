@@ -47,7 +47,7 @@ Camber.RL = Car.Tyres.Camber.RL*ones(length(radius_d),1);
 Camber.RR = Car.Tyres.Camber.RR*ones(length(radius_d),1);
 
 eps = Inf;
-eps_lim = 0.01;
+eps_lim = 0.015;
 v_x_check = zeros(1,length(distanceTrack));
 while eps >= eps_lim
 
@@ -127,7 +127,7 @@ for i = 1:length(distanceTrack)
         
     eps_prev = Inf;
     Fz_check = [0 0 0 0];
-    eps_lim = 0.01;
+    eps_lim = 0.015;
     bSkip = 0;
     while bSkip ~= 1
      
@@ -333,7 +333,7 @@ for i = length(distanceTrack):-1:1
     
     eps_prev = Inf;
     Fz_check = [0 0 0 0];
-    eps_lim = 0.01;
+    eps_lim = 0.015;
     bSkip = 0;
     while bSkip ~= 1
                 
