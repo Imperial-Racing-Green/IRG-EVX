@@ -108,7 +108,7 @@ while eps >= eps_lim
     disp(['Approaching vCar convergence criterion: ' num2str(min((eps_lim/eps),1)*100) ' %'])
     v_x_check = v_x;
 end
-    
+
 %% Applying power limit
 disp('Applying power limits...')
 v_x2 = zeros(length(distanceTrack),1);
