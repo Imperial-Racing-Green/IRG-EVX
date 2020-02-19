@@ -55,6 +55,10 @@ for iSweep = 1:nSweeps
         load(Sweep.Weatherfile{iSweep});
     end
     
+    % Define grip level incase it was changes
+    Car.Tyres.Front.GripScale = Car.Tyres.GripScale_Total*(Car.Tyres.GripWeightingFront/0.5);        
+    Car.Tyres.Rear.GripScale = (Car.Tyres.GripScale_Total*2) - Car.Tyres.Front.GripScale;
+    
     
     %% Running Kinematics
     % Front_kine = run_kine_sim('Kinematics_Model',Car.Sus.Front.Hardpoints);

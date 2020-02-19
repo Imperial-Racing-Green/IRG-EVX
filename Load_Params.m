@@ -29,9 +29,7 @@ Car.Tyres.CamberRollFactor.Rear = 0.13;      % (deg/deg)
 Car.Tyres.CamberRideFactor.Front = -34.8;         % (deg/m)
 Car.Tyres.CamberRideFactor.Rear = -11.5;          % (deg/m)
 Car.Tyres.GripScale_Total = 2/3;            % Scale factor of the grip level (2/3 accounts for higher grip seen in test facility)
-Car.Tyres.GripWeightingFront = 0.5;
-Car.Tyres.Front.GripScale = Car.Tyres.GripScale_Total*(Car.Tyres.GripWeightingFront/0.5);        
-Car.Tyres.Rear.GripScale = (Car.Tyres.GripScale_Total*2) - Car.Tyres.Front.GripScale;  
+Car.Tyres.GripWeightingFront = 0.5; 
 Car.Tyres.bSameTyreType = 1;    % (boolean) Forces rear tyres to be the same type as fronts (can have different pressure). Useful for sweeping tyre choice for both axles
 Car.Tyres.Front.Name = 'Hoosier_16.0x7.5-10_R25B'; % If front and rear are intentionally different set 'bSameTyreType = 0'
 Car.Tyres.Rear.Name = 'Hoosier_16.0x7.5-10_R25B';
