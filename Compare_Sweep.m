@@ -3,9 +3,14 @@ close all
 clear
 clc
 
-FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Fomula Student\EV1 Sims\Test';
+FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Fomula Student\EV1 Sims\BrakeBias_Sweep';
 full_weekend = 0;  % If selected point to folder of enclosing all weekend results
-bFindSweptVariable = 0; % Only set to 1 if its a single swept numeric values...
+
+% Variable to plot on x-axis. Set 'bFindSweptVariable = 1' (optional)
+bFindSweptVariable = 1; % Only set to 1 if its a single swept numeric values...
+SweptParam = 'Car.Brakes.BrakeBias';
+ParamName = 'BrakeBias';
+
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%
 
@@ -35,46 +40,56 @@ for iTest = 1:length(FolderName)
         sim = listing.name{i};
         SimNames{i} = sim(1:end-4);
     end
+%     if bFindSweptVariable
+%         % Find swept paramater
+%         id =  regexp(SimNames{1},'\d');
+%         Param = SimNames{1};
+%         Param = Param(1:id-1);
+%     %     Param = regexprep(SimNames{1}, '\d[0-9_]+\d', '');
+%         if strcmp(Param(end),'_')
+%             Param = Param(1:end-1);
+%         end
+%         Param = strrep(Param,'_','.');
+%         Param = strrep(Param,'SC.L','SC_L');
+%         Param = strrep(Param,'SC.D','SC_D');
+%         idx = strfind(Param,'.');
+%         if ~isempty(idx)
+%             SweptParam = Param(idx(end)+1:end);
+%             SweptValues = zeros(1,length(SimNames));
+%             for i = 1:length(SimNames)
+%                 j = strfind(SimNames{i},SweptParam);
+%                 sim = SimNames{i};
+%                 SimNames{i} = sim(j:end);
+%                 if any(strfind(Param,'CoGx')) || any(strfind(Param,'CoPx'))
+%                     Param = strrep(Param,'x','(1)');
+%                 elseif any(strfind(Param,'CoGy')) || any(strfind(Param,'CoPy'))
+%                     Param = strrep(Param,'y','(2)');
+%                 elseif any(strfind(Param,'CoGz')) || any(strfind(Param,'CoPz'))
+%                     Param = strrep(Param,'z','(3)');
+%                 else
+%                     % Do nothing
+%                 end
+%                 SweptValues(i) = eval(['Results.' (Test{iTest}) '.' (['Sim' num2str(i)]) '.' Param]);
+%             end
+%         else
+%             SweptParam = 'Sim';
+%             SweptValues = 1:length(SimNames);
+%         end
+%     else
+%         SweptParam = 'Sim';
+%         SweptValues = 1:length(SimNames);
+%     end    
+    
     if bFindSweptVariable
-        % Find swept paramater
-        id =  regexp(SimNames{1},'\d');
-        Param = SimNames{1};
-        Param = Param(1:id-1);
-    %     Param = regexprep(SimNames{1}, '\d[0-9_]+\d', '');
-        if strcmp(Param(end),'_')
-            Param = Param(1:end-1);
-        end
-        Param = strrep(Param,'_','.');
-        Param = strrep(Param,'SC.L','SC_L');
-        Param = strrep(Param,'SC.D','SC_D');
-        idx = strfind(Param,'.');
-        if ~isempty(idx)
-            SweptParam = Param(idx(end)+1:end);
-            SweptValues = zeros(1,length(SimNames));
-            for i = 1:length(SimNames)
-                j = strfind(SimNames{i},SweptParam);
-                sim = SimNames{i};
-                SimNames{i} = sim(j:end);
-                if any(strfind(Param,'CoGx')) || any(strfind(Param,'CoPx'))
-                    Param = strrep(Param,'x','(1)');
-                elseif any(strfind(Param,'CoGy')) || any(strfind(Param,'CoPy'))
-                    Param = strrep(Param,'y','(2)');
-                elseif any(strfind(Param,'CoGz')) || any(strfind(Param,'CoPz'))
-                    Param = strrep(Param,'z','(3)');
-                else
-                    % Do nothing
-                end
-                SweptValues(i) = eval(['Results.' (Test{iTest}) '.' (['Sim' num2str(i)]) '.' Param]);
-            end
-        else
-            SweptParam = 'Sim';
-            SweptValues = 1:length(SimNames);
+        for i = 1:length(SimNames)
+            SweptValues(i) = eval(['Results.' (Test{iTest}) '.' (['Sim' num2str(i)]) '.' SweptParam]);
+            SimNames{i} = [ParamName '_' num2str(SweptValues(i))];
         end
     else
         SweptParam = 'Sim';
         SweptValues = 1:length(SimNames);
-    end    
-
+    end   
+    
     SimViewer = figure('Name',Name{iTest},'NumberTitle','off');
     tabgp = uitabgroup(SimViewer,'Position',[0 0 1 1]);
     % Laptime sensitivity
