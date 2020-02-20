@@ -196,6 +196,9 @@ for iSweep = 1:nSweeps
     bkd_T(bkd_T <= 0) = 0;
     rThrottle = fwd_T ./ Force.Powertrain.Thrust.Total;
     rBrake = bkd_T ./ Force.Brakes.Total;
+    % Correct motor outputs
+    pMotor = pMotor.*rThrottle;
+    nMotor = nMotor.*rThrottle;
     % Wheel forces (include drag and rolling resistance)
     Force.Wheel.Fx.FL = Fx.FL' - (Force.Aero.Drag/4)  + (Fz.FL*Car.Tyres.Front.Coefficients.RollingResistance);
     Force.Wheel.Fx.FR = Fx.FR' - (Force.Aero.Drag/4)  + (Fz.FR*Car.Tyres.Front.Coefficients.RollingResistance);
@@ -211,10 +214,10 @@ for iSweep = 1:nSweeps
     Force.Wheel.Fz.RR = Fz.RR;
     
     % Calculate tyre camber changes from static position
-    Camber.FL = Car.Tyres.Camber.FL + (aRollF*Car.Tyres.CamberRollFactor.Front) + (dhRideF(i)*Car.Tyres.CamberRideFactor.Front);
-    Camber.FR = Car.Tyres.Camber.FR - (aRollF*Car.Tyres.CamberRollFactor.Front) + (dhRideF(i)*Car.Tyres.CamberRideFactor.Front);
-    Camber.RL = Car.Tyres.Camber.RL + (aRollR*Car.Tyres.CamberRollFactor.Rear) + (dhRideR(i)*Car.Tyres.CamberRideFactor.Rear);
-    Camber.RR = Car.Tyres.Camber.RR - (aRollR*Car.Tyres.CamberRollFactor.Rear) + (dhRideR(i)*Car.Tyres.CamberRideFactor.Rear);
+    Camber.FL = Car.Tyres.Camber.FL + (aRollF*Car.Tyres.CamberRollFactor.Front) + (dhRideF*Car.Tyres.CamberRideFactor.Front);
+    Camber.FR = Car.Tyres.Camber.FR - (aRollF*Car.Tyres.CamberRollFactor.Front) + (dhRideF*Car.Tyres.CamberRideFactor.Front);
+    Camber.RL = Car.Tyres.Camber.RL + (aRollR*Car.Tyres.CamberRollFactor.Rear) + (dhRideR*Car.Tyres.CamberRideFactor.Rear);
+    Camber.RR = Car.Tyres.Camber.RR - (aRollR*Car.Tyres.CamberRollFactor.Rear) + (dhRideR*Car.Tyres.CamberRideFactor.Rear);
     
     % Tyre slips
 %     SlipAngle.Front = 0.5*(SA.FL + SA.FR);
@@ -280,11 +283,13 @@ for iSweep = 1:nSweeps
         mFuelBurn = trapz(tLap,MassFlowRate); % (kg)
         vFuelBurn = (mFuelBurn / 719.7) * 1000; % (litres)
         CO2_Usage = 2.31 * vFuelBurn;
-        MotorPower = zeros(1,length(vCar));
+        pMotor = zeros(1,length(vCar));
+        nMotor = zeros(1,length(vCar));
     elseif strcmp(Car.Category,'EV') == 1
+        nEngine = zeros(length(radius_d),1);
         % Get power from motors
-        pMotor = pMotor*Car.Powertrain.Motor.nMotors;
-        EPower_avg = (trapz(tLap,pMotor)) / Laptime;
+        TotalMotorPower = pMotor*Car.Powertrain.Motor.nMotors;
+        EPower_avg = (trapz(tLap,TotalMotorPower)) / Laptime;
         E_kwh = EPower_avg*(Laptime/3600)/1000;
         CO2_Usage = (0.65*E_kwh);
     elseif strcmp(Car.Category,'Hybrid') == 1
@@ -295,8 +300,8 @@ for iSweep = 1:nSweeps
         vFuelBurn = (mFuelBurn / 719.7) * 1000; % (litres)
         CO2_Usage = 2.31 * vFuelBurn;
         % Get power from motors
-        pMotor = pMotor*Car.Powertrain.Motor.nMotors;
-        EPower_avg = (trapz(tLap,pMotor)) / Laptime;
+        TotalMotorPower = pMotor*Car.Powertrain.Motor.nMotors;
+        EPower_avg = (trapz(tLap,TotalMotorPower)) / Laptime;
         E_kwh = EPower_avg*(Laptime/3600)/1000;
         CO2_Usage = CO2_Usage + (0.65*E_kwh);
     end
