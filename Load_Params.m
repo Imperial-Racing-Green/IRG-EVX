@@ -11,7 +11,7 @@ Car.Dimension.Rear_track = 1.2;
 Car.Dimension.Height = 1.21;
 Car.Dimension.lWheelbase = 1.55;
 Car.Dimension.CoG = [0.775, 0, 0.300]; % Behind front axle
-Car.Dimension.CoP = [0.868, 0, 0.37]; % Behind front axle
+Car.Dimension.CoP = [0.682, 0, 0.37]; % Behind front axle
 Car.Dimension.zRollCentreF = 28.6/1000;
 Car.Dimension.zRollCentreR = 25.6/1000;
 
@@ -20,10 +20,10 @@ Car.Balance.CoG = [Car.Dimension.CoG(1)/Car.Dimension.lWheelbase, 0, Car.Dimensi
 Car.Balance.CoP = [Car.Dimension.CoP(1)/Car.Dimension.lWheelbase, 0, Car.Dimension.CoP(3)/Car.Dimension.Height]; 
 
 %% Tyre info
-Car.Tyres.Camber.FL = -0.65;
-Car.Tyres.Camber.FR = -0.65;
-Car.Tyres.Camber.RL = -0.40;
-Car.Tyres.Camber.RR = -0.40;
+Car.Tyres.Camber.FL = -1.0;
+Car.Tyres.Camber.FR = -1.0;
+Car.Tyres.Camber.RL = 0.0;
+Car.Tyres.Camber.RR = 0.0;
 Car.Tyres.CamberRollFactor.Front = 0.36;     % (deg/deg)
 Car.Tyres.CamberRollFactor.Rear = 0.13;      % (deg/deg)
 Car.Tyres.CamberRideFactor.Front = -34.8;         % (deg/m)
