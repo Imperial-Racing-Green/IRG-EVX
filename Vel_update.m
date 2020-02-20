@@ -126,7 +126,8 @@ for i = 1:length(distanceTrack)
     Fy_real = (Car.Mass.Total * (v_x2(i)^2))/radius_d(i);
         
     eps_prev = Inf;
-    Fz_check = [0 0 0 0];
+%     Fz_check = [0 0 0 0];
+    Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
     eps_lim = 0.015;
     bSkip = 0;
     while bSkip ~= 1
@@ -200,7 +201,7 @@ for i = 1:length(distanceTrack)
         [SAmin, idx] = min(abs(SlipAngles));
         SA.FL(i) = SAmin*sign(SlipAngles(idx));
         SA.FR(i) = SA.FL(i);
-        SL.FL(i:end) = min([SL.FL(i), SL.FR(i)]);
+        SL.FL(i:end) = min([SL.FL(i), SL.FR(i), 1]);
         SL.FR(i:end) = SL.FL(i);
 
         Fy_RLreal(i) = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
@@ -225,7 +226,7 @@ for i = 1:length(distanceTrack)
         [SAmin, idx] = min(abs(SlipAngles));
         SA.RL(i) = SAmin*sign(SlipAngles(idx));
         SA.RR(i) = SA.RL(i);
-        SL.RL(i:end) = min([SL.RL(i), SL.RR(i)]);
+        SL.RL(i:end) = min([SL.RL(i), SL.RR(i), 1]);
         SL.RR(i:end) = SL.RL(i);
         
         Fx_traction = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
@@ -332,7 +333,8 @@ for i = length(distanceTrack):-1:1
                     Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius]; 
     
     eps_prev = Inf;
-    Fz_check = [0 0 0 0];
+%     Fz_check = [0 0 0 0];
+    Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
     eps_lim = 0.015;
     bSkip = 0;
     while bSkip ~= 1
@@ -382,7 +384,7 @@ for i = length(distanceTrack):-1:1
         [SAmin, idx] = min(abs(SlipAngles));
         SA_FL = SAmin*sign(SlipAngles(idx));
         SA_FR = SA_FL;
-        SL_FL = min([SL_FL, SL_FR]);
+        SL_FL = max([SL_FL, SL_FR, -1]);
         SL_FR = SL_FL;
 
         Fy_RLreal(i) = (Fz_RL_d(i) / Fz_sum(i)) * Fy_real;
@@ -407,7 +409,7 @@ for i = length(distanceTrack):-1:1
         [SAmin, idx] = min(abs(SlipAngles));
         SA_RL = SAmin*sign(SlipAngles(idx));
         SA_RR = SA_RL;
-        SL_RL = min([SL_RL, SL_RR]);
+        SL_RL = max([SL_RL, SL_RR, -1]);
         SL_RR = SL_RL;
         
         Fx_traction = [Fx_FLreal; Fx_FRreal; Fx_RLreal; Fx_RRreal];
