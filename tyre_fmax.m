@@ -26,21 +26,22 @@ end
 
 % Columns of F_x are the the lateral loading capability of a tyre under a
 % set Fz. Each row is at a different slip ratio. Same format for F_y
-% F_x = rmmissing(F_x);
-% F_y = rmmissing(F_y);
 F_x(isnan(F_x)) = 0;
 F_y(isnan(F_y)) = 0;
 
-Force = [];
-SlipAngle = [];
-SlipRatio = [];
-for i = 1:size(F_x,1)
-    for j = 1:size(F_x,2)
-        Force = [Force; F_x(i,j), F_y(i,j)];
-        SlipAngle = [SlipAngle; SA(i,j)];
-        SlipRatio = [SlipRatio; SL(i,j)];
-    end
-end
+% Force = [];
+% SlipAngle = [];
+% SlipRatio = [];
+% for i = 1:size(F_x,1)
+%     for j = 1:size(F_x,2)
+%         Force = [Force; F_x(i,j), F_y(i,j)];
+%         SlipAngle = [SlipAngle; SA(i,j)];
+%         SlipRatio = [SlipRatio; SL(i,j)];
+%     end
+% end
+Force = [F_x(:), F_y(:)];
+SlipAngle = SA(:);
+SlipRatio = SL(:);
 
 % Find outer edge boundary of tyre potential forces
 k = boundary(Force(:,1),Force(:,2),0);
