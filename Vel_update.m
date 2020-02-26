@@ -1,4 +1,4 @@
-function [velocity_d, Fx, Fy, Fz, SA, SL, zCoG_dyn] = Vel_update(Fz_log,distanceTrack,dist_log,radius_d,Environment,Car,BoundaryConditions,bUseAeromap)
+function [velocity_d, Fx, Fy, Fz, SA, SL, zCoG_dyn] = Vel_update(Fz_log,distanceTrack,radius_d,Environment,Car,BoundaryConditions,bUseAeromap)
 
 TyrePoints = 15;
 TyreInterpMethod = 'linear';
@@ -126,7 +126,6 @@ for i = 1:length(distanceTrack)
     Fy_real = (Car.Mass.Total * (v_x2(i)^2))/radius_d(i);
         
     eps_prev = Inf;
-%     Fz_check = [0 0 0 0];
     Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
     eps_lim = 0.015;
     bSkip = 0;
@@ -333,7 +332,6 @@ for i = length(distanceTrack):-1:1
                     Car.Dimension.WheelRL.Radius; Car.Dimension.WheelRR.Radius]; 
     
     eps_prev = Inf;
-%     Fz_check = [0 0 0 0];
     Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
     eps_lim = 0.015;
     bSkip = 0;
@@ -511,3 +509,4 @@ v_x3(1) = min(v_x3(1),v_x2(1));
 %% Output
 velocity_d = v_x3;
 
+end
