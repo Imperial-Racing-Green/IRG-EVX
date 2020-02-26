@@ -3,7 +3,7 @@ function [F_x,F_y,F_xmax,F_ymax,F_xmin,F_ymin,SA_xmax,SA_xmin,SL_xmax,SL_xmin,SA
 % Slip ratio
 SL = linspace(-0.3,0.3,points);
 % Slip angle
-SA = linspace(-15,15,points);
+SA = linspace(-20,20,points);
 
 [SA,SL] = meshgrid(SA,SL);
 
@@ -60,7 +60,7 @@ y = Fx;
 coeffs = [y.^2,x.*y,x,y,ones(numel(x),1)]\x.^2;
 % Solve for r in polar coordinate form
 i = 1;
-for theta = 0:2.5:180
+for theta = 0:5:180
     a = (coeffs(1)*((sind(theta))^2)) + (coeffs(2)*cosd(theta)*sind(theta)) - ((cosd(theta))^2);
     b = (coeffs(3)*cosd(theta)) + (coeffs(4)*sind(theta));
     c = coeffs(5);
@@ -79,11 +79,15 @@ Fx_interp = temp(:,2);
 SL_interp = interp1(Fx(idx),Slip.Ratio(idx)',Fx_interp,'nearest','extrap');
 [~, idx] = unique(Fy);
 SA_interp = interp1(Fy(idx),Slip.Angle(idx)',Fy_interp,'nearest','extrap');
-% Clean up SA and SL with some sketchy curve fitting
-coeff = polyfit(Fx_interp,SL_interp,1);
+% Clean up SA and SL with some sketchy curve fitting (temporarily disable
+% warnings)
+orig_state = warning;
+warning('off','all');
+coeff = polyfit(Fx_interp,SL_interp,3);
 SL_interp = polyval(coeff,Fx_interp);
-coeff = polyfit(Fy_interp,SA_interp,1);
+coeff = polyfit(Fy_interp,SA_interp,3);
 SA_interp = polyval(coeff,Fy_interp);
+warning('on','all'); 
 % Find outer edge boundary of tyre potential forces
 k = boundary(Fy_interp,Fx_interp,0);
 % Remove repeated point
