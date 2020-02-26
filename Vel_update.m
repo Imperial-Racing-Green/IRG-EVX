@@ -117,7 +117,10 @@ if ~isempty(BoundaryConditions.vCar_start)
 else
     v_x2(1) = v_x(1);
 end
-Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
+
+% Weight transfers
+Fz_FL = 0;   Fz_FR = 0; 
+Fz_RL = 0;   Fz_RR = 0;
 
 for i = 1:length(distanceTrack)
     
@@ -134,10 +137,17 @@ for i = 1:length(distanceTrack)
         [F_L,F_D,AB] = Aero_Forces(v_x2(i),Environment,Car,bUseAeromap,hRideF(i),hRideR(i),aRollF(i),aRollR(i),aYaw(i));
         % Recalculate downforce
         Aerobalance(i:end) = AB;
-        Fz_FL_d(i) = Fz_FL_static(i) - (F_L * (Aerobalance(i)/2));
-        Fz_FR_d(i) = Fz_FR_static(i) - (F_L * (Aerobalance(i)/2));
-        Fz_RL_d(i) = Fz_RL_static(i) - (F_L * ((1 - Aerobalance(i))/2));
-        Fz_RR_d(i) = Fz_RR_static(i) - (F_L * ((1 - Aerobalance(i))/2));
+        Fz_FL_d(i) = Fz_FL_static(i) - (F_L * (Aerobalance(i)/2)) + Fz_FL;
+        Fz_FR_d(i) = Fz_FR_static(i) - (F_L * (Aerobalance(i)/2)) + Fz_FR;
+        Fz_RL_d(i) = Fz_RL_static(i) - (F_L * ((1 - Aerobalance(i))/2)) + Fz_RL;
+        Fz_RR_d(i) = Fz_RR_static(i) - (F_L * ((1 - Aerobalance(i))/2)) + Fz_RR;
+        % If tyres lift from ground set force to 0
+        if (Fz_FL_d(i)>=0) || (Fz_FR_d(i)>=0) || (Fz_RL_d(i)>=0) || (Fz_RR_d(i)>=0)
+            Fz_FL_d(i) = min(Fz_FL_d(i),0);
+            Fz_FR_d(i) = min(Fz_FR_d(i),0);
+            Fz_RL_d(i) = min(Fz_RL_d(i),0);
+            Fz_RR_d(i) = min(Fz_RR_d(i),0);
+        end
         Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
         
         % Get wheel speeds from wheelslips
@@ -245,6 +255,7 @@ for i = 1:length(distanceTrack)
         Fx_sum = Fx_sum - F_D - Fx_rollres;    
 
         a_x = Fx_sum / Car.Mass.Total;
+        a_x = max(a_x,0);
         a_y = (v_x2(i)^2) / radius_d(i);
         
         % Carry out mass transfer checks
@@ -289,7 +300,7 @@ for i = 1:length(distanceTrack)
         
         eps = max(abs((Fz_check - [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)])./Fz_check));
         if eps > eps_prev
-            bSkip = bSkip + 0.25; % Give it a chance to try and re-converge (this is getting desperate...)
+            bSkip = bSkip + 0.5; % Give it a chance to try and re-converge (this is getting desperate...)
         else
             eps_prev = eps;
             Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
@@ -321,6 +332,10 @@ else
     v_x3(end) = v_x2(end);
 end
 
+% Weight transfers
+Fz_FL = 0;   Fz_FR = 0; 
+Fz_RL = 0;   Fz_RR = 0;
+
 for i = length(distanceTrack):-1:1
     
     v_x3(i) = min(v_x3(i),v_x2(i));
@@ -340,10 +355,15 @@ for i = length(distanceTrack):-1:1
         [F_L,F_D,AB] = Aero_Forces(v_x3(i),Environment,Car,bUseAeromap,hRideF(i),hRideR(i),aRollF(i),aRollR(i),aYaw(i));
         % Recalculate downforce
         Aerobalance(i:end) = AB;
-        Fz_FL_d(i) = Fz_FL_static(i) - (F_L * (Aerobalance(i)/2));
-        Fz_FR_d(i) = Fz_FR_static(i) - (F_L * (Aerobalance(i)/2));
-        Fz_RL_d(i) = Fz_RL_static(i) - (F_L * ((1 - Aerobalance(i))/2));
-        Fz_RR_d(i) = Fz_RR_static(i) - (F_L * ((1 - Aerobalance(i))/2));
+        Fz_FL_d(i) = Fz_FL_static(i) - (F_L * (Aerobalance(i)/2)) + Fz_FL;
+        Fz_FR_d(i) = Fz_FR_static(i) - (F_L * (Aerobalance(i)/2)) + Fz_FR;
+        Fz_RL_d(i) = Fz_RL_static(i) - (F_L * ((1 - Aerobalance(i))/2)) + Fz_RL;
+        Fz_RR_d(i) = Fz_RR_static(i) - (F_L * ((1 - Aerobalance(i))/2)) + Fz_RR;
+        % If tyres lift from ground set force to 0
+        Fz_FL_d(i) = min(Fz_FL_d(i),0);
+        Fz_FR_d(i) = min(Fz_FR_d(i),0);
+        Fz_RL_d(i) = min(Fz_RL_d(i),0);
+        Fz_RR_d(i) = min(Fz_RR_d(i),0);
         Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
         
         % Re-evaluate tyre potential
@@ -465,7 +485,7 @@ for i = length(distanceTrack):-1:1
         
         eps = max(abs((Fz_check - [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)])./Fz_check));
         if eps > eps_prev
-            bSkip = bSkip + 0.25; % Give it a chance to try and re-converge (this is getting depserate...)
+            bSkip = bSkip + 0.5; % Give it a chance to try and re-converge (this is getting depserate...)
         else
             eps_prev = eps;
             Fz_check = [Fz_FL_d(i) Fz_FR_d(i) Fz_RL_d(i) Fz_RR_d(i)];
