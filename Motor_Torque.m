@@ -7,6 +7,9 @@ rated_voltage = Motor_Info.RatedVoltage;
 Config = Motor_Info.Config;
 nMotors = Motor_Info.nMotors;
 
+% FSAE power limit
+pLim = 80000;
+
 % Get wheel speed
 if strcmp(Config,'fwd') == 1
    vWheel = mean(vWheels(1:2)); 
@@ -47,10 +50,12 @@ T_motor =  T_stall - ((RPM_motor/RPM_no_load)*T_stall);
 T_motor = min(T_motor,T_cap)*Motor_Info.Efficiencies.Motor;
 
 % Make sure motor power is not exceeding 80kW limit in regulations
-pMotor = (T_motor * RPM_motor) / 9.5488;
-if pMotor > 80000
-    pMotor = 80000;
-    T_motor = (9.5488 * pMotor * Motor_Info.Efficiencies.Motor) / RPM_motor;
+% pMotor = (T_motor*RPM_motor)*(pi/30);
+pMotor = min( (P_max/RPM_maxP)*RPM_motor , P_max );
+if pMotor > pLim
+%     T_motor = (9.5488 * pMotor * Motor_Info.Efficiencies.Motor) / RPM_motor;
+    T_motor = T_motor*(pLim/pMotor);
+    pMotor = pLim;
 end
 
 if isnan(T_motor)
