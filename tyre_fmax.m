@@ -29,16 +29,6 @@ end
 F_x(isnan(F_x)) = 0;
 F_y(isnan(F_y)) = 0;
 
-% Force = [];
-% SlipAngle = [];
-% SlipRatio = [];
-% for i = 1:size(F_x,1)
-%     for j = 1:size(F_x,2)
-%         Force = [Force; F_x(i,j), F_y(i,j)];
-%         SlipAngle = [SlipAngle; SA(i,j)];
-%         SlipRatio = [SlipRatio; SL(i,j)];
-%     end
-% end
 Force = [F_x(:), F_y(:)];
 SlipAngle = SA(:);
 SlipRatio = SL(:);

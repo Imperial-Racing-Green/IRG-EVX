@@ -1,6 +1,9 @@
 function [Fx,Fy,Mz] = PacejkaTest(Tyre,SA,SL,Fz,IA)
 %% Pacejka '96 model using dynamic lookup coefficients obtained in Owen Heaney's FYP
 
+% Lose lateral grip and things get weird for Fz > 1400 due to surface fits
+Fz = min(Fz,1400); 
+
 S_x = SL./(1+SL);
 S_y = tand(SA)./(1+SL); % Alpha should be equal to alpha + Sh_y
 S = sqrt((S_x.^2) + (S_y.^2));
