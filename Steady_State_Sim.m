@@ -114,7 +114,7 @@ for iSweep = 1:nSweeps
     dist_log.Data = distanceTrack;
     dist_log.Time = linspace(0,120,length(distanceTrack))';
     %% Main simulation for tyre forces and velocity trace
-    [vCar, Fx, Fy, Fz, SA, SL] = Vel_update(Fz_log,distanceTrack,dist_log,radius_d,Environment,Car,BoundaryConditions,bUseAeromap);
+    [vCar, Fx, Fy, Fz, SA, SL] = Vel_update(Fz_log,distanceTrack,radius_d,Environment,Car,BoundaryConditions,bUseAeromap);
     
     %% Post-processing (simulation is over)
     sLap = distanceTrack;
