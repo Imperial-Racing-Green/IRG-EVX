@@ -196,6 +196,9 @@ for iSweep = 1:nSweeps
     bkd_T(bkd_T <= 0) = 0;
     rThrottle = fwd_T ./ Force.Powertrain.Thrust.Total;
     rBrake = bkd_T ./ Force.Brakes.Total;
+    % SHould not be doing these checks!
+    rThrottle(rThrottle > 1) = 1;
+    rBrake(rBrake > 1) = 1;
     % Correct motor outputs
     pMotor = pMotor.*rThrottle;
     nMotor = nMotor.*rThrottle;
