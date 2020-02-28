@@ -1,9 +1,9 @@
-function [F_x,F_y,F_xmax,F_ymax,F_xmin,F_ymin,SA_xmax,SA_xmin,SL_xmax,SL_xmin,SA_ymax,SA_ymin,SL_ymax,SL_ymin] = tyre_fmax(Car,Environment,Fz,IA,points,corner)
+function [F_xmax,F_ymax,F_xmin,F_ymin,SA_xmax,SA_xmin,SL_xmax,SL_xmin,SA_ymax,SA_ymin,SL_ymax,SL_ymin] = tyre_fmax(Car,Environment,Fz,IA,TyrePoints,corner)
 
 % Slip ratio
-SL = linspace(-0.3,0.3,points);
+SL = linspace(-0.3,0.3,TyrePoints.Input);
 % Slip angle
-SA = linspace(-20,20,points);
+SA = linspace(-20,20,TyrePoints.Input);
 
 [SA,SL] = meshgrid(SA,SL);
 
@@ -51,7 +51,7 @@ y = Fx;
 coeffs = [y.^2,x.*y,x,y,ones(numel(x),1)]\x.^2;
 % Solve for r in polar coordinate form
 i = 1;
-for theta = 0:5:180
+for theta = 0:(180/TyrePoints.Output):180
     a = (coeffs(1)*((sind(theta))^2)) + (coeffs(2)*cosd(theta)*sind(theta)) - ((cosd(theta))^2);
     b = (coeffs(3)*cosd(theta)) + (coeffs(4)*sind(theta));
     c = coeffs(5);

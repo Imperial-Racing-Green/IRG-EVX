@@ -8,7 +8,7 @@ Config = Motor_Info.Config;
 nMotors = Motor_Info.nMotors;
 
 % FSAE power limit
-pLim = 80000;
+pLim = 80000/nMotors;
 
 % Get wheel speed
 if strcmp(Config,'fwd') == 1

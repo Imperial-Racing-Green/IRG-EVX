@@ -1,10 +1,10 @@
 function [velocity_d, Fx, Fy, Fz, SA, SL, zCoG_dyn] = Vel_update(Fz_log,distanceTrack,radius_d,Environment,Car,BoundaryConditions,bUseAeromap)
 
-TyrePoints = 15;
+TyrePoints.Input = 15;
+TyrePoints.Output = 36;
 TyreInterpMethod = 'linear';
 
-%% Finding max velocity at each curvature
-radius_d(radius_d == 0) = 1e-5;
+radius_d(radius_d == 0) = 1e-10;
 
 Fz_FL_d = Fz_log.Data(:,1);
 Fz_FR_d = Fz_log.Data(:,2);
@@ -17,51 +17,83 @@ Fz_FR_static = Fz_FR_d;
 Fz_RL_static = Fz_RL_d;
 Fz_RR_static = Fz_RR_d;
 
-% Prepare dynamic zCoG position for load transfers as well as car positions
-% for aeromap lookups
-zCoG_dyn = Car.Dimension.CoG(3)*ones(length(radius_d),1);
-hRideF = Car.AeroPerformance.hRideF*ones(length(radius_d),1);
-hRideR = Car.AeroPerformance.hRideR*ones(length(radius_d),1);
-aRollF = zeros(length(radius_d),1);
-aRollR = zeros(length(radius_d),1);
-aPitch = zeros(length(radius_d),1);
-aYaw = zeros(length(radius_d),1);
+%% Initialise dynamics variables 
 Aerobalance = (1-Car.Balance.CoP(1))*ones(length(radius_d),1);
+% Tyre force and slip matrices
+F_xFLmax = zeros((TyrePoints.Output+1),2,length(distanceTrack));
+F_yFLmax = zeros((TyrePoints.Output+1),2,length(distanceTrack));
+F_xFLmin = zeros((TyrePoints.Output+1),2,length(distanceTrack));
+F_yFLmin = zeros((TyrePoints.Output+1),2,length(distanceTrack));
+SA_FL_xmax = zeros((TyrePoints.Output+1),length(distanceTrack));
+SA_FL_xmin = zeros((TyrePoints.Output+1),length(distanceTrack));
+SL_FL_xmax = zeros((TyrePoints.Output+1),length(distanceTrack));
+SL_FL_xmin = zeros((TyrePoints.Output+1),length(distanceTrack));
+SA_FL_ymax = zeros((TyrePoints.Output+1),length(distanceTrack));
+SA_FL_ymin = zeros((TyrePoints.Output+1),length(distanceTrack));
+SL_FL_ymax = zeros((TyrePoints.Output+1),length(distanceTrack));
+SL_FL_ymin = zeros((TyrePoints.Output+1),length(distanceTrack));
+Fy_FL = zeros(1,length(radius_d));
+Fy_FLreal = zeros(length(radius_d),1);
+F_xFRmax = zeros((TyrePoints.Output+1),2,length(distanceTrack));
+F_yFRmax = zeros((TyrePoints.Output+1),2,length(distanceTrack));
+F_xFRmin = zeros((TyrePoints.Output+1),2,length(distanceTrack));
+F_yFRmin = zeros((TyrePoints.Output+1),2,length(distanceTrack));
+SA_FR_xmax = zeros((TyrePoints.Output+1),length(distanceTrack));
+SA_FR_xmin = zeros((TyrePoints.Output+1),length(distanceTrack));
+SL_FR_xmax = zeros((TyrePoints.Output+1),length(distanceTrack));
+SL_FR_xmin = zeros((TyrePoints.Output+1),length(distanceTrack));
+SA_FR_ymax = zeros((TyrePoints.Output+1),length(distanceTrack));
+SA_FR_ymin = zeros((TyrePoints.Output+1),length(distanceTrack));
+SL_FR_ymax = zeros((TyrePoints.Output+1),length(distanceTrack));
+SL_FR_ymin = zeros((TyrePoints.Output+1),length(distanceTrack));
+Fy_FR = zeros(1,length(radius_d));
+Fy_FRreal = zeros(length(radius_d),1);
+F_xRLmax = zeros((TyrePoints.Output+1),2,length(distanceTrack));
+F_yRLmax = zeros((TyrePoints.Output+1),2,length(distanceTrack));
+F_xRLmin = zeros((TyrePoints.Output+1),2,length(distanceTrack));
+F_yRLmin = zeros((TyrePoints.Output+1),2,length(distanceTrack));
+SA_RL_xmax = zeros((TyrePoints.Output+1),length(distanceTrack));
+SA_RL_xmin = zeros((TyrePoints.Output+1),length(distanceTrack));
+SL_RL_xmax = zeros((TyrePoints.Output+1),length(distanceTrack));
+SL_RL_xmin = zeros((TyrePoints.Output+1),length(distanceTrack));
+SA_RL_ymax = zeros((TyrePoints.Output+1),length(distanceTrack));
+SA_RL_ymin = zeros((TyrePoints.Output+1),length(distanceTrack));
+SL_RL_ymax = zeros((TyrePoints.Output+1),length(distanceTrack));
+SL_RL_ymin = zeros((TyrePoints.Output+1),length(distanceTrack));
+Fy_RL = zeros(1,length(radius_d));
+Fy_RLreal = zeros(length(radius_d),1);
+F_xRRmax = zeros((TyrePoints.Output+1),2,length(distanceTrack));
+F_yRRmax = zeros((TyrePoints.Output+1),2,length(distanceTrack));
+F_xRRmin = zeros((TyrePoints.Output+1),2,length(distanceTrack));
+F_yRRmin = zeros((TyrePoints.Output+1),2,length(distanceTrack));
+SA_RR_xmax = zeros((TyrePoints.Output+1),length(distanceTrack));
+SA_RR_xmin = zeros((TyrePoints.Output+1),length(distanceTrack));
+SL_RR_xmax = zeros((TyrePoints.Output+1),length(distanceTrack));
+SL_RR_xmin = zeros((TyrePoints.Output+1),length(distanceTrack));
+SA_RR_ymax = zeros((TyrePoints.Output+1),length(distanceTrack));
+SA_RR_ymin = zeros((TyrePoints.Output+1),length(distanceTrack));
+SL_RR_ymax = zeros((TyrePoints.Output+1),length(distanceTrack));
+SL_RR_ymin = zeros((TyrePoints.Output+1),length(distanceTrack));
+Fy_RR = zeros(1,length(radius_d));
+Fy_RRreal = zeros(length(radius_d),1);
 
-% Prepare gears, engine speeds and wheel speeds
-NGear = ones(length(radius_d),1);
-RPM_engine = ones(length(radius_d),1);
-SL.FL = zeros(length(radius_d),1);
-SL.FR = zeros(length(radius_d),1);
-SL.RL = zeros(length(radius_d),1);
-SL.RR = zeros(length(radius_d),1);
-vWheel.FL = zeros(length(radius_d),1);
-vWheel.FR = zeros(length(radius_d),1);
-vWheel.RL = zeros(length(radius_d),1);
-vWheel.RR = zeros(length(radius_d),1);
-
-% Prepare camber angles to use in tyre model
-Camber.FL = Car.Tyres.Camber.FL*ones(length(radius_d),1);
-Camber.FR = Car.Tyres.Camber.FR*ones(length(radius_d),1);
-Camber.RL = Car.Tyres.Camber.RL*ones(length(radius_d),1);
-Camber.RR = Car.Tyres.Camber.RR*ones(length(radius_d),1);
-
+%% Finding max velocity at each curvature
 eps = Inf;
 eps_lim = 0.015;
 v_x_check = zeros(1,length(distanceTrack));
 while eps >= eps_lim
 
     for i = 1:length(distanceTrack)
-        [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),F_xFLmin(:,:,i),F_yFLmin(:,:,i),...
+        [F_xFLmax(:,:,i),F_yFLmax(:,:,i),F_xFLmin(:,:,i),F_yFLmin(:,:,i),...
             SA_FL_xmax(:,i),SA_FL_xmin(:,i),SL_FL_xmax(:,i),SL_FL_xmin(:,i),...
             SA_FL_ymax(:,i),SA_FL_ymin(:,i),SL_FL_ymax(:,i),SL_FL_ymin(:,i)] = tyre_fmax(Car,Environment,Fz_FL_d(i),0,TyrePoints,'FL');
-        [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),F_xFRmin(:,:,i),F_yFRmin(:,:,i),...
+        [F_xFRmax(:,:,i),F_yFRmax(:,:,i),F_xFRmin(:,:,i),F_yFRmin(:,:,i),...
             SA_FR_xmax(:,i),SA_FR_xmin(:,i),SL_FR_xmax(:,i),SL_FR_xmin(:,i),...
             SA_FR_ymax(:,i),SA_FR_ymin(:,i),SL_FR_ymax(:,i),SL_FR_ymin(:,i)] = tyre_fmax(Car,Environment,Fz_FR_d(i),0,TyrePoints,'FR');
-        [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),F_xRLmin(:,:,i),F_yRLmin(:,:,i),...
+        [F_xRLmax(:,:,i),F_yRLmax(:,:,i),F_xRLmin(:,:,i),F_yRLmin(:,:,i),...
             SA_RL_xmax(:,i),SA_RL_xmin(:,i),SL_RL_xmax(:,i),SL_RL_xmin(:,i),...
             SA_RL_ymax(:,i),SA_RL_ymin(:,i),SL_RL_ymax(:,i),SL_RL_ymin(:,i)] = tyre_fmax(Car,Environment,Fz_RL_d(i),0,TyrePoints,'RL');
-        [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),F_xRRmin(:,:,i),F_yRRmin(:,:,i),...
+        [F_xRRmax(:,:,i),F_yRRmax(:,:,i),F_xRRmin(:,:,i),F_yRRmin(:,:,i),...
             SA_RR_xmax(:,i),SA_RR_xmin(:,i),SL_RR_xmax(:,i),SL_RR_xmin(:,i),...
             SA_RR_ymax(:,i),SA_RR_ymin(:,i),SL_RR_ymax(:,i),SL_RR_ymin(:,i)] = tyre_fmax(Car,Environment,Fz_RR_d(i),0,TyrePoints,'RR');
     end
@@ -121,6 +153,37 @@ end
 % Weight transfers
 Fz_FL = 0;   Fz_FR = 0; 
 Fz_RL = 0;   Fz_RR = 0;
+% Prepare dynamic zCoG position for load transfers as well as car positions
+% for aeromap lookups
+zCoG_dyn = Car.Dimension.CoG(3)*ones(length(radius_d),1);
+dhRideFL = zeros(length(radius_d),1);
+dhRideFR = zeros(length(radius_d),1);
+dhRideRL = zeros(length(radius_d),1);
+dhRideRR = zeros(length(radius_d),1);
+dhRideF = zeros(length(radius_d),1);
+dhRideR = zeros(length(radius_d),1);
+hRideF = Car.AeroPerformance.hRideF*ones(length(radius_d),1);
+hRideR = Car.AeroPerformance.hRideR*ones(length(radius_d),1);
+aRollF = zeros(length(radius_d),1);
+aRollR = zeros(length(radius_d),1);
+aPitch = zeros(length(radius_d),1);
+aYaw = zeros(length(radius_d),1);
+% Prepare gears, engine speeds and wheel speeds
+NGear = ones(length(radius_d),1);
+RPM_engine = ones(length(radius_d),1);
+SL.FL = zeros(length(radius_d),1);
+SL.FR = zeros(length(radius_d),1);
+SL.RL = zeros(length(radius_d),1);
+SL.RR = zeros(length(radius_d),1);
+vWheel.FL = zeros(length(radius_d),1);
+vWheel.FR = zeros(length(radius_d),1);
+vWheel.RL = zeros(length(radius_d),1);
+vWheel.RR = zeros(length(radius_d),1);
+% Prepare camber angles to use in tyre model
+Camber.FL = Car.Tyres.Camber.FL*ones(length(radius_d),1);
+Camber.FR = Car.Tyres.Camber.FR*ones(length(radius_d),1);
+Camber.RL = Car.Tyres.Camber.RL*ones(length(radius_d),1);
+Camber.RR = Car.Tyres.Camber.RR*ones(length(radius_d),1);
 
 for i = 1:length(distanceTrack)
     
@@ -175,16 +238,16 @@ for i = 1:length(distanceTrack)
         Powertrain_Fx = Engine_Fx + Motor_Fx;
         
         % Re-evaluate tyre potential
-        [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),F_xFLmin(:,:,i),F_yFLmin(:,:,i),...
+        [F_xFLmax(:,:,i),F_yFLmax(:,:,i),F_xFLmin(:,:,i),F_yFLmin(:,:,i),...
             SA_FL_xmax(:,i),SA_FL_xmin(:,i),SL_FL_xmax(:,i),SL_FL_xmin(:,i),...
             SA_FL_ymax(:,i),SA_FL_ymin(:,i),SL_FL_ymax(:,i),SL_FL_ymin(:,i)] = tyre_fmax(Car,Environment,Fz_FL_d(i),Camber.FL(i),TyrePoints,'FL');
-        [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),F_xFRmin(:,:,i),F_yFRmin(:,:,i),...
+        [F_xFRmax(:,:,i),F_yFRmax(:,:,i),F_xFRmin(:,:,i),F_yFRmin(:,:,i),...
             SA_FR_xmax(:,i),SA_FR_xmin(:,i),SL_FR_xmax(:,i),SL_FR_xmin(:,i),...
             SA_FR_ymax(:,i),SA_FR_ymin(:,i),SL_FR_ymax(:,i),SL_FR_ymin(:,i)] = tyre_fmax(Car,Environment,Fz_FR_d(i),Camber.FR(i),TyrePoints,'FR');
-        [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),F_xRLmin(:,:,i),F_yRLmin(:,:,i),...
+        [F_xRLmax(:,:,i),F_yRLmax(:,:,i),F_xRLmin(:,:,i),F_yRLmin(:,:,i),...
             SA_RL_xmax(:,i),SA_RL_xmin(:,i),SL_RL_xmax(:,i),SL_RL_xmin(:,i),...
             SA_RL_ymax(:,i),SA_RL_ymin(:,i),SL_RL_ymax(:,i),SL_RL_ymin(:,i)] = tyre_fmax(Car,Environment,Fz_RL_d(i),Camber.RL(i),TyrePoints,'RL');
-        [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),F_xRRmin(:,:,i),F_yRRmin(:,:,i),...
+        [F_xRRmax(:,:,i),F_yRRmax(:,:,i),F_xRRmin(:,:,i),F_yRRmin(:,:,i),...
             SA_RR_xmax(:,i),SA_RR_xmin(:,i),SL_RR_xmax(:,i),SL_RR_xmin(:,i),...
             SA_RR_ymax(:,i),SA_RR_ymin(:,i),SL_RR_ymax(:,i),SL_RR_ymin(:,i)] = tyre_fmax(Car,Environment,Fz_RR_d(i),Camber.RR(i),TyrePoints,'RR');
     
@@ -367,16 +430,16 @@ for i = length(distanceTrack):-1:1
         Fz_sum = Fz_FL_d + Fz_FR_d + Fz_RL_d + Fz_RR_d;
         
         % Re-evaluate tyre potential
-        [F_xFL(:,:,i),F_yFL(:,:,i),F_xFLmax(:,:,i),F_yFLmax(:,:,i),F_xFLmin(:,:,i),F_yFLmin(:,:,i),...
+        [F_xFLmax(:,:,i),F_yFLmax(:,:,i),F_xFLmin(:,:,i),F_yFLmin(:,:,i),...
             SA_FL_xmax(:,i),SA_FL_xmin(:,i),SL_FL_xmax(:,i),SL_FL_xmin(:,i),...
             SA_FL_ymax(:,i),SA_FL_ymin(:,i),SL_FL_ymax(:,i),SL_FL_ymin(:,i)] = tyre_fmax(Car,Environment,Fz_FL_d(i),Camber.FL(i),TyrePoints,'FL');
-        [F_xFR(:,:,i),F_yFR(:,:,i),F_xFRmax(:,:,i),F_yFRmax(:,:,i),F_xFRmin(:,:,i),F_yFRmin(:,:,i),...
+        [F_xFRmax(:,:,i),F_yFRmax(:,:,i),F_xFRmin(:,:,i),F_yFRmin(:,:,i),...
             SA_FR_xmax(:,i),SA_FR_xmin(:,i),SL_FR_xmax(:,i),SL_FR_xmin(:,i),...
             SA_FR_ymax(:,i),SA_FR_ymin(:,i),SL_FR_ymax(:,i),SL_FR_ymin(:,i)] = tyre_fmax(Car,Environment,Fz_FR_d(i),Camber.FR(i),TyrePoints,'FR');
-        [F_xRL(:,:,i),F_yRL(:,:,i),F_xRLmax(:,:,i),F_yRLmax(:,:,i),F_xRLmin(:,:,i),F_yRLmin(:,:,i),...
+        [F_xRLmax(:,:,i),F_yRLmax(:,:,i),F_xRLmin(:,:,i),F_yRLmin(:,:,i),...
             SA_RL_xmax(:,i),SA_RL_xmin(:,i),SL_RL_xmax(:,i),SL_RL_xmin(:,i),...
             SA_RL_ymax(:,i),SA_RL_ymin(:,i),SL_RL_ymax(:,i),SL_RL_ymin(:,i)] = tyre_fmax(Car,Environment,Fz_RL_d(i),Camber.RL(i),TyrePoints,'RL');
-        [F_xRR(:,:,i),F_yRR(:,:,i),F_xRRmax(:,:,i),F_yRRmax(:,:,i),F_xRRmin(:,:,i),F_yRRmin(:,:,i),...
+        [F_xRRmax(:,:,i),F_yRRmax(:,:,i),F_xRRmin(:,:,i),F_yRRmin(:,:,i),...
             SA_RR_xmax(:,i),SA_RR_xmin(:,i),SL_RR_xmax(:,i),SL_RR_xmin(:,i),...
             SA_RR_ymax(:,i),SA_RR_ymin(:,i),SL_RR_ymax(:,i),SL_RR_ymin(:,i)] = tyre_fmax(Car,Environment,Fz_RR_d(i),Camber.RR(i),TyrePoints,'RR');
         

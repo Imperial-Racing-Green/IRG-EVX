@@ -196,7 +196,7 @@ for iSweep = 1:nSweeps
     bkd_T(bkd_T <= 0) = 0;
     rThrottle = fwd_T ./ Force.Powertrain.Thrust.Total;
     rBrake = bkd_T ./ Force.Brakes.Total;
-    % SHould not be doing these checks!
+    % Should not be doing these checks!
     rThrottle(rThrottle > 1) = 1;
     rBrake(rBrake > 1) = 1;
     % Correct motor outputs
@@ -207,10 +207,10 @@ for iSweep = 1:nSweeps
     Force.Wheel.Fx.FR = Fx.FR' - (Force.Aero.Drag/4)  + (Fz.FR*Car.Tyres.Front.Coefficients.RollingResistance);
     Force.Wheel.Fx.RL = Fx.RL' - (Force.Aero.Drag/4)  + (Fz.RL*Car.Tyres.Rear.Coefficients.RollingResistance);
     Force.Wheel.Fx.RR = Fx.RR' - (Force.Aero.Drag/4)  + (Fz.RR*Car.Tyres.Rear.Coefficients.RollingResistance);
-    Force.Wheel.Fy.FL = Fy.FL';
-    Force.Wheel.Fy.FR = Fy.FR';
-    Force.Wheel.Fy.RL = Fy.RL';
-    Force.Wheel.Fy.RR = Fy.RR';
+    Force.Wheel.Fy.FL = Fy.FL;
+    Force.Wheel.Fy.FR = Fy.FR;
+    Force.Wheel.Fy.RL = Fy.RL;
+    Force.Wheel.Fy.RR = Fy.RR;
     Force.Wheel.Fz.FL = Fz.FL;
     Force.Wheel.Fz.FR = Fz.FR;
     Force.Wheel.Fz.RL = Fz.RL;

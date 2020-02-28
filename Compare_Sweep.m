@@ -3,13 +3,13 @@ close all
 clear
 clc
 
-FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Fomula Student\EV1 Sims\BrakeBias_Sweep';
-full_weekend = 0;  % If selected point to folder of enclosing all weekend results
+FolderName = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Fomula Student\EV1 Sims\Mass_Sweep';
+full_weekend = 1;  % If selected point to folder of enclosing all weekend results
 
 % Variable to plot on x-axis. Set 'bFindSweptVariable = 1' (optional)
-bFindSweptVariable = 1; % Only set to 1 if its a single swept numeric values...
-SweptParam = 'Car.Brakes.BrakeBias';
-ParamName = 'BrakeBias';
+bUseSweptVariable = 1; % Only set to 1 if its a single swept numeric values...
+SweptParam = 'Car.Mass.Total'; % Car file parameter name
+ParamName = 'Mass'; % User defined name
 
 
 %%%%%%%%%%%%%%%%%%%% END OF INPUTS %%%%%%%%%%%%%%%%%%%%
@@ -39,48 +39,9 @@ for iTest = 1:length(FolderName)
         Results.(Test{iTest}).(['Sim' num2str(i)]) = load(filenames{i});
         sim = listing.name{i};
         SimNames{i} = sim(1:end-4);
-    end
-%     if bFindSweptVariable
-%         % Find swept paramater
-%         id =  regexp(SimNames{1},'\d');
-%         Param = SimNames{1};
-%         Param = Param(1:id-1);
-%     %     Param = regexprep(SimNames{1}, '\d[0-9_]+\d', '');
-%         if strcmp(Param(end),'_')
-%             Param = Param(1:end-1);
-%         end
-%         Param = strrep(Param,'_','.');
-%         Param = strrep(Param,'SC.L','SC_L');
-%         Param = strrep(Param,'SC.D','SC_D');
-%         idx = strfind(Param,'.');
-%         if ~isempty(idx)
-%             SweptParam = Param(idx(end)+1:end);
-%             SweptValues = zeros(1,length(SimNames));
-%             for i = 1:length(SimNames)
-%                 j = strfind(SimNames{i},SweptParam);
-%                 sim = SimNames{i};
-%                 SimNames{i} = sim(j:end);
-%                 if any(strfind(Param,'CoGx')) || any(strfind(Param,'CoPx'))
-%                     Param = strrep(Param,'x','(1)');
-%                 elseif any(strfind(Param,'CoGy')) || any(strfind(Param,'CoPy'))
-%                     Param = strrep(Param,'y','(2)');
-%                 elseif any(strfind(Param,'CoGz')) || any(strfind(Param,'CoPz'))
-%                     Param = strrep(Param,'z','(3)');
-%                 else
-%                     % Do nothing
-%                 end
-%                 SweptValues(i) = eval(['Results.' (Test{iTest}) '.' (['Sim' num2str(i)]) '.' Param]);
-%             end
-%         else
-%             SweptParam = 'Sim';
-%             SweptValues = 1:length(SimNames);
-%         end
-%     else
-%         SweptParam = 'Sim';
-%         SweptValues = 1:length(SimNames);
-%     end    
+    end  
     
-    if bFindSweptVariable
+    if bUseSweptVariable
         for i = 1:length(SimNames)
             SweptValues(i) = eval(['Results.' (Test{iTest}) '.' (['Sim' num2str(i)]) '.' SweptParam]);
             SimNames{i} = [ParamName '_' num2str(SweptValues(i))];
@@ -217,7 +178,7 @@ for iTest = 1:length(FolderName)
     ylabel('aSteeringWheel (deg)')
     grid minor
     xlim([0 Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)])
-    ylim([-180 180])
+%     ylim([-180 180])
     ax2 = axes(t,'Position',[0.05 0.08 0.9 0.4]);
     for i = 1:length(filenames)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).aUOSteer,'LineWidth',1)
@@ -257,7 +218,8 @@ for iTest = 1:length(FolderName)
         plot(Results.(Test{iTest}).(['Sim' num2str(i)]).sLap,Results.(Test{iTest}).(['Sim' num2str(i)]).pMotor/1000,'LineWidth',1)
         hold on
     end 
-    plot([0, Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)],[80, 80],'r--','LineWidth',1)
+    pLim = 80/Results.(Test{iTest}).(['Sim' num2str(i)]).Car.Powertrain.Motor.nMotors;
+    plot([0, Results.(Test{iTest}).(['Sim' num2str(i)]).sLap(end)],[pLim, pLim],'r--','LineWidth',1)
     legend(SimNames,'Interpreter','none')
     ylabel('Power (kW) (per motor)')
     grid minor

@@ -68,7 +68,7 @@ Car.Gears.Properties.VariableNames = {'NGear','vCar_ShiftDown','vCar_ShiftUp','R
 
 %% Brakes info
 Car.Brakes.FPedalMax = 1500;                                           % (N) 
-Car.Brakes.BrakeBias = 0.50;                                           % > 0.5 is biased towards front
+Car.Brakes.BrakeBias = 0.67;                                           % > 0.5 is biased towards front
 Car.Brakes.PedalMotionRatio = 205.8/51.5;
 Car.Brakes.Front.wPad = 0.040894; %25.4e-3                                          % Pad width (m) 
 Car.Brakes.Rear.wPad = 0.040894; %25.4e-3
