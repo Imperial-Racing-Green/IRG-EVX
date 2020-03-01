@@ -14,9 +14,9 @@ if length(SimName) == length(Sweep.Values)
 elseif Sweep.Choose_Param == 1
     for i = 1:nSweeps
         if isnumeric(Sweep.Values(i))
-            name = [Sweep.Param{1} '_' num2str(Sweep.Values(i))];
+            name = [Sweep.Param '_' num2str(Sweep.Values(i))];
         else
-            name = [Sweep.Param{1} '_' Sweep.Values{i}];
+            name = [Sweep.Param '_' Sweep.Values{i}];
         end
         name = strrep(name,'.','_');
         name = strrep(name,'(1)','x');
@@ -38,12 +38,12 @@ for iSweep = 1:nSweeps
     % Check which variables (if any) to change
     if Sweep.Choose_Param == 1
         if isnumeric(Sweep.Values(iSweep))
-            eval([Sweep.Param{1},'=',num2str(Sweep.Values(iSweep)),';']);
+            eval([Sweep.Param,'=',num2str(Sweep.Values(iSweep)),';']);
         else
-            eval([Sweep.Param{1},'=','"' Sweep.Values{iSweep} '"',';']);
+            eval([Sweep.Param,'=','"' Sweep.Values{iSweep} '"',';']);
         end
         % If change of tyres make extra requried changes
-        if strcmp(Sweep.Param{1},'Car.Tyres.Front.Name')
+        if strcmp(Sweep.Param,'Car.Tyres.Front.Name')
             Car = fnSelectTyres(Car);
         end
     elseif Sweep.Choose_Carfile == 1
@@ -113,8 +113,12 @@ for iSweep = 1:nSweeps
     Fz_log.Time = linspace(0,120,length(distanceTrack))';
     dist_log.Data = distanceTrack;
     dist_log.Time = linspace(0,120,length(distanceTrack))';
+    if iSweep == 1
+        Workspace = struct();
+    end
     %% Main simulation for tyre forces and velocity trace
-    [vCar, Fx, Fy, Fz, SA, SL] = Vel_update(Fz_log,distanceTrack,radius_d,Environment,Car,BoundaryConditions,bUseAeromap);
+    [vCar, Fx, Fy, Fz, SA, SL, zCoG_dyn, Workspace] = Vel_update(Fz_log,distanceTrack,radius_d,Environment,Car,BoundaryConditions,bUseAeromap,Sweep,iSweep,Workspace);
+    disp('Post-processing and saving simulation results...')
     
     %% Post-processing (simulation is over)
     sLap = distanceTrack;

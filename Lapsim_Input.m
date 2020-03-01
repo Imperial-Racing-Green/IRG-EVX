@@ -5,20 +5,20 @@ clc
 
 %% Save results location
 SaveLocation = 'C:\Users\gregj\OneDrive\Documents\Documents\Imperial\Fomula Student\EV1 Sims';
-FolderName = 'Mass_Sweep';
+FolderName = 'Test';
 SimName = {'Test'};
 
 %% Trackmap
 % trackmap = 'Acceleration_Track.mat';
 % trackmap = 'SkidPad_Track.mat';
-% trackmap = 'Autocross_Track.mat';
-trackmap = 'Endurance_Track.mat';
+trackmap = 'Autocross_Track.mat';
+% trackmap = 'Endurance_Track.mat';
 % trackmap = 'Full_FS_Weekend';
 
 %% Sweep inputs (can only sweep car params OR car files OR weatherfile)
 Sweep.Choose_Param = 1;                                % Choose whether to sweep anything or not
-Sweep.Param = {'Car.Mass.Total'};             % Variable within car structure to be swept
-Sweep.Values = 290:30:350;
+Sweep.Param = 'Car.Brakes.BrakeBias';             % Variable within car structure to be swept
+Sweep.Values = 0.7:0.05:0.95;
 Sweep.Choose_Carfile = 0;
 Sweep.Carfile = {'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\HEV1.mat',...
     'C:\Users\gregj\OneDrive\Documents\GitHub\IRG-EVX\Baseline_Carfile'};
