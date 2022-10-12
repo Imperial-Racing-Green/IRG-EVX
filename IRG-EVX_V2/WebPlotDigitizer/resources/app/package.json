@@ -16,7 +16,7 @@
     "electron": "^4.0.5"
   },
   "dependencies": {
-    "electron-packager": "^12.2.0",
+    "electron-packager": "^16.0.0",
     "is-builtin-module": "^3.0.0",
     "npm": "^6.8.0"
   }
